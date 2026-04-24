@@ -1,0 +1,5 @@
+[tools]
+bazel = "latest"
+buildifier = "latest"
+"aqua:bazelbuild/buildtools/buildozer" = "latest"
+prek = "latest"

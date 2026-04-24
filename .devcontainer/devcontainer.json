@@ -1,17 +1,30 @@
 {
-  "build": {
-    // instructs devcontainers to use a Dockerfile
-    // rather than a pre-defined image
-    "dockerfile": "Dockerfile"
+  "name": "rules-mise",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+  "features": {
+    "ghcr.io/devcontainers-extra/features/mise:1": {}
   },
   "customizations": {
     "vscode": {
       "extensions": [
+        "hverlin.mise-vscode",
         "ms-azuretools.vscode-docker", // docker support
         "BazelBuild.vscode-bazel" // bazel support
       ]
     }
   },
-  // sets up pre-commit hooks
-  "postStartCommand": "pre-commit install"
+  "mounts": [
+    {
+      "source": "mise-data-volume",
+      "target": "/mnt/mise-data",
+      "type": "volume"
+    }
+  ],
+  "containerEnv": {
+    "MISE_DATA_DIR": "/mnt/mise-data"
+  },
+  "remoteEnv": {
+    "PATH": "${containerEnv:PATH}:/mnt/mise-data/shims"
+  },
+  "postCreateCommand": "sudo chown -R vscode:vscode /mnt/mise-data && mise install -y && prek install"
 }
