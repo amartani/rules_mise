@@ -8,7 +8,7 @@ actions:
         branches:
           - "*"
     steps:
-      - run: "bazel test //..."
+      - run: "bazel test --config=buildbuddy //..."
   - name: buildbuddy e2e/smoke
     triggers:
       push:
@@ -18,4 +18,4 @@ actions:
         branches:
           - "*"
     steps:
-      - run: "cd e2e/smoke && bazel test //..."
+      - run: "cd e2e/smoke && bazel test --config=buildbuddy //..."

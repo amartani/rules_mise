@@ -1,1 +1,4 @@
 common --@rules_python//python/config_settings:bootstrap_impl=script
+
+build:buildbuddy --bes_results_url=https://app.buildbuddy.io/invocation/ --bes_backend=grpcs://remote.buildbuddy.io
+common:buildbuddy --remote_timeout=10m --remote_executor=grpcs://remote.buildbuddy.io
