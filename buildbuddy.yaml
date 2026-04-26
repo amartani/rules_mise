@@ -1,0 +1,21 @@
+actions:
+  - name: buildbuddy root
+    triggers:
+      push:
+        branches:
+          - "main"
+      pull_request:
+        branches:
+          - "*"
+    steps:
+      - run: "bazel test //..."
+  - name: buildbuddy e2e/smoke
+    triggers:
+      push:
+        branches:
+          - "main"
+      pull_request:
+        branches:
+          - "*"
+    steps:
+      - run: "cd e2e/smoke && bazel test //..."
