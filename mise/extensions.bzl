@@ -1,72 +1,47 @@
 """Extensions for bzlmod.
 
-Installs a mise toolchain.
-Every module can define a toolchain version under the default name, "mise".
-The latest of those versions will be selected (the rest discarded),
-and will always be registered by rules_mise.
-
-Additionally, the root module can define arbitrarily many more toolchain versions under different
-names (the latest version will be picked for each name) and can register them as it sees fit,
-effectively overriding the default named toolchain due to toolchain resolution precedence.
+Provides hub extension for parsing mise.lock and exposing tools.
 """
 
-load(":repositories.bzl", "mise_register_toolchains")
+load(":hub.bzl", "bzlmod_hub")
 
-_DEFAULT_NAME = "mise"
-
-mise_toolchain = tag_class(attrs = {
-    "name": attr.string(doc = """\
-Base name for generated repositories, allowing more than one mise toolchain to be registered.
-Overriding the default is only permitted in the root module.
-""", default = _DEFAULT_NAME),
-    "mise_version": attr.string(doc = "Explicit version of mise.", mandatory = True),
+hub = tag_class(attrs = {
+    "hub_name": attr.string(default = "mise"),
+    "lockfile": attr.label(mandatory = True, allow_single_file = True),
 })
 
 def _toolchain_extension(module_ctx):
-    registrations = {}
+    hub_name = None
+    hub_lockfiles = []
+
     for mod in module_ctx.modules:
-        for toolchain in mod.tags.toolchain:
-            if toolchain.name != _DEFAULT_NAME and not mod.is_root:
-                fail("""\
-                Only the root module may override the default name for the mise toolchain.
-                This prevents conflicting registrations in the global namespace of external repos.
-                """)
-            if toolchain.name not in registrations.keys():
-                registrations[toolchain.name] = []
-            registrations[toolchain.name].append(toolchain.mise_version)
-    for name, versions in registrations.items():
-        if len(versions) > 1:
-            # TODO: should be semver-aware, using MVS
-            selected = sorted(versions, reverse = True)[0]
+        for h in mod.tags.hub:
+            if hub_name and hub_name != h.hub_name:
+                fail("Multiple hub names not supported: {} and {}".format(hub_name, h.hub_name))
+            hub_name = h.hub_name
+            hub_lockfiles.append(h.lockfile)
 
-            # buildifier: disable=print
-            print("NOTE: mise toolchain {} has multiple versions {}, selected {}".format(name, versions, selected))
-        else:
-            selected = versions[0]
-
-        mise_register_toolchains(
-            name = name,
-            mise_version = selected,
-            register = False,
+    if hub_lockfiles:
+        bzlmod_hub(
+            name = hub_name or "mise",
+            lockfiles = hub_lockfiles,
+            module_ctx = module_ctx,
         )
+        return module_ctx.extension_metadata(
+            root_module_direct_deps = [hub_name],
+            root_module_direct_dev_deps = [],
+            reproducible = True,
+        )
+
     return module_ctx.extension_metadata(
-        # Return True if the behavior of the module extension is fully
-        # determined by its inputs. Return False if the module depends on
-        # outside state, for example, if it needs to fetch an external list
-        # of versions, URLs, or hashes that could change.
-        #
-        # If True, Bazel omits information from the lock file, expecting that
-        # it can be reproduced.
         reproducible = True,
     )
 
 mise = module_extension(
     implementation = _toolchain_extension,
-    tag_classes = {"toolchain": mise_toolchain},
-    # Mark the extension as OS and architecture independent to simplify the
-    # lock file. An independent module extension may still download OS- and
-    # arch-dependent files, but it should download the same set of files
-    # regardless of the host platform.
+    tag_classes = {
+        "hub": hub,
+    },
     os_dependent = False,
     arch_dependent = False,
 )

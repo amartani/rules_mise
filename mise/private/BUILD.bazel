@@ -1,19 +1,8 @@
 load("@bazel_lib//:bzl_library.bzl", "bzl_library")
 
 bzl_library(
-    name = "toolchains_repo",
-    srcs = ["toolchains_repo.bzl"],
+    name = "lockfile",
+    srcs = ["lockfile.bzl"],
     visibility = ["//mise:__subpackages__"],
-)
-
-bzl_library(
-    name = "versions",
-    srcs = ["versions.bzl"],
-    visibility = ["//mise:__subpackages__"],
-)
-
-bzl_library(
-    name = "resolved_toolchain",
-    srcs = ["resolved_toolchain.bzl"],
-    visibility = ["//mise:__subpackages__"],
+    deps = ["@toml.bzl"],
 )

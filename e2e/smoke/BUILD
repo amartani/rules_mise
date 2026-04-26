@@ -1,17 +1,9 @@
-"""Provides a simple way to test your rules as an external workspace.
-Add a basic smoke-test target below.
-"""
-
-load("@bazel_skylib//rules:build_test.bzl", "build_test")
-# load("@com_rules_mise_mise//mise:defs.bzl", "...")
-
-# Replace with a usage of your rule/macro
-filegroup(name = "empty")
-
-build_test(
-    name = "smoke_test",
-    targets = [
-        # targets you add above
-        ":empty",
+genrule(
+    name = "ruff_check",
+    srcs = [
+        ":test_sample.py",
+        "@mise//tools/ruff:tool",
     ],
+    outs = ["ruff_output.txt"],
+    cmd = "$(location @mise//tools/ruff:tool) check $(location :test_sample.py) > $@ 2>&1 || true",
 )
