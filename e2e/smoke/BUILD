@@ -1,3 +1,23 @@
+load("@rules_python//python:defs.bzl", "py_test")
+load("@rules_python//python:pip.bzl", "compile_pip_requirements")
+
+py_test(
+    name = "test_sample",
+    srcs = ["test_sample.py"],
+    data = [
+        "@mise//tools/ruff:tool",
+    ],
+    deps = [
+        "@pypi//bazel_runfiles",
+    ],
+)
+
+compile_pip_requirements(
+    name = "requirements",
+    src = "requirements.in",
+    requirements_txt = "requirements.txt",
+)
+
 genrule(
     name = "ruff_check",
     srcs = [

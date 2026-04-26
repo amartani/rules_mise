@@ -1,7 +1,15 @@
-def add(a, b):
-    return a + b
+import subprocess
+import sys
 
-def test_add():
-    assert add(1, 2) == 3
-    assert add(0, 0) == 0
-    assert add(-1, 1) == 0
+from runfiles import Runfiles
+
+r = Runfiles.Create()
+
+ruff_binary = r.Rlocation("mise/tools/ruff/executable")
+
+result = subprocess.run(
+    [ruff_binary, "format", "--check", __file__], capture_output=True, text=True
+)
+print(result.stdout)
+print(result.stderr)
+sys.exit(result.returncode)

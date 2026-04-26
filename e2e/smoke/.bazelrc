@@ -1,0 +1,1 @@
+common --@rules_python//python/config_settings:bootstrap_impl=script
