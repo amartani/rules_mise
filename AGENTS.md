@@ -28,6 +28,7 @@ When working with external libraries, use the `context7` MCP to access up-to-dat
 - Bazel: `/bazelbuild/bazel`
 - rules_multitool: `/bazel-contrib/rules_multitool`
 - bazel_skylib: `/bazelbuild/bazel-skylib`
+- bazel_lib: `/bazel-contrib/bazel-lib`
 
 ## Adding New Modules
 
