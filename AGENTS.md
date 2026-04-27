@@ -20,3 +20,15 @@ cd e2e/smoke && bazel build //:ruff_check
 ## Repo Structure
 
 See @docs/architecture.md
+
+## External Library Documentation
+
+When working with external libraries, use the `context7` MCP to access up-to-date documentation:
+
+- Bazel: `/bazelbuild/bazel`
+- rules_multitool: `/bazel-contrib/rules_multitool`
+- bazel_skylib: `/bazelbuild/bazel-skylib`
+
+## Adding New Modules
+
+When adding new modules, verify the current version in the [Bazel Central Registry](https://github.com/bazelbuild/bazel-central-registry) to ensure using an up-to-date version.
