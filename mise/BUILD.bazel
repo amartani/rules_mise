@@ -7,6 +7,7 @@ bzl_library(
     deps = [
         ":hub",
         "//mise/private:lockfile",
+        "@toml.bzl//toml:toml",
     ],
 )
 
@@ -16,6 +17,22 @@ bzl_library(
     visibility = ["//visibility:public"],
     deps = [
         "//mise/private:lockfile",
-        "@toml.bzl//toml:toml",
+        "//mise/private:templates",
+        "@bazel_features//:features",
+        "@bazel_tools//tools/build_defs/repo:utils.bzl",
     ],
+)
+
+bzl_library(
+    name = "cwd",
+    srcs = ["cwd.bzl"],
+    visibility = ["//visibility:public"],
+    deps = ["//mise/private:cwd"],
+)
+
+bzl_library(
+    name = "workspace_root",
+    srcs = ["workspace_root.bzl"],
+    visibility = ["//visibility:public"],
+    deps = ["//mise/private:workspace_root"],
 )

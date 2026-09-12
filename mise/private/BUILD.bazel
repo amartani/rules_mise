@@ -1,8 +1,40 @@
 load("@bazel_lib//:bzl_library.bzl", "bzl_library")
 
+exports_files([
+    "run_in.template.bat",
+    "run_in.template.sh",
+])
+
+bzl_library(
+    name = "cwd",
+    srcs = ["cwd.bzl"],
+    visibility = ["//mise:__subpackages__"],
+    deps = [":run_in"],
+)
+
 bzl_library(
     name = "lockfile",
     srcs = ["lockfile.bzl"],
     visibility = ["//mise:__subpackages__"],
-    deps = ["@toml.bzl"],
+    deps = ["@toml.bzl//:toml"],
+)
+
+bzl_library(
+    name = "run_in",
+    srcs = ["run_in.bzl"],
+    visibility = ["//mise:__subpackages__"],
+)
+
+bzl_library(
+    name = "templates",
+    srcs = ["templates.bzl"],
+    visibility = ["//mise:__subpackages__"],
+    deps = ["@platforms//host:constraints_lib"],
+)
+
+bzl_library(
+    name = "workspace_root",
+    srcs = ["workspace_root.bzl"],
+    visibility = ["//mise:__subpackages__"],
+    deps = [":run_in"],
 )

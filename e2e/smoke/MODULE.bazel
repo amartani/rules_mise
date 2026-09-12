@@ -22,3 +22,6 @@ local_path_override(
 mise = use_extension("@rules_mise//mise:extensions.bzl", "mise")
 mise.hub(lockfile = "//:mise.lock")
 use_repo(mise, "mise")
+
+# Register toolchains from the default mise hub
+register_toolchains("@mise//toolchains:all")
