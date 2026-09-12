@@ -7,6 +7,7 @@ def _toolchain_info_impl(ctx):
             cpu = ctx.attr.cpu,
             os = ctx.attr.os,
             ext = ctx.attr.ext,
+            files = ctx.files.files,
         ),
     ]
 
@@ -16,6 +17,7 @@ toolchain_info = rule(
         cpu = attr.string(mandatory = True, values = ["arm64", "x86_64"]),
         os = attr.string(mandatory = True, values = ["linux", "macos", "windows"]),
         ext = attr.string(mandatory = True, values = ["", ".exe"]),
+        files = attr.label_list(allow_files = True),
     ),
     implementation = _toolchain_info_impl,
 )
@@ -33,6 +35,7 @@ def declare_toolchain(name, os, cpu, toolchain_type, hub_name):
         os = os,
         cpu = cpu,
         ext = ext,
+        files = ["@@{hub_name}.{name}.{os}_{cpu}//tools/{name}:pkgx_files".format(name=name, os=os, cpu=cpu, hub_name=hub_name)],
     )
 
     native.toolchain(

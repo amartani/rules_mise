@@ -15,6 +15,30 @@ _MUSL_VARIANTS = {
     "linux-arm64-musl": "linux-arm64",
 }
 
+_ARCHIVE_SUFFIXES = [".tar.gz", ".tgz", ".tar.xz", ".tar.bz2", ".tar", ".zip"]
+
+def _clean(name):
+    """Sanitizes a mise tool/package name for use in Bazel labels and paths.
+
+    Only characters that are illegal in labels, repo names, or paths are
+    replaced (`:`, `/`, `+`, `@`, space); `-` and `.` are kept so existing
+    tool names are unaffected.
+    """
+    return (name.replace(":", "_").replace("/", "_").replace("+", "_")
+        .replace("@", "_").replace(" ", "_"))
+
+def _strip_sha256(checksum):
+    if checksum.startswith("sha256:"):
+        return checksum[len("sha256:"):]
+    return checksum
+
+def _is_archive(url):
+    lower_url = url.lower()
+    for suffix in _ARCHIVE_SUFFIXES:
+        if lower_url.endswith(suffix):
+            return True
+    return False
+
 def _parse_mise_platform(platform):
     if platform in _MUSL_VARIANTS:
         return None
@@ -22,10 +46,62 @@ def _parse_mise_platform(platform):
         return _MISE_PLATFORM_TO_BAZEL[platform]
     return None
 
+def _split_dep_id(dep_id):
+    parts = dep_id.rsplit("@", 1)
+    if len(parts) != 2:
+        fail("Invalid pkgx package id {id!r}: expected <name>@<version>".format(id = dep_id))
+    return (parts[0], parts[1])
+
+def _pkgx_payload(tool_name, backend, version, url, checksum, platform, platform_data, pkgx_packages):
+    """Builds the pkgx closure payload for one platform entry of a pkgx tool.
+
+    Mirrors `mise install` from a lockfile: the main bottle plus every
+    transitive dependency listed in `pkgx_deps`, with bottle info taken from
+    the shared `[pkgx-packages]` lockfile section (deps first, root last).
+    """
+    root = backend[len("pkgx:"):]
+    provides = [
+        p
+        for p in platform_data.get("pkgx_provides", [])
+        if p.startswith("bin/") or p.startswith("sbin/")
+    ]
+    platform_pkgs = pkgx_packages.get(platform, {})
+    packages = []
+    for dep_id in platform_data.get("pkgx_deps", []):
+        info = platform_pkgs.get(dep_id, None)
+        if info == None:
+            fail("pkgx tool {tool}: dependency {dep} has no [pkgx-packages.{platform}] entry in the lockfile".format(
+                tool = tool_name,
+                dep = dep_id,
+                platform = platform,
+            ))
+        (dep_name, dep_version) = _split_dep_id(dep_id)
+        packages.append({
+            "name": dep_name,
+            "version": dep_version,
+            "url": info.get("url", ""),
+            "checksum": _strip_sha256(info.get("checksum", "")),
+            "runtime_env": info.get("pkgx_runtime_env", {}),
+        })
+    packages.append({
+        "name": root,
+        "version": version,
+        "url": url,
+        "checksum": checksum,
+        "runtime_env": platform_data.get("pkgx_runtime_env", {}),
+    })
+    return {
+        "root": root,
+        "version": version,
+        "provides": provides,
+        "packages": packages,
+    }
+
 def _load(ctx, lockfiles):
     tools = {}
     for lockfile in lockfiles:
         parsed = toml.decode(ctx.read(lockfile))
+        pkgx_packages = parsed.get("pkgx-packages", {})
 
         tools_dict = parsed.get("tools", {})
         for tool_name, tool_data in tools_dict.items():
@@ -44,6 +120,8 @@ def _load(ctx, lockfiles):
                 if not backend:
                     backend = tool_entry.get("backend", "")
 
+                is_pkgx = backend.startswith("pkgx:")
+
                 for platform_key, platform_data in tool_entry.items():
                     if not platform_key.startswith("platforms."):
                         continue
@@ -54,15 +132,12 @@ def _load(ctx, lockfiles):
                         continue
 
                     url = platform_data.get("url", "")
-                    checksum = platform_data.get("checksum", "")
-                    if checksum.startswith("sha256:"):
-                        checksum = checksum[7:]
-
+                    checksum = _strip_sha256(platform_data.get("checksum", ""))
                     if not url or not checksum:
                         continue
 
                     lower_url = url.lower()
-                    if lower_url.endswith(".tar.gz") or lower_url.endswith(".tgz") or lower_url.endswith(".zip"):
+                    if _is_archive(url):
                         kind = "archive"
                     elif lower_url.endswith(".pkg"):
                         kind = "pkg"
@@ -78,13 +153,36 @@ def _load(ctx, lockfiles):
                         "version": version,
                         "backend": backend,
                     }
+                    if is_pkgx:
+                        if kind != "archive":
+                            fail("pkgx tool {tool}: expected an archive bottle, got {url}".format(
+                                tool = tool_name,
+                                url = url,
+                            ))
+                        binary["pkgx"] = _pkgx_payload(
+                            tool_name,
+                            backend,
+                            version,
+                            url,
+                            checksum,
+                            platform_suffix,
+                            platform_data,
+                            pkgx_packages,
+                        )
                     binaries.append(binary)
 
             if binaries:
-                tools[tool_name] = {
+                clean_name = _clean(tool_name)
+                provides = []
+                for binary in binaries:
+                    if "pkgx" in binary:
+                        provides = binary["pkgx"]["provides"]
+                        break
+                tools[clean_name] = {
                     "binaries": binaries,
                     "version": version,
                     "backend": backend,
+                    "provides": provides,
                 }
     return tools
 

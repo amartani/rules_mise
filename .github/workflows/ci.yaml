@@ -20,7 +20,8 @@ jobs:
       folders: |
         [
           ".",
-          "e2e/smoke"
+          "e2e/smoke",
+          "e2e/pkgx"
         ]
       exclude: |
         [

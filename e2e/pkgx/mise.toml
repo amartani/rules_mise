@@ -1,0 +1,5 @@
+[settings]
+experimental = true
+
+[tools]
+"pkgx:stedolan.github.io/jq" = "latest"
