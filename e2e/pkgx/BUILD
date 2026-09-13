@@ -11,12 +11,6 @@ py_test(
         "@mise//tools/pkgx_postgresql.org:pg_isready",
         "@mise//tools/pkgx_postgresql.org:psql",
     ],
-    # pkgx bottles are built against a modern glibc (>= 2.25) but
-    # BuildBuddy's default execution platform is Ubuntu 16.04 (glibc 2.23),
-    # so run this test in an Ubuntu 22.04 container when executing remotely.
-    exec_properties = {
-        "container-image": "docker://ubuntu:22.04",
-    },
     deps = [
         "@pypi//bazel_runfiles",
     ],

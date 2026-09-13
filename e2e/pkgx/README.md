@@ -17,9 +17,11 @@ over a Unix socket, then `pg_ctl stop`.
 
 Two things are needed to run this test on BuildBuddy's remote executors:
 
-- The `pkgx` bottles are built against a modern glibc (>= 2.25) while the
-  default execution platform is Ubuntu 16.04 (glibc 2.23), so `test_psql`
-  carries `exec_properties = {"container-image": "docker://ubuntu:22.04"}`.
+- The `pkgx` bottles are built against a modern glibc (>= 2.25) while
+  BuildBuddy's default execution platform is Ubuntu 16.04 (glibc 2.23), so
+  the repo's `buildbuddy` configs set `container-image` to the Ubuntu 24.04
+  image from `buildbuddy-io/buildbuddy-toolchain` (`UBUNTU24_04_IMAGE`) as
+  the default for all remote actions.
 - Containers run as root and postgres refuses `initdb` as root, so the test
   drops privileges via `setpriv`/`runuser` to `nobody` when it starts as
   root (and `chown`s its scratch dirs accordingly).
