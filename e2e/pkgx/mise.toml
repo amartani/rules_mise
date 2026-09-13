@@ -2,4 +2,4 @@
 experimental = true
 
 [tools]
-"pkgx:stedolan.github.io/jq" = "latest"
+"pkgx:postgresql.org" = "latest"

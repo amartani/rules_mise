@@ -2,73 +2,775 @@
 
 lockfile_version = 1
 
-[pkgx-packages.linux-arm64."github.com/kkos/oniguruma@6.9.10"]
-url = "https://dist.pkgx.dev/github.com/kkos/oniguruma/linux/aarch64/v6.9.10.tar.xz"
-checksum = "sha256:4a8203f13efbcde181253d733191b010987b4f7970189c26c41f9880bb99fd0a"
-pkgx_provides = ["bin/onig-config"]
+[pkgx-packages.linux-arm64."curl.se/ca-certs@2026.8.13"]
+url = "https://dist.pkgx.dev/curl.se/ca-certs/linux/aarch64/v2026.8.13.tar.xz"
+checksum = "sha256:94f16e8646503efd40aca734eb76bc780dfc8e1e48c01f3bd15f871930b725c8"
 
-[pkgx-packages.linux-arm64-musl."github.com/kkos/oniguruma@6.9.10"]
-url = "https://dist.pkgx.dev/github.com/kkos/oniguruma/linux/aarch64/v6.9.10.tar.xz"
-checksum = "sha256:4a8203f13efbcde181253d733191b010987b4f7970189c26c41f9880bb99fd0a"
-pkgx_provides = ["bin/onig-config"]
+[pkgx-packages.linux-arm64."curl.se/ca-certs@2026.8.13".pkgx_runtime_env]
+SSL_CERT_FILE = "${{prefix}}/ssl/cert.pem"
 
-[pkgx-packages.linux-x64."github.com/kkos/oniguruma@6.9.10"]
-url = "https://dist.pkgx.dev/github.com/kkos/oniguruma/linux/x86-64/v6.9.10.tar.xz"
-checksum = "sha256:6d11828271dfcb522999d574bed74be79629def7a87f9314a6cccf078a748412"
-pkgx_provides = ["bin/onig-config"]
+[pkgx-packages.linux-arm64."gnome.org/libxml2@2.13.9"]
+url = "https://dist.pkgx.dev/gnome.org/libxml2/linux/aarch64/v2.13.9.tar.xz"
+checksum = "sha256:6142a72de85dfee4f0368d76f8368f7b4b51d4a1dd90aac0ffad8ded4144530b"
+pkgx_provides = [
+    "bin/xml2-config",
+    "bin/xmlcatalog",
+    "bin/xmllint",
+]
 
-[pkgx-packages.linux-x64-musl."github.com/kkos/oniguruma@6.9.10"]
-url = "https://dist.pkgx.dev/github.com/kkos/oniguruma/linux/x86-64/v6.9.10.tar.xz"
-checksum = "sha256:6d11828271dfcb522999d574bed74be79629def7a87f9314a6cccf078a748412"
-pkgx_provides = ["bin/onig-config"]
+[pkgx-packages.linux-arm64."gnome.org/libxml2@2.13.9".pkgx_runtime_env]
+PYTHONPATH = "${{prefix}}/lib/python3.11/site-packages:$PYTHONPATH"
 
-[pkgx-packages.macos-arm64."github.com/kkos/oniguruma@6.9.10"]
-url = "https://dist.pkgx.dev/github.com/kkos/oniguruma/darwin/aarch64/v6.9.10.tar.xz"
-checksum = "sha256:b00b3fc30da60a078f0f3f01f0267e78910b80881209e041ff020c4b9039ece5"
-pkgx_provides = ["bin/onig-config"]
+[pkgx-packages.linux-arm64."gnome.org/libxslt@1.1.45"]
+url = "https://dist.pkgx.dev/gnome.org/libxslt/linux/aarch64/v1.1.45.tar.xz"
+checksum = "sha256:c555bb1416db6b64a3ea5e521fa23bcf975f52d4a91fbc6bd0a725863fb85ab6"
+pkgx_provides = [
+    "bin/xslt-config",
+    "bin/xsltproc",
+]
 
-[pkgx-packages.macos-x64."github.com/kkos/oniguruma@6.9.10"]
-url = "https://dist.pkgx.dev/github.com/kkos/oniguruma/darwin/x86-64/v6.9.10.tar.xz"
-checksum = "sha256:17575492c1c6b3220d99ea8580e5f62b6e91f40ff2de82a531d03d76a3111402"
-pkgx_provides = ["bin/onig-config"]
+[pkgx-packages.linux-arm64."gnu.org/readline@8.3.0"]
+url = "https://dist.pkgx.dev/gnu.org/readline/linux/aarch64/v8.3.0.tar.xz"
+checksum = "sha256:376edf3b1191d51b6c1174ba25e9dcca65de9ec816e975716a8af85a9758e491"
 
-[[tools."pkgx:stedolan.github.io/jq"]]
-version = "1.7.1"
-backend = "pkgx:stedolan.github.io/jq"
+[pkgx-packages.linux-arm64."invisible-island.net/ncurses@6.6.0"]
+url = "https://dist.pkgx.dev/invisible-island.net/ncurses/linux/aarch64/v6.6.0.tar.xz"
+checksum = "sha256:f38fb9863cb9e1ee3b11c84883eaa548fc1792f4e37ceffd323df401502f5a3d"
+pkgx_provides = [
+    "bin/captoinfo",
+    "bin/clear",
+    "bin/infocmp",
+    "bin/infotocap",
+    "bin/ncursesw6-config",
+    "bin/reset",
+    "bin/tabs",
+    "bin/tic",
+    "bin/toe",
+    "bin/tput",
+    "bin/tset",
+]
+
+[pkgx-packages.linux-arm64."invisible-island.net/ncurses@6.6.0".pkgx_runtime_env]
+TERMINFO_DIRS = "/usr/share/terminfo:{{prefix}}/share/terminfo"
+
+[pkgx-packages.linux-arm64."lz4.org@1.10.0"]
+url = "https://dist.pkgx.dev/lz4.org/linux/aarch64/v1.10.0.tar.xz"
+checksum = "sha256:fbc1fe7fe1b8284dccdcc2a2f9e369a6de037369360361a64e2370d7acbf045d"
+pkgx_provides = ["bin/lz4"]
+
+[pkgx-packages.linux-arm64."openssl.org@1.1.1w"]
+url = "https://dist.pkgx.dev/openssl.org/linux/aarch64/v1.1.1w.tar.xz"
+checksum = "sha256:1583579186e3d3b71c6f95c5cf6d5b6f3f9adbeb75887f2008d420653ee8c47b"
+pkgx_provides = ["bin/openssl"]
+
+[pkgx-packages.linux-arm64."unicode.org@73.2.0"]
+url = "https://dist.pkgx.dev/unicode.org/linux/aarch64/v73.2.0.tar.xz"
+checksum = "sha256:3328e42f9ef8e70186985b876325e9fa045ea36ba9be51f905f2b77b2295cb89"
+pkgx_provides = [
+    "bin/derb",
+    "bin/genbrk",
+    "bin/gencfu",
+    "bin/gencnval",
+    "bin/gendict",
+    "bin/genrb",
+    "bin/icu-config",
+    "bin/icuexportdata",
+    "bin/icuinfo",
+    "bin/makeconv",
+    "bin/pkgdata",
+    "bin/uconv",
+]
+
+[pkgx-packages.linux-arm64."zlib.net@1.3.2"]
+url = "https://dist.pkgx.dev/zlib.net/linux/aarch64/v1.3.2.tar.xz"
+checksum = "sha256:a30adaa25d25867596f2bf2c2822e9862d44ea88e4bc9e6a1a39fc0881e04097"
+
+[pkgx-packages.linux-arm64-musl."curl.se/ca-certs@2026.8.13"]
+url = "https://dist.pkgx.dev/curl.se/ca-certs/linux/aarch64/v2026.8.13.tar.xz"
+checksum = "sha256:94f16e8646503efd40aca734eb76bc780dfc8e1e48c01f3bd15f871930b725c8"
+
+[pkgx-packages.linux-arm64-musl."curl.se/ca-certs@2026.8.13".pkgx_runtime_env]
+SSL_CERT_FILE = "${{prefix}}/ssl/cert.pem"
+
+[pkgx-packages.linux-arm64-musl."gnome.org/libxml2@2.13.9"]
+url = "https://dist.pkgx.dev/gnome.org/libxml2/linux/aarch64/v2.13.9.tar.xz"
+checksum = "sha256:6142a72de85dfee4f0368d76f8368f7b4b51d4a1dd90aac0ffad8ded4144530b"
+pkgx_provides = [
+    "bin/xml2-config",
+    "bin/xmlcatalog",
+    "bin/xmllint",
+]
+
+[pkgx-packages.linux-arm64-musl."gnome.org/libxml2@2.13.9".pkgx_runtime_env]
+PYTHONPATH = "${{prefix}}/lib/python3.11/site-packages:$PYTHONPATH"
+
+[pkgx-packages.linux-arm64-musl."gnome.org/libxslt@1.1.45"]
+url = "https://dist.pkgx.dev/gnome.org/libxslt/linux/aarch64/v1.1.45.tar.xz"
+checksum = "sha256:c555bb1416db6b64a3ea5e521fa23bcf975f52d4a91fbc6bd0a725863fb85ab6"
+pkgx_provides = [
+    "bin/xslt-config",
+    "bin/xsltproc",
+]
+
+[pkgx-packages.linux-arm64-musl."gnu.org/readline@8.3.0"]
+url = "https://dist.pkgx.dev/gnu.org/readline/linux/aarch64/v8.3.0.tar.xz"
+checksum = "sha256:376edf3b1191d51b6c1174ba25e9dcca65de9ec816e975716a8af85a9758e491"
+
+[pkgx-packages.linux-arm64-musl."invisible-island.net/ncurses@6.6.0"]
+url = "https://dist.pkgx.dev/invisible-island.net/ncurses/linux/aarch64/v6.6.0.tar.xz"
+checksum = "sha256:f38fb9863cb9e1ee3b11c84883eaa548fc1792f4e37ceffd323df401502f5a3d"
+pkgx_provides = [
+    "bin/captoinfo",
+    "bin/clear",
+    "bin/infocmp",
+    "bin/infotocap",
+    "bin/ncursesw6-config",
+    "bin/reset",
+    "bin/tabs",
+    "bin/tic",
+    "bin/toe",
+    "bin/tput",
+    "bin/tset",
+]
+
+[pkgx-packages.linux-arm64-musl."invisible-island.net/ncurses@6.6.0".pkgx_runtime_env]
+TERMINFO_DIRS = "/usr/share/terminfo:{{prefix}}/share/terminfo"
+
+[pkgx-packages.linux-arm64-musl."lz4.org@1.10.0"]
+url = "https://dist.pkgx.dev/lz4.org/linux/aarch64/v1.10.0.tar.xz"
+checksum = "sha256:fbc1fe7fe1b8284dccdcc2a2f9e369a6de037369360361a64e2370d7acbf045d"
+pkgx_provides = ["bin/lz4"]
+
+[pkgx-packages.linux-arm64-musl."openssl.org@1.1.1w"]
+url = "https://dist.pkgx.dev/openssl.org/linux/aarch64/v1.1.1w.tar.xz"
+checksum = "sha256:1583579186e3d3b71c6f95c5cf6d5b6f3f9adbeb75887f2008d420653ee8c47b"
+pkgx_provides = ["bin/openssl"]
+
+[pkgx-packages.linux-arm64-musl."unicode.org@73.2.0"]
+url = "https://dist.pkgx.dev/unicode.org/linux/aarch64/v73.2.0.tar.xz"
+checksum = "sha256:3328e42f9ef8e70186985b876325e9fa045ea36ba9be51f905f2b77b2295cb89"
+pkgx_provides = [
+    "bin/derb",
+    "bin/genbrk",
+    "bin/gencfu",
+    "bin/gencnval",
+    "bin/gendict",
+    "bin/genrb",
+    "bin/icu-config",
+    "bin/icuexportdata",
+    "bin/icuinfo",
+    "bin/makeconv",
+    "bin/pkgdata",
+    "bin/uconv",
+]
+
+[pkgx-packages.linux-arm64-musl."zlib.net@1.3.2"]
+url = "https://dist.pkgx.dev/zlib.net/linux/aarch64/v1.3.2.tar.xz"
+checksum = "sha256:a30adaa25d25867596f2bf2c2822e9862d44ea88e4bc9e6a1a39fc0881e04097"
+
+[pkgx-packages.linux-x64."curl.se/ca-certs@2026.8.13"]
+url = "https://dist.pkgx.dev/curl.se/ca-certs/linux/x86-64/v2026.8.13.tar.xz"
+checksum = "sha256:a4d4c83d3c6f0871411af70667ba245d3a87ebbc2ffabceee16c404474c30054"
+
+[pkgx-packages.linux-x64."curl.se/ca-certs@2026.8.13".pkgx_runtime_env]
+SSL_CERT_FILE = "${{prefix}}/ssl/cert.pem"
+
+[pkgx-packages.linux-x64."gnome.org/libxml2@2.13.9"]
+url = "https://dist.pkgx.dev/gnome.org/libxml2/linux/x86-64/v2.13.9.tar.xz"
+checksum = "sha256:7d25d3d66d400fec10f96a1b4f9f3a755cdc5cf4ad2deecd670f1f2fe4c15ae1"
+pkgx_provides = [
+    "bin/xml2-config",
+    "bin/xmlcatalog",
+    "bin/xmllint",
+]
+
+[pkgx-packages.linux-x64."gnome.org/libxml2@2.13.9".pkgx_runtime_env]
+PYTHONPATH = "${{prefix}}/lib/python3.11/site-packages:$PYTHONPATH"
+
+[pkgx-packages.linux-x64."gnome.org/libxslt@1.1.45"]
+url = "https://dist.pkgx.dev/gnome.org/libxslt/linux/x86-64/v1.1.45.tar.xz"
+checksum = "sha256:0b28a98624abaa9f3edf317a376539ab493d2a309213298599e3db25449afd20"
+pkgx_provides = [
+    "bin/xslt-config",
+    "bin/xsltproc",
+]
+
+[pkgx-packages.linux-x64."gnu.org/readline@8.3.0"]
+url = "https://dist.pkgx.dev/gnu.org/readline/linux/x86-64/v8.3.0.tar.xz"
+checksum = "sha256:9feef0636bb707607f7d776220f82fa2d360c6207d3ab814e65879e1a015cba3"
+
+[pkgx-packages.linux-x64."invisible-island.net/ncurses@6.6.0"]
+url = "https://dist.pkgx.dev/invisible-island.net/ncurses/linux/x86-64/v6.6.0.tar.xz"
+checksum = "sha256:5df65b8127f97cb3a1e40fc11a3b9e96bd3985405180a82ecc6be62a08721daa"
+pkgx_provides = [
+    "bin/captoinfo",
+    "bin/clear",
+    "bin/infocmp",
+    "bin/infotocap",
+    "bin/ncursesw6-config",
+    "bin/reset",
+    "bin/tabs",
+    "bin/tic",
+    "bin/toe",
+    "bin/tput",
+    "bin/tset",
+]
+
+[pkgx-packages.linux-x64."invisible-island.net/ncurses@6.6.0".pkgx_runtime_env]
+TERMINFO_DIRS = "/usr/share/terminfo:{{prefix}}/share/terminfo"
+
+[pkgx-packages.linux-x64."lz4.org@1.10.0"]
+url = "https://dist.pkgx.dev/lz4.org/linux/x86-64/v1.10.0.tar.xz"
+checksum = "sha256:1c12ff71e70ca7d554f4ba02ed14436ba210cf6a02d27ef4ab893835f925fea8"
+pkgx_provides = ["bin/lz4"]
+
+[pkgx-packages.linux-x64."openssl.org@1.1.1w"]
+url = "https://dist.pkgx.dev/openssl.org/linux/x86-64/v1.1.1w.tar.xz"
+checksum = "sha256:a0b5595c9e344c742bc8d641ada6f02e9a9ab3bedc25245279200ac68235cc37"
+pkgx_provides = ["bin/openssl"]
+
+[pkgx-packages.linux-x64."unicode.org@73.2.0"]
+url = "https://dist.pkgx.dev/unicode.org/linux/x86-64/v73.2.0.tar.xz"
+checksum = "sha256:45cb757875d6db57ed052fb77b6dee88ed78e0a4109f213545ba451da8135272"
+pkgx_provides = [
+    "bin/derb",
+    "bin/genbrk",
+    "bin/gencfu",
+    "bin/gencnval",
+    "bin/gendict",
+    "bin/genrb",
+    "bin/icu-config",
+    "bin/icuexportdata",
+    "bin/icuinfo",
+    "bin/makeconv",
+    "bin/pkgdata",
+    "bin/uconv",
+]
+
+[pkgx-packages.linux-x64."zlib.net@1.3.2"]
+url = "https://dist.pkgx.dev/zlib.net/linux/x86-64/v1.3.2.tar.xz"
+checksum = "sha256:492afbfd65523f4b6be48ed63e36539e45a3ae1a8688be63a5dfa1c695715b6e"
+
+[pkgx-packages.linux-x64-musl."curl.se/ca-certs@2026.8.13"]
+url = "https://dist.pkgx.dev/curl.se/ca-certs/linux/x86-64/v2026.8.13.tar.xz"
+checksum = "sha256:a4d4c83d3c6f0871411af70667ba245d3a87ebbc2ffabceee16c404474c30054"
+
+[pkgx-packages.linux-x64-musl."curl.se/ca-certs@2026.8.13".pkgx_runtime_env]
+SSL_CERT_FILE = "${{prefix}}/ssl/cert.pem"
+
+[pkgx-packages.linux-x64-musl."gnome.org/libxml2@2.13.9"]
+url = "https://dist.pkgx.dev/gnome.org/libxml2/linux/x86-64/v2.13.9.tar.xz"
+checksum = "sha256:7d25d3d66d400fec10f96a1b4f9f3a755cdc5cf4ad2deecd670f1f2fe4c15ae1"
+pkgx_provides = [
+    "bin/xml2-config",
+    "bin/xmlcatalog",
+    "bin/xmllint",
+]
+
+[pkgx-packages.linux-x64-musl."gnome.org/libxml2@2.13.9".pkgx_runtime_env]
+PYTHONPATH = "${{prefix}}/lib/python3.11/site-packages:$PYTHONPATH"
+
+[pkgx-packages.linux-x64-musl."gnome.org/libxslt@1.1.45"]
+url = "https://dist.pkgx.dev/gnome.org/libxslt/linux/x86-64/v1.1.45.tar.xz"
+checksum = "sha256:0b28a98624abaa9f3edf317a376539ab493d2a309213298599e3db25449afd20"
+pkgx_provides = [
+    "bin/xslt-config",
+    "bin/xsltproc",
+]
+
+[pkgx-packages.linux-x64-musl."gnu.org/readline@8.3.0"]
+url = "https://dist.pkgx.dev/gnu.org/readline/linux/x86-64/v8.3.0.tar.xz"
+checksum = "sha256:9feef0636bb707607f7d776220f82fa2d360c6207d3ab814e65879e1a015cba3"
+
+[pkgx-packages.linux-x64-musl."invisible-island.net/ncurses@6.6.0"]
+url = "https://dist.pkgx.dev/invisible-island.net/ncurses/linux/x86-64/v6.6.0.tar.xz"
+checksum = "sha256:5df65b8127f97cb3a1e40fc11a3b9e96bd3985405180a82ecc6be62a08721daa"
+pkgx_provides = [
+    "bin/captoinfo",
+    "bin/clear",
+    "bin/infocmp",
+    "bin/infotocap",
+    "bin/ncursesw6-config",
+    "bin/reset",
+    "bin/tabs",
+    "bin/tic",
+    "bin/toe",
+    "bin/tput",
+    "bin/tset",
+]
+
+[pkgx-packages.linux-x64-musl."invisible-island.net/ncurses@6.6.0".pkgx_runtime_env]
+TERMINFO_DIRS = "/usr/share/terminfo:{{prefix}}/share/terminfo"
+
+[pkgx-packages.linux-x64-musl."lz4.org@1.10.0"]
+url = "https://dist.pkgx.dev/lz4.org/linux/x86-64/v1.10.0.tar.xz"
+checksum = "sha256:1c12ff71e70ca7d554f4ba02ed14436ba210cf6a02d27ef4ab893835f925fea8"
+pkgx_provides = ["bin/lz4"]
+
+[pkgx-packages.linux-x64-musl."openssl.org@1.1.1w"]
+url = "https://dist.pkgx.dev/openssl.org/linux/x86-64/v1.1.1w.tar.xz"
+checksum = "sha256:a0b5595c9e344c742bc8d641ada6f02e9a9ab3bedc25245279200ac68235cc37"
+pkgx_provides = ["bin/openssl"]
+
+[pkgx-packages.linux-x64-musl."unicode.org@73.2.0"]
+url = "https://dist.pkgx.dev/unicode.org/linux/x86-64/v73.2.0.tar.xz"
+checksum = "sha256:45cb757875d6db57ed052fb77b6dee88ed78e0a4109f213545ba451da8135272"
+pkgx_provides = [
+    "bin/derb",
+    "bin/genbrk",
+    "bin/gencfu",
+    "bin/gencnval",
+    "bin/gendict",
+    "bin/genrb",
+    "bin/icu-config",
+    "bin/icuexportdata",
+    "bin/icuinfo",
+    "bin/makeconv",
+    "bin/pkgdata",
+    "bin/uconv",
+]
+
+[pkgx-packages.linux-x64-musl."zlib.net@1.3.2"]
+url = "https://dist.pkgx.dev/zlib.net/linux/x86-64/v1.3.2.tar.xz"
+checksum = "sha256:492afbfd65523f4b6be48ed63e36539e45a3ae1a8688be63a5dfa1c695715b6e"
+
+[pkgx-packages.macos-arm64."curl.se/ca-certs@2026.8.13"]
+url = "https://dist.pkgx.dev/curl.se/ca-certs/darwin/aarch64/v2026.8.13.tar.xz"
+checksum = "sha256:23ae920f021c462e55caaabd8e128bf53e5889063a741540b910522402698b7f"
+
+[pkgx-packages.macos-arm64."curl.se/ca-certs@2026.8.13".pkgx_runtime_env]
+SSL_CERT_FILE = "${{prefix}}/ssl/cert.pem"
+
+[pkgx-packages.macos-arm64."gnome.org/libxml2@2.13.9"]
+url = "https://dist.pkgx.dev/gnome.org/libxml2/darwin/aarch64/v2.13.9.tar.xz"
+checksum = "sha256:8abc19f01765d0243f683de43ebb5682757867dc9665d3cede4bcc85267749db"
+pkgx_provides = [
+    "bin/xml2-config",
+    "bin/xmlcatalog",
+    "bin/xmllint",
+]
+
+[pkgx-packages.macos-arm64."gnome.org/libxml2@2.13.9".pkgx_runtime_env]
+PYTHONPATH = "${{prefix}}/lib/python3.11/site-packages:$PYTHONPATH"
+
+[pkgx-packages.macos-arm64."gnome.org/libxslt@1.1.45"]
+url = "https://dist.pkgx.dev/gnome.org/libxslt/darwin/aarch64/v1.1.45.tar.xz"
+checksum = "sha256:97990acdc508cdbdac9a1326ef783035fbd3c581f8ba3cc326ce70c0f69d4b17"
+pkgx_provides = [
+    "bin/xslt-config",
+    "bin/xsltproc",
+]
+
+[pkgx-packages.macos-arm64."gnu.org/readline@8.3.0"]
+url = "https://dist.pkgx.dev/gnu.org/readline/darwin/aarch64/v8.3.0.tar.xz"
+checksum = "sha256:8eab476d6c6c6751decd96b2ed534d71889737ae7079acc52291fecb1b92f737"
+
+[pkgx-packages.macos-arm64."invisible-island.net/ncurses@6.6.0"]
+url = "https://dist.pkgx.dev/invisible-island.net/ncurses/darwin/aarch64/v6.6.0.tar.xz"
+checksum = "sha256:f6a3fac0cc48e921a367d91f587f4c7ee3a816e1cab6401b29df6674edb369c2"
+pkgx_provides = [
+    "bin/captoinfo",
+    "bin/clear",
+    "bin/infocmp",
+    "bin/infotocap",
+    "bin/ncursesw6-config",
+    "bin/reset",
+    "bin/tabs",
+    "bin/tic",
+    "bin/toe",
+    "bin/tput",
+    "bin/tset",
+]
+
+[pkgx-packages.macos-arm64."invisible-island.net/ncurses@6.6.0".pkgx_runtime_env]
+TERMINFO_DIRS = "/usr/share/terminfo:{{prefix}}/share/terminfo"
+
+[pkgx-packages.macos-arm64."lz4.org@1.10.0"]
+url = "https://dist.pkgx.dev/lz4.org/darwin/aarch64/v1.10.0.tar.xz"
+checksum = "sha256:c17d2e12c2fb3a258307d386509f0a757b51033dd1d0a0f822a990d16d2a268d"
+pkgx_provides = ["bin/lz4"]
+
+[pkgx-packages.macos-arm64."openssl.org@1.1.1w"]
+url = "https://dist.pkgx.dev/openssl.org/darwin/aarch64/v1.1.1w.tar.xz"
+checksum = "sha256:0135b60be833f100c7e58400338c2edd23e3635e2e597f0d2f19369033dcd70d"
+pkgx_provides = ["bin/openssl"]
+
+[pkgx-packages.macos-arm64."unicode.org@73.2.0"]
+url = "https://dist.pkgx.dev/unicode.org/darwin/aarch64/v73.2.0.tar.xz"
+checksum = "sha256:2e8ca0c8ba645aebca0f543a7c2f6cd549ee9981a23e5c916bf98a7e05edc409"
+pkgx_provides = [
+    "bin/derb",
+    "bin/genbrk",
+    "bin/gencfu",
+    "bin/gencnval",
+    "bin/gendict",
+    "bin/genrb",
+    "bin/icu-config",
+    "bin/icuexportdata",
+    "bin/icuinfo",
+    "bin/makeconv",
+    "bin/pkgdata",
+    "bin/uconv",
+]
+
+[pkgx-packages.macos-arm64."zlib.net@1.3.2"]
+url = "https://dist.pkgx.dev/zlib.net/darwin/aarch64/v1.3.2.tar.xz"
+checksum = "sha256:cb8db365dbb42b027433241bf743ac13001b9fb5e6c46c5ee1eeef166237fd95"
+
+[pkgx-packages.macos-x64."curl.se/ca-certs@2026.8.13"]
+url = "https://dist.pkgx.dev/curl.se/ca-certs/darwin/x86-64/v2026.8.13.tar.xz"
+checksum = "sha256:881b3cfd7d19a51880684ab92bfe51fdeecd7f6a99f7566cca3d197f47d0243d"
+
+[pkgx-packages.macos-x64."curl.se/ca-certs@2026.8.13".pkgx_runtime_env]
+SSL_CERT_FILE = "${{prefix}}/ssl/cert.pem"
+
+[pkgx-packages.macos-x64."gnome.org/libxml2@2.13.9"]
+url = "https://dist.pkgx.dev/gnome.org/libxml2/darwin/x86-64/v2.13.9.tar.xz"
+checksum = "sha256:9c7809e0a258874971fe23143b5429348fec68f3fff8d1a09c025be87ec72b18"
+pkgx_provides = [
+    "bin/xml2-config",
+    "bin/xmlcatalog",
+    "bin/xmllint",
+]
+
+[pkgx-packages.macos-x64."gnome.org/libxml2@2.13.9".pkgx_runtime_env]
+PYTHONPATH = "${{prefix}}/lib/python3.11/site-packages:$PYTHONPATH"
+
+[pkgx-packages.macos-x64."gnome.org/libxslt@1.1.45"]
+url = "https://dist.pkgx.dev/gnome.org/libxslt/darwin/x86-64/v1.1.45.tar.xz"
+checksum = "sha256:8789054b11bf73ca30dbc6f1b30bf38a81f1e634c8f2cf3a6ec25a3b88d0557d"
+pkgx_provides = [
+    "bin/xslt-config",
+    "bin/xsltproc",
+]
+
+[pkgx-packages.macos-x64."gnu.org/readline@8.3.0"]
+url = "https://dist.pkgx.dev/gnu.org/readline/darwin/x86-64/v8.3.0.tar.xz"
+checksum = "sha256:4638bf55e7f24c8495871c748ae207cf3bd6a38f046ae7cf93f06d8108755ff4"
+
+[pkgx-packages.macos-x64."invisible-island.net/ncurses@6.6.0"]
+url = "https://dist.pkgx.dev/invisible-island.net/ncurses/darwin/x86-64/v6.6.0.tar.xz"
+checksum = "sha256:1dd6ad8d3268fc19a9734ef4d47ccc28e510f8016d85bb6358ae82e07c9ec36d"
+pkgx_provides = [
+    "bin/captoinfo",
+    "bin/clear",
+    "bin/infocmp",
+    "bin/infotocap",
+    "bin/ncursesw6-config",
+    "bin/reset",
+    "bin/tabs",
+    "bin/tic",
+    "bin/toe",
+    "bin/tput",
+    "bin/tset",
+]
+
+[pkgx-packages.macos-x64."invisible-island.net/ncurses@6.6.0".pkgx_runtime_env]
+TERMINFO_DIRS = "/usr/share/terminfo:{{prefix}}/share/terminfo"
+
+[pkgx-packages.macos-x64."lz4.org@1.10.0"]
+url = "https://dist.pkgx.dev/lz4.org/darwin/x86-64/v1.10.0.tar.xz"
+checksum = "sha256:8370cc7e2c6241850ca9860d2633c19d2d54988165e725835d194bb5b56abd1c"
+pkgx_provides = ["bin/lz4"]
+
+[pkgx-packages.macos-x64."openssl.org@1.1.1w"]
+url = "https://dist.pkgx.dev/openssl.org/darwin/x86-64/v1.1.1w.tar.xz"
+checksum = "sha256:818aa9d30d282ee45749d46a174169f49533f27af874f8b5fed9345bf69f8860"
+pkgx_provides = ["bin/openssl"]
+
+[pkgx-packages.macos-x64."unicode.org@73.2.0"]
+url = "https://dist.pkgx.dev/unicode.org/darwin/x86-64/v73.2.0.tar.xz"
+checksum = "sha256:c61582a753453f9cce0551ec5f247fdf921e72923f8f5e5a20325ea6b99ddcb6"
+pkgx_provides = [
+    "bin/derb",
+    "bin/genbrk",
+    "bin/gencfu",
+    "bin/gencnval",
+    "bin/gendict",
+    "bin/genrb",
+    "bin/icu-config",
+    "bin/icuexportdata",
+    "bin/icuinfo",
+    "bin/makeconv",
+    "bin/pkgdata",
+    "bin/uconv",
+]
+
+[pkgx-packages.macos-x64."zlib.net@1.3.2"]
+url = "https://dist.pkgx.dev/zlib.net/darwin/x86-64/v1.3.2.tar.xz"
+checksum = "sha256:d076bb5d37a0471be0b5b9aec8d35ed2cb9424c73b7addda940d951683a4a316"
+
+[[tools."pkgx:postgresql.org"]]
+version = "18.0.0"
+backend = "pkgx:postgresql.org"
 specifiers = ["latest"]
 
-[tools."pkgx:stedolan.github.io/jq"."platforms.linux-arm64"]
-checksum = "sha256:df29b8a7c10f06bb4a13dec44f491c37b33ce97a75ee56e19d158461670227ce"
-url = "https://dist.pkgx.dev/stedolan.github.io/jq/linux/aarch64/v1.7.1.tar.xz"
-pkgx_deps = ["github.com/kkos/oniguruma@6.9.10"]
-pkgx_provides = ["bin/jq"]
+[tools."pkgx:postgresql.org"."platforms.linux-arm64"]
+checksum = "sha256:6498bbe0633f46bed1711a55740b65cf6100d2119dd99abf6dedb243cf84b311"
+url = "https://dist.pkgx.dev/postgresql.org/linux/aarch64/v18.0.0.tar.xz"
+pkgx_deps = [
+    "zlib.net@1.3.2",
+    "unicode.org@73.2.0",
+    "openssl.org@1.1.1w",
+    "curl.se/ca-certs@2026.8.13",
+    "lz4.org@1.10.0",
+    "gnu.org/readline@8.3.0",
+    "invisible-island.net/ncurses@6.6.0",
+    "gnome.org/libxslt@1.1.45",
+    "gnome.org/libxml2@2.13.9",
+]
+pkgx_provides = [
+    "bin/clusterdb",
+    "bin/createdb",
+    "bin/dropdb",
+    "bin/dropuser",
+    "bin/ecpg",
+    "bin/initdb",
+    "bin/pg_archivecleanup",
+    "bin/pg_basebackup",
+    "bin/pg_config",
+    "bin/pg_controldata",
+    "bin/pg_ctl",
+    "bin/pg_dump",
+    "bin/pg_dumpall",
+    "bin/pg_isready",
+    "bin/pg_receivewal",
+    "bin/pg_recvlogical",
+    "bin/pg_resetwal",
+    "bin/pg_restore",
+    "bin/pg_rewind",
+    "bin/pg_test_fsync",
+    "bin/pg_test_timing",
+    "bin/pg_upgrade",
+    "bin/pg_waldump",
+    "bin/pgbench",
+    "bin/postgres",
+    "bin/psql",
+    "bin/reindexdb",
+    "bin/vacuumdb",
+]
 
-[tools."pkgx:stedolan.github.io/jq"."platforms.linux-arm64-musl"]
-checksum = "sha256:df29b8a7c10f06bb4a13dec44f491c37b33ce97a75ee56e19d158461670227ce"
-url = "https://dist.pkgx.dev/stedolan.github.io/jq/linux/aarch64/v1.7.1.tar.xz"
-pkgx_deps = ["github.com/kkos/oniguruma@6.9.10"]
-pkgx_provides = ["bin/jq"]
+[tools."pkgx:postgresql.org"."platforms.linux-arm64-musl"]
+checksum = "sha256:6498bbe0633f46bed1711a55740b65cf6100d2119dd99abf6dedb243cf84b311"
+url = "https://dist.pkgx.dev/postgresql.org/linux/aarch64/v18.0.0.tar.xz"
+pkgx_deps = [
+    "zlib.net@1.3.2",
+    "unicode.org@73.2.0",
+    "openssl.org@1.1.1w",
+    "curl.se/ca-certs@2026.8.13",
+    "lz4.org@1.10.0",
+    "gnu.org/readline@8.3.0",
+    "invisible-island.net/ncurses@6.6.0",
+    "gnome.org/libxslt@1.1.45",
+    "gnome.org/libxml2@2.13.9",
+]
+pkgx_provides = [
+    "bin/clusterdb",
+    "bin/createdb",
+    "bin/dropdb",
+    "bin/dropuser",
+    "bin/ecpg",
+    "bin/initdb",
+    "bin/pg_archivecleanup",
+    "bin/pg_basebackup",
+    "bin/pg_config",
+    "bin/pg_controldata",
+    "bin/pg_ctl",
+    "bin/pg_dump",
+    "bin/pg_dumpall",
+    "bin/pg_isready",
+    "bin/pg_receivewal",
+    "bin/pg_recvlogical",
+    "bin/pg_resetwal",
+    "bin/pg_restore",
+    "bin/pg_rewind",
+    "bin/pg_test_fsync",
+    "bin/pg_test_timing",
+    "bin/pg_upgrade",
+    "bin/pg_waldump",
+    "bin/pgbench",
+    "bin/postgres",
+    "bin/psql",
+    "bin/reindexdb",
+    "bin/vacuumdb",
+]
 
-[tools."pkgx:stedolan.github.io/jq"."platforms.linux-x64"]
-checksum = "sha256:4e9186c543efeb21fe7f35617745fab4809aa438152b247d85b389baed3dce9c"
-url = "https://dist.pkgx.dev/stedolan.github.io/jq/linux/x86-64/v1.7.1.tar.xz"
-pkgx_deps = ["github.com/kkos/oniguruma@6.9.10"]
-pkgx_provides = ["bin/jq"]
+[tools."pkgx:postgresql.org"."platforms.linux-x64"]
+checksum = "sha256:9b4ec959ba089b1c82d925d424bc1011083e89c4ef9b9a2d03e416b502ff76c8"
+url = "https://dist.pkgx.dev/postgresql.org/linux/x86-64/v18.0.0.tar.xz"
+pkgx_deps = [
+    "zlib.net@1.3.2",
+    "unicode.org@73.2.0",
+    "openssl.org@1.1.1w",
+    "curl.se/ca-certs@2026.8.13",
+    "lz4.org@1.10.0",
+    "gnu.org/readline@8.3.0",
+    "invisible-island.net/ncurses@6.6.0",
+    "gnome.org/libxslt@1.1.45",
+    "gnome.org/libxml2@2.13.9",
+]
+pkgx_provides = [
+    "bin/clusterdb",
+    "bin/createdb",
+    "bin/dropdb",
+    "bin/dropuser",
+    "bin/ecpg",
+    "bin/initdb",
+    "bin/pg_archivecleanup",
+    "bin/pg_basebackup",
+    "bin/pg_config",
+    "bin/pg_controldata",
+    "bin/pg_ctl",
+    "bin/pg_dump",
+    "bin/pg_dumpall",
+    "bin/pg_isready",
+    "bin/pg_receivewal",
+    "bin/pg_recvlogical",
+    "bin/pg_resetwal",
+    "bin/pg_restore",
+    "bin/pg_rewind",
+    "bin/pg_test_fsync",
+    "bin/pg_test_timing",
+    "bin/pg_upgrade",
+    "bin/pg_waldump",
+    "bin/pgbench",
+    "bin/postgres",
+    "bin/psql",
+    "bin/reindexdb",
+    "bin/vacuumdb",
+]
 
-[tools."pkgx:stedolan.github.io/jq"."platforms.linux-x64-musl"]
-checksum = "sha256:4e9186c543efeb21fe7f35617745fab4809aa438152b247d85b389baed3dce9c"
-url = "https://dist.pkgx.dev/stedolan.github.io/jq/linux/x86-64/v1.7.1.tar.xz"
-pkgx_deps = ["github.com/kkos/oniguruma@6.9.10"]
-pkgx_provides = ["bin/jq"]
+[tools."pkgx:postgresql.org"."platforms.linux-x64-musl"]
+checksum = "sha256:9b4ec959ba089b1c82d925d424bc1011083e89c4ef9b9a2d03e416b502ff76c8"
+url = "https://dist.pkgx.dev/postgresql.org/linux/x86-64/v18.0.0.tar.xz"
+pkgx_deps = [
+    "zlib.net@1.3.2",
+    "unicode.org@73.2.0",
+    "openssl.org@1.1.1w",
+    "curl.se/ca-certs@2026.8.13",
+    "lz4.org@1.10.0",
+    "gnu.org/readline@8.3.0",
+    "invisible-island.net/ncurses@6.6.0",
+    "gnome.org/libxslt@1.1.45",
+    "gnome.org/libxml2@2.13.9",
+]
+pkgx_provides = [
+    "bin/clusterdb",
+    "bin/createdb",
+    "bin/dropdb",
+    "bin/dropuser",
+    "bin/ecpg",
+    "bin/initdb",
+    "bin/pg_archivecleanup",
+    "bin/pg_basebackup",
+    "bin/pg_config",
+    "bin/pg_controldata",
+    "bin/pg_ctl",
+    "bin/pg_dump",
+    "bin/pg_dumpall",
+    "bin/pg_isready",
+    "bin/pg_receivewal",
+    "bin/pg_recvlogical",
+    "bin/pg_resetwal",
+    "bin/pg_restore",
+    "bin/pg_rewind",
+    "bin/pg_test_fsync",
+    "bin/pg_test_timing",
+    "bin/pg_upgrade",
+    "bin/pg_waldump",
+    "bin/pgbench",
+    "bin/postgres",
+    "bin/psql",
+    "bin/reindexdb",
+    "bin/vacuumdb",
+]
 
-[tools."pkgx:stedolan.github.io/jq"."platforms.macos-arm64"]
-checksum = "sha256:1e34c71369c2c170feefb68f720e20b536cb19d3c2924dc43b3e0ff1105152e9"
-url = "https://dist.pkgx.dev/stedolan.github.io/jq/darwin/aarch64/v1.7.1.tar.xz"
-pkgx_deps = ["github.com/kkos/oniguruma@6.9.10"]
-pkgx_provides = ["bin/jq"]
+[tools."pkgx:postgresql.org"."platforms.macos-arm64"]
+checksum = "sha256:aa55b745d03b9c5d4cd533ecd00a15a43ff03020d09ce2acc30b037234ee1589"
+url = "https://dist.pkgx.dev/postgresql.org/darwin/aarch64/v18.0.0.tar.xz"
+pkgx_deps = [
+    "zlib.net@1.3.2",
+    "unicode.org@73.2.0",
+    "openssl.org@1.1.1w",
+    "curl.se/ca-certs@2026.8.13",
+    "lz4.org@1.10.0",
+    "gnu.org/readline@8.3.0",
+    "invisible-island.net/ncurses@6.6.0",
+    "gnome.org/libxslt@1.1.45",
+    "gnome.org/libxml2@2.13.9",
+]
+pkgx_provides = [
+    "bin/clusterdb",
+    "bin/createdb",
+    "bin/dropdb",
+    "bin/dropuser",
+    "bin/ecpg",
+    "bin/initdb",
+    "bin/pg_archivecleanup",
+    "bin/pg_basebackup",
+    "bin/pg_config",
+    "bin/pg_controldata",
+    "bin/pg_ctl",
+    "bin/pg_dump",
+    "bin/pg_dumpall",
+    "bin/pg_isready",
+    "bin/pg_receivewal",
+    "bin/pg_recvlogical",
+    "bin/pg_resetwal",
+    "bin/pg_restore",
+    "bin/pg_rewind",
+    "bin/pg_test_fsync",
+    "bin/pg_test_timing",
+    "bin/pg_upgrade",
+    "bin/pg_waldump",
+    "bin/pgbench",
+    "bin/postgres",
+    "bin/psql",
+    "bin/reindexdb",
+    "bin/vacuumdb",
+]
 
-[tools."pkgx:stedolan.github.io/jq"."platforms.macos-x64"]
-checksum = "sha256:b93038eb38a4ba9297eb6f68457a0e1c68468397946185672cc8eff242b06396"
-url = "https://dist.pkgx.dev/stedolan.github.io/jq/darwin/x86-64/v1.7.1.tar.xz"
-pkgx_deps = ["github.com/kkos/oniguruma@6.9.10"]
-pkgx_provides = ["bin/jq"]
+[tools."pkgx:postgresql.org"."platforms.macos-x64"]
+checksum = "sha256:5d52458462be41f9583839e3e203cb0dcf25627956a1cb15b36eeda15d684d41"
+url = "https://dist.pkgx.dev/postgresql.org/darwin/x86-64/v18.0.0.tar.xz"
+pkgx_deps = [
+    "zlib.net@1.3.2",
+    "unicode.org@73.2.0",
+    "openssl.org@1.1.1w",
+    "curl.se/ca-certs@2026.8.13",
+    "lz4.org@1.10.0",
+    "gnu.org/readline@8.3.0",
+    "invisible-island.net/ncurses@6.6.0",
+    "gnome.org/libxslt@1.1.45",
+    "gnome.org/libxml2@2.13.9",
+]
+pkgx_provides = [
+    "bin/clusterdb",
+    "bin/createdb",
+    "bin/dropdb",
+    "bin/dropuser",
+    "bin/ecpg",
+    "bin/initdb",
+    "bin/pg_archivecleanup",
+    "bin/pg_basebackup",
+    "bin/pg_config",
+    "bin/pg_controldata",
+    "bin/pg_ctl",
+    "bin/pg_dump",
+    "bin/pg_dumpall",
+    "bin/pg_isready",
+    "bin/pg_receivewal",
+    "bin/pg_recvlogical",
+    "bin/pg_resetwal",
+    "bin/pg_restore",
+    "bin/pg_rewind",
+    "bin/pg_test_fsync",
+    "bin/pg_test_timing",
+    "bin/pg_upgrade",
+    "bin/pg_waldump",
+    "bin/pgbench",
+    "bin/postgres",
+    "bin/psql",
+    "bin/reindexdb",
+    "bin/vacuumdb",
+]
