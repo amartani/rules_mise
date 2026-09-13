@@ -1,0 +1,5 @@
+[settings]
+experimental = true
+
+[tools]
+"pkgx:postgresql.org" = "latest"
