@@ -13,6 +13,23 @@ The `pkgx` backend is experimental, hence `[settings] experimental = true` in
 `initdb`, `pg_ctl start`, a `CREATE/INSERT/SELECT` round-trip through `psql`
 over a Unix socket, then `pg_ctl stop`.
 
+## Note on remote execution
+
+Two things are needed to run this test on BuildBuddy's remote executors:
+
+- The `pkgx` bottles are built against a modern glibc (>= 2.25) while the
+  default execution platform is Ubuntu 16.04 (glibc 2.23), so `test_psql`
+  carries `exec_properties = {"container-image": "docker://ubuntu:22.04"}`.
+- Containers run as root and postgres refuses `initdb` as root, so the test
+  drops privileges via `setpriv`/`runuser` to `nobody` when it starts as
+  root (and `chown`s its scratch dirs accordingly).
+
+Related `rules_mise` behavior worth knowing: the per-binary launchers are
+symlinks to the shared dispatcher, and remote execution may materialize
+them as plain files. The dispatcher therefore falls back to locating the
+bottles via the runfiles root plus the tool repo's runfiles path when they
+are not next to the script itself (see `mise/hub.bzl`).
+
 ## Note on regenerating `mise.lock`
 
 `mise lock` could not resolve `pkgx:postgresql.org` before mise 2026.9.6:

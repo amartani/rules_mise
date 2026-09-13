@@ -130,6 +130,11 @@ def _download_extract_pkgx(rctx, tool_name, binary, pkgx):
     # subdirectories that actually exist in the extracted bottles.
     # The dispatcher may be reached via a symlink (the `tool` rule output),
     # so resolve to the real script directory (portable, no readlink -f).
+    # Under remote execution that symlink may be materialized as a plain
+    # file, leaving SCRIPT_DIR at the hub package instead of next to the
+    # bottles (which live in this tool repo). Fall back to the runfiles
+    # root plus this repo's runfiles path, both stable across machines.
+    tool_runfiles_dir = "{repo}/tools/{tool}".format(repo = rctx.name, tool = tool_name)
     lines = [
         "#!/usr/bin/env bash",
         "_MISE_SOURCE=\"$0\"",
@@ -143,6 +148,19 @@ def _download_extract_pkgx(rctx, tool_name, binary, pkgx):
         "done",
         "SCRIPT_DIR=\"$(cd -P \"$(dirname \"$_MISE_SOURCE\")\" && pwd)\"",
         "unset _MISE_SOURCE _MISE_DIR",
+        "if [ ! -d \"$SCRIPT_DIR/pkgx-root\" ]; then",
+        "  _MISE_ROOT=\"$SCRIPT_DIR\"",
+        "  while [ \"$_MISE_ROOT\" != \"/\" ] && [ \"$_MISE_ROOT\" != \".\" ]; do",
+        "    case \"$_MISE_ROOT\" in",
+        "      *.runfiles) break ;;",
+        "    esac",
+        "    _MISE_ROOT=\"$(dirname \"$_MISE_ROOT\")\"",
+        "  done",
+        "  if [ -d \"$_MISE_ROOT/{runfiles_dir}/pkgx-root\" ]; then".format(runfiles_dir = tool_runfiles_dir),
+        "    SCRIPT_DIR=\"$_MISE_ROOT/{runfiles_dir}\"".format(runfiles_dir = tool_runfiles_dir),
+        "  fi",
+        "  unset _MISE_ROOT",
+        "fi",
     ]
     for (var, subdirs) in _PKGX_ENV_SUBDIRS:
         dirs = []
