@@ -50,6 +50,8 @@ jobs:
     needs: [test, pre-commit]
     runs-on: ubuntu-latest
     if: always()
+    permissions:
+      actions: read
     steps:
       - uses: technote-space/workflow-conclusion-action@45ce8e0eb155657ab8ccf346ade734257fd196a5 # v3.0.3
       # Note: possible conclusion values:
