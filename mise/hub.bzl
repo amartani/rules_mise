@@ -272,7 +272,14 @@ filegroup(
     return True
 
 def _download_extract_tool(rctx, tool_name, binary):
-    reproducible = True
+    # Entries without a checksum (e.g. `http:` backends) cannot be verified;
+    # Bazel allows downloads without `sha256`, but the repo is then
+    # non-reproducible.
+    checksum_kwargs = {}
+    if binary["checksum"]:
+        checksum_kwargs["sha256"] = binary["checksum"]
+    checksum_kwargs.update(_feature_sensitive_args(binary))
+    reproducible = bool(binary["checksum"])
     if "pkgx" in binary:
         return _download_extract_pkgx(rctx, tool_name, binary, binary["pkgx"])
 
@@ -288,11 +295,10 @@ def _download_extract_tool(rctx, tool_name, binary):
     if kind == "file":
         rctx.download(
             url = binary["url"],
-            sha256 = binary["checksum"],
             output = target_executable,
             executable = True,
             auth = _get_auth(rctx, [binary["url"]], binary.get("auth_patterns", {})),
-            **_feature_sensitive_args(binary)
+            **checksum_kwargs
         )
     elif kind == "archive":
         archive_path = "tools/{tool_name}/{os_cpu}_archive".format(
@@ -302,11 +308,10 @@ def _download_extract_tool(rctx, tool_name, binary):
 
         rctx.download_and_extract(
             url = binary["url"],
-            sha256 = binary["checksum"],
             output = archive_path,
             type = binary.get("type", ""),
             auth = _get_auth(rctx, [binary["url"]], binary.get("auth_patterns", {})),
-            **_feature_sensitive_args(binary)
+            **checksum_kwargs
         )
 
         # Find the executable in the extracted archive. Tool names may carry
@@ -368,10 +373,9 @@ def _download_extract_tool(rctx, tool_name, binary):
 
         rctx.download(
             url = binary["url"],
-            sha256 = binary["checksum"],
             output = archive_path + ".pkg",
             auth = _get_auth(rctx, [binary["url"]], binary.get("auth_patterns", {})),
-            **_feature_sensitive_args(binary)
+            **checksum_kwargs
         )
 
         rctx.execute([pkgutil_cmd, "--expand-full", archive_path + ".pkg", archive_path])

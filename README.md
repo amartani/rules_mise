@@ -27,10 +27,38 @@ Then depend on tools through the toolchain-resolved targets:
 @mise//tools/pkgx_postgresql.org:psql  -> pkgx-provided binary via the dispatcher
 ```
 
-Only lockfile entries with both `url` and `checksum` on a supported
+Only lockfile entries with a downloadable `url` on a supported
 platform (`linux-x64`, `linux-arm64`, `macos-x64`, `macos-arm64`,
 `windows-x64`) are exposed; anything else is skipped with a warning.
 `linux-*-musl` entries are ignored (folded into the non-musl entry).
+A `checksum` is used when the lockfile records one; entries without a
+checksum (e.g. `http:` backends) are still exposed, but the download cannot
+be verified and the tool repo is marked non-reproducible.
+
+## Supported mise backends
+
+`rules_mise` exposes tools whose lockfile entries contain direct download
+URLs. That covers these backends (all exercised in `e2e/smoke`, except
+`pkgx` which is exercised in `e2e/pkgx`):
+
+| Backend    | Supported          | Notes                                                               |
+| ---------- | ------------------ | ------------------------------------------------------------------- |
+| `aqua`     | yes                | includes registry shorthand entries such as `ruff = "latest"`       |
+| `core`     | yes                | e.g. `bun`, `node`                                                  |
+| `forgejo`  | yes                | self-hosted instances via the `api_url` tool option                 |
+| `github`   | yes                |                                                                     |
+| `gitlab`   | yes                |                                                                     |
+| `http`     | yes                | records no checksums: downloads are unverified and non-reproducible |
+| `packslip` | yes                |                                                                     |
+| `pkgx`     | yes (experimental) | needs `[settings] experimental = true`, see `e2e/pkgx`              |
+
+These backends record no usable URLs in `mise.lock` (they install via a
+language runtime, plugin scripts, or install-time API resolution), so
+supporting them would require significant additional work and they are
+skipped with a warning: `asdf`, `cargo`, `conda`, `dotnet`, `gem`, `go`,
+`npm`, `pipx`, `s3`, `spm`, `ubi`, `vfox`. Single-file-compressed assets
+such as `taplo`'s `.gz` files (as opposed to `.tar.gz` archives) are also
+skipped.
 
 ## Installation
 
