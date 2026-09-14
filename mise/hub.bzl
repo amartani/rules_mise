@@ -271,6 +271,52 @@ filegroup(
 
     return True
 
+def _list_files(rctx, root):
+    """Returns the sorted list of files under `root`, portably across OSes.
+
+    `find` cannot be used here: on Windows it may resolve to
+    C:\\Windows\\System32\\find.exe (a text search tool), which silently
+    returns no matches. Matching happens in Starlark on the basenames.
+    """
+    if "windows" in rctx.os.name:
+        # cmd.exe treats `/` as a switch introducer, so the path must use
+        # backslashes (it is normalized back to `/` below).
+        result = rctx.execute(["cmd.exe", "/c", "dir", "/s", "/b", "/a-d", root.replace("/", "\\")])
+    else:
+        result = rctx.execute(["find", root, "-type", "f"])
+    if result.return_code != 0:
+        fail("cannot list files under {root}: {err}".format(
+            root = root,
+            err = result.stderr,
+        ))
+    files = sorted([
+        line.replace("\\", "/").strip()
+        for line in result.stdout.splitlines()
+        if line.strip()
+    ])
+    return files
+
+def _match_rank(basename, tool_patterns, ext):
+    """Ranks how well an archive member basename matches the tool.
+
+    Returns (kind, index): kind 0 for an exact match (allowing the
+    platform extension, e.g. `ruff` matching `ruff.exe`), kind 1 for a
+    prefix match whose remainder carries no file extension (native
+    executables conventionally have none, unlike bundled docs such as
+    `yq.1`), kind 2 for any other prefix match, or None for no match.
+    Lower ranks sort first.
+    """
+    for i, pattern in enumerate(tool_patterns):
+        if basename == pattern or (ext and basename == pattern + ext):
+            return (0, i)
+    for i, pattern in enumerate(tool_patterns):
+        if basename.startswith(pattern) and "." not in basename[len(pattern):]:
+            return (1, i)
+    for i, pattern in enumerate(tool_patterns):
+        if basename.startswith(pattern):
+            return (2, i)
+    return None
+
 def _download_extract_tool(rctx, tool_name, binary):
     # Entries without a checksum (e.g. `http:` backends) cannot be verified;
     # Bazel allows downloads without `sha256`, but the repo is then
@@ -333,21 +379,21 @@ def _download_extract_tool(rctx, tool_name, binary):
                 ))
             rctx.symlink(archive_file, target_executable)
         else:
-            found = None
-            for pattern in tool_patterns:
-                result = rctx.execute(["find", archive_path, "-name", pattern, "-type", "f"])
-                if result.stdout and result.stdout.strip():
-                    found = result.stdout.strip().split("\n")[0]
-                    break
-                result = rctx.execute(["find", archive_path, "-name", pattern + "*", "-type", "f"])
-                if result.stdout and result.stdout.strip():
-                    found = result.stdout.strip().split("\n")[0]
-                    break
-
-            if not found:
-                result = rctx.execute(["find", archive_path, "-type", "f", "-perm", "-u=x"])
-                if result.stdout and result.stdout.strip():
-                    found = result.stdout.strip().split("\n")[0]
+            files = _list_files(rctx, archive_path)
+            ranked = []
+            for f in files:
+                rank = _match_rank(f.rpartition("/")[2], tool_patterns, ext)
+                if rank != None:
+                    ranked.append((rank[0], rank[1], f))
+            if ranked:
+                found = sorted(ranked)[0][2]
+            elif files:
+                # No name match (e.g. the archive carries an unrelated
+                # binary name): fall back to the first file, sorted for
+                # determinism.
+                found = files[0]
+            else:
+                found = None
 
             if not found:
                 fail("{tool_name} ({os_cpu}): Cannot locate executable in archive from {url}".format(
