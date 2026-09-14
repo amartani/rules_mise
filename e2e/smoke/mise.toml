@@ -4,7 +4,7 @@ ruff = "latest"
 "aqua:mikefarah/yq" = "latest"
 "github:mikefarah/yq" = "latest"
 "packslip:github.com/jdx/hk" = "latest"
-"gitlab:gitlab-org/cli" = "latest"
+"gitlab:gitlab-org/release-cli" = "latest"
 
 [tools."forgejo:gitea/tea"]
 version = "latest"

@@ -21,7 +21,7 @@ TOOLS = [
     ("mise/tools/aqua_mikefarah_yq/tool", "yq"),
     ("mise/tools/github_mikefarah_yq/tool", "yq"),
     ("mise/tools/http_yq/tool", "yq"),
-    ("mise/tools/gitlab_gitlab-org_cli/tool", "glab"),
+    ("mise/tools/gitlab_gitlab-org_release-cli/tool", "release-cli"),
     ("mise/tools/forgejo_gitea_tea/tool", None),
     ("mise/tools/packslip_github.com_jdx_hk/tool", "hk"),
 ]

@@ -32,7 +32,7 @@ py_test(
         "@mise//tools/bun:tool",
         "@mise//tools/forgejo_gitea_tea:tool",
         "@mise//tools/github_mikefarah_yq:tool",
-        "@mise//tools/gitlab_gitlab-org_cli:tool",
+        "@mise//tools/gitlab_gitlab-org_release-cli:tool",
         "@mise//tools/http_yq:tool",
         "@mise//tools/packslip_github.com_jdx_hk:tool",
         "@mise//tools/ruff:tool",
