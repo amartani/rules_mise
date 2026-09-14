@@ -1,0 +1,24 @@
+[tools]
+bun = "latest"
+ruff = "latest"
+"aqua:mikefarah/yq" = "latest"
+"github:mikefarah/yq" = "latest"
+"packslip:github.com/jdx/hk" = "latest"
+"gitlab:gitlab-org/release-cli" = "latest"
+
+[tools."forgejo:gitea/tea"]
+version = "latest"
+api_url = "https://gitea.com/api/v1"
+
+# The `http:` backend records no checksums, so this also exercises
+# checksum-less downloads (see mise/private/lockfile.bzl).
+[tools."http:yq"]
+version = "4.53.6"
+url = "https://github.com/mikefarah/yq/releases/download/v4.53.6/yq_linux_amd64"
+
+[tools."http:yq".platforms]
+macos-x64 = { url = "https://github.com/mikefarah/yq/releases/download/v4.53.6/yq_darwin_amd64" }
+macos-arm64 = { url = "https://github.com/mikefarah/yq/releases/download/v4.53.6/yq_darwin_arm64" }
+linux-x64 = { url = "https://github.com/mikefarah/yq/releases/download/v4.53.6/yq_linux_amd64" }
+linux-arm64 = { url = "https://github.com/mikefarah/yq/releases/download/v4.53.6/yq_linux_arm64" }
+windows-x64 = { url = "https://github.com/mikefarah/yq/releases/download/v4.53.6/yq_windows_amd64.exe" }

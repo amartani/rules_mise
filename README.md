@@ -38,7 +38,7 @@ be verified and the tool repo is marked non-reproducible.
 ## Supported mise backends
 
 `rules_mise` exposes tools whose lockfile entries contain direct download
-URLs. That covers these backends (all exercised in `e2e/smoke`, except
+URLs. That covers these backends (all exercised in `e2e/backends`, except
 `pkgx` which is exercised in `e2e/pkgx`):
 
 | Backend    | Supported          | Notes                                                               |

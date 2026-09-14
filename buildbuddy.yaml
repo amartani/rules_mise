@@ -19,6 +19,16 @@ actions:
           - "*"
     steps:
       - run: "cd e2e/smoke && bazel test --config=buildbuddy //..."
+  - name: buildbuddy e2e/backends
+    triggers:
+      push:
+        branches:
+          - "main"
+      pull_request:
+        branches:
+          - "*"
+    steps:
+      - run: "cd e2e/backends && bazel test --config=buildbuddy //..."
   - name: buildbuddy e2e/pkgx
     triggers:
       push:

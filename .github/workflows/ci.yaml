@@ -21,7 +21,7 @@ jobs:
         bazel: ["8.x", "9.x"]
         folder:
           - .
-          - e2e/smoke
+          - e2e/backends
           - e2e/pkgx
           - e2e/itest
     defaults:
@@ -40,6 +40,44 @@ jobs:
             ${{ matrix.folder == '.' && 'common --config=ci ' || '' }}
             ${{ matrix.folder == '.' && !startsWith(matrix.bazel, '9.') && 'common --lockfile_mode=update' || '' }}
       - run: bazel test //...
+  smoke:
+    # e2e/smoke is the BCR presubmit module: run it on every OS x arch so
+    # platform-specific tool failures surface here instead of at publish time.
+    # Runner labels are the standard GitHub-hosted ones (free for public repos):
+    # https://docs.github.com/en/actions/reference/runners/github-hosted-runners
+    # Pinned versions (not -latest) to avoid surprise image migrations.
+    strategy:
+      fail-fast: false
+      matrix:
+        bazel: ["8.x", "9.x"]
+        platform:
+          - name: linux-x86_64
+            runner: ubuntu-24.04
+          - name: linux-arm64
+            runner: ubuntu-24.04-arm
+          - name: macos-arm64
+            runner: macos-15
+          - name: macos-x86_64
+            runner: macos-15-intel
+          - name: windows-x86_64
+            runner: windows-2025
+          - name: windows-arm64
+            runner: windows-11-arm
+    name: smoke (${{ matrix.platform.name }}, bazel ${{ matrix.bazel }})
+    runs-on: ${{ matrix.platform.runner }}
+    defaults:
+      run:
+        working-directory: e2e/smoke
+    env:
+      USE_BAZEL_VERSION: ${{ matrix.bazel }}
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: bazel-contrib/setup-bazel@c5acdfb288317d0b5c0bbd7a396a3dc868bb0f86 # 0.19.0
+        with:
+          bazelisk-cache: true
+          disk-cache: ${{ github.workflow }}
+          repository-cache: true
+      - run: bazel test //...
   hk:
     runs-on: ubuntu-latest
     steps:
@@ -49,7 +87,7 @@ jobs:
   # For branch protection settings, this job provides a "stable" name that can be used to gate PR merges
   # on "all matrix jobs were successful".
   conclusion:
-    needs: [test, hk]
+    needs: [test, smoke, hk]
     runs-on: ubuntu-latest
     if: always()
     permissions:
