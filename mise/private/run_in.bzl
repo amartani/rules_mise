@@ -18,8 +18,17 @@ def run_in(ctx, env_var):
     """
     template = ctx.file._template_sh
     wrapper_name = ctx.label.name
-    tool_short_path = ctx.executable.tool.short_path
-    if ctx.executable.tool.extension == "exe":
+    tool_file = ctx.executable.tool
+    tool_short_path = tool_file.short_path
+
+    # In the runfiles tree, external repository files live at their short
+    # path without the leading `../` (e.g. `../repo/path` -> `repo/path`).
+    if tool_short_path.startswith("../"):
+        tool_runfiles_path = tool_short_path[3:]
+    else:
+        tool_runfiles_path = tool_short_path
+    tool_filename = tool_file.basename
+    if tool_file.extension == "exe":
         template = ctx.file._template_bat
         wrapper_name = wrapper_name + ".bat"
         tool_short_path = tool_short_path.replace("/", "\\")
@@ -29,9 +38,11 @@ def run_in(ctx, env_var):
         output = output,
         substitutions = {
             "{{tool}}": tool_short_path,
+            "{{tool_filename}}": tool_filename,
+            "{{runfiles_path}}": tool_runfiles_path,
             "{{env_var}}": env_var,
         },
     )
-    runfiles = ctx.runfiles(ctx.files.tool)
+    runfiles = ctx.runfiles(files = ctx.files.tool)
     runfiles = runfiles.merge(ctx.attr.tool[DefaultInfo].default_runfiles)
     return [DefaultInfo(executable = output, runfiles = runfiles)]

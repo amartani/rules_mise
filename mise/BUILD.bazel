@@ -4,11 +4,7 @@ bzl_library(
     name = "extensions",
     srcs = ["extensions.bzl"],
     visibility = ["//visibility:public"],
-    deps = [
-        ":hub",
-        "//mise/private:lockfile",
-        "@toml.bzl//toml:toml",
-    ],
+    deps = [":hub"],
 )
 
 bzl_library(

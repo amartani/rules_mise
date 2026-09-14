@@ -22,10 +22,10 @@ checksum = "sha256:8d28939cf5cabe54a2f8f7cbfab52c643436d1bc70474198181db9e48f504
 
 Key aspects (see `mise/private/lockfile.bzl`):
 
-- Tools are `[[tools.<name>]]` (array of tables) or a single `[tools.<name>]` table; each entry has `version`, `backend`, and `platforms.<os>-<arch>` subtables.
+- Tools are `[[tools.<name>]]` (array of tables) or a single `[tools.<name>]` table; each entry has `version`, `backend`, and `platforms.<os>-<arch>` subtables. Each entry's `version`/`backend` is recorded on its own binaries (entries may differ).
 - Recognized platforms: `linux-x64`, `linux-arm64`, `macos-x64`, `macos-arm64`, `windows-x64`. `linux-*-musl` entries are ignored (folded into the non-musl entry); anything else is skipped.
-- Entries without both `url` and `checksum` are silently skipped. `sha256:` prefixes are stripped before use.
-- Tool names are sanitized for Bazel (`_clean`): only `:`, `/`, `+`, `@`, and space become `_`; `-` and `.` are kept (e.g. `npm:prettier` → `npm_prettier`).
+- Entries without both `url` and `checksum` are skipped. `sha256:` prefixes are stripped before use. Tools left with no supported platform entries are skipped with a warning.
+- Tool names are sanitized for Bazel (`_clean`): only `:`, `/`, `+`, `@`, and space become `_`; `-` and `.` are kept (e.g. `npm:prettier` → `npm_prettier`). The trailing name segment is also kept as an executable-discovery hint (`hint`) for archives whose binary omits the backend prefix.
 - pkgx tools (`backend = "pkgx:..."`) additionally carry `pkgx_deps` / `pkgx_provides` / `pkgx_runtime_env` per platform, resolved against a shared `[pkgx-packages.<platform>]` lockfile section. Only `bin/` and `sbin/` provides become Bazel targets.
 
 ### 2. Module Extension
@@ -43,7 +43,7 @@ use_repo(mise, "mise")
 register_toolchains("@mise//toolchains:all")
 ```
 
-The extension collects lockfiles per `hub_name` across modules (later modules win), so multiple lockfiles / modules can feed one hub. It ensures the default `mise` hub is a direct dep, and reports `reproducible = True` metadata.
+The extension collects lockfiles per `hub_name` across modules (later modules win), so multiple lockfiles / modules can feed one hub. Hub names used by the root module are reported as direct deps, and the extension reports `reproducible = True` metadata.
 
 ### 3. Per-Platform Tool Repositories
 
@@ -77,7 +77,7 @@ Tools resolve through the toolchain, so the same label picks the right binary pe
 @mise//tools/pkgx_postgresql.org:psql           -> pkgx-provided binary via the dispatcher
 ```
 
-`:cwd` / `:workspace_root` (`mise/private/run_in.bzl`) expand a small wrapper script (`.sh`, or `.bat` for `.exe` tools) that sets `PWD` / `BUILD_WORKSPACE_DIRECTORY` and execs the resolved tool.
+`:cwd` / `:workspace_root` (`mise/private/run_in.bzl`) expand a small wrapper script (`.sh`, or `.bat` for `.exe` tools) that `cd`s into `$PWD` / `$BUILD_WORKSPACE_DIRECTORY` and execs the resolved tool. The wrapper locates the tool next to itself first (works under `bazel run`, direct execution, and in the runfiles tree), then via `$RUNFILES_DIR` / the runfiles manifest, and finally via the legacy `$PWD`-relative short path.
 
 ## File Structure
 
@@ -93,9 +93,8 @@ mise/
     ├── run_in.bzl           # shared cwd/workspace_root wrapper implementation
     ├── cwd.bzl / workspace_root.bzl
     ├── run_in.template.sh / run_in.template.bat
-    ├── hub_repo_template/   # BUILD / toolchain_info.bzl / tools.bzl / toolchains+tools shells
-    ├── hub_repo_tool_template/  # (currently unused: hub.bzl inlines tool.bzl/BUILD content)
-    └── tool_repo_template/  # (currently unused: hub.bzl writes executables directly)
+    ├── hub_repo_template/   # BUILD / toolchain_info.bzl / tools.bzl / toolchains shells
+    └── hub_repo_tool_template/  # per-tool tool.bzl / BUILD shells (used by hub.bzl)
 ```
 
 ## Data Flow
@@ -113,13 +112,13 @@ mise/
 
 Mise platform suffixes map to toolchain `os`/`cpu` strings, which become `@platforms//os:{os}` / `@platforms//cpu:{cpu}` constraints:
 
-| Mise Platform | os      | cpu     |
-| ------------- | ------- | ------- |
-| linux-x64     | linux   | x86_64  |
-| linux-arm64   | linux   | arm64   |
-| macos-x64     | macos   | x86_64  |
-| macos-arm64   | macos   | arm64   |
-| windows-x64   | windows | x86_64  |
+| Mise Platform | os      | cpu    |
+| ------------- | ------- | ------ |
+| linux-x64     | linux   | x86_64 |
+| linux-arm64   | linux   | arm64  |
+| macos-x64     | macos   | x86_64 |
+| macos-arm64   | macos   | arm64  |
+| windows-x64   | windows | x86_64 |
 
 (`*-musl` suffixed entries fold into their non-musl row. Host-platform detection in `templates.bzl` additionally accepts `osx`/`aarch64` aliases.)
 

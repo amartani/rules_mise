@@ -8,9 +8,10 @@ def _tool_impl(ctx):
     toolchain = ctx.toolchains[_TOOLCHAIN_TYPE]
     output = ctx.actions.declare_file(ctx.label.name + toolchain.ext)
     ctx.actions.symlink(output = output, target_file = toolchain.executable)
-    return [DefaultInfo(executable = output)]
+    runfiles = ctx.runfiles(files = [output] + toolchain.files)
+    return [DefaultInfo(executable = output, runfiles = runfiles)]
 
 tool = rule(executable = True, implementation = _tool_impl, toolchains = [_TOOLCHAIN_TYPE])
 
 def declare_toolchains():
-    {toolchains}
+{toolchains}

@@ -27,6 +27,15 @@ def _clean(name):
     return (name.replace(":", "_").replace("/", "_").replace("+", "_")
         .replace("@", "_").replace(" ", "_"))
 
+def _exe_hint(tool_name):
+    """Best-effort executable name for archive discovery.
+
+    Tool names may carry a backend prefix (`npm:prettier`,
+    `aqua:org/name/tool`), while the archived binary is usually just the
+    trailing segment (`prettier`, `tool`).
+    """
+    return tool_name.rsplit(":", 1)[-1].rsplit("/", 1)[-1]
+
 def _strip_sha256(checksum):
     if checksum.startswith("sha256:"):
         return checksum[len("sha256:"):]
@@ -49,7 +58,7 @@ def _parse_mise_platform(platform):
 def _split_dep_id(dep_id):
     parts = dep_id.rsplit("@", 1)
     if len(parts) != 2:
-        fail("Invalid pkgx package id {id!r}: expected <name>@<version>".format(id = dep_id))
+        fail("Invalid pkgx package id '{id}': expected <name>@<version>".format(id = dep_id))
     return (parts[0], parts[1])
 
 def _pkgx_payload(tool_name, backend, version, url, checksum, platform, platform_data, pkgx_packages):
@@ -113,14 +122,17 @@ def _load(ctx, lockfiles):
             binaries = []
             version = ""
             backend = ""
+            hint = _exe_hint(tool_name)
 
             for tool_entry in tool_entries:
+                entry_version = tool_entry.get("version", "")
+                entry_backend = tool_entry.get("backend", "")
                 if not version:
-                    version = tool_entry.get("version", "")
+                    version = entry_version
                 if not backend:
-                    backend = tool_entry.get("backend", "")
+                    backend = entry_backend
 
-                is_pkgx = backend.startswith("pkgx:")
+                is_pkgx = entry_backend.startswith("pkgx:")
 
                 for platform_key, platform_data in tool_entry.items():
                     if not platform_key.startswith("platforms."):
@@ -150,8 +162,9 @@ def _load(ctx, lockfiles):
                         "url": url,
                         "checksum": checksum,
                         "kind": kind,
-                        "version": version,
-                        "backend": backend,
+                        "version": entry_version,
+                        "backend": entry_backend,
+                        "hint": hint,
                     }
                     if is_pkgx:
                         if kind != "archive":
@@ -161,8 +174,8 @@ def _load(ctx, lockfiles):
                             ))
                         binary["pkgx"] = _pkgx_payload(
                             tool_name,
-                            backend,
-                            version,
+                            entry_backend,
+                            entry_version,
                             url,
                             checksum,
                             platform_suffix,
@@ -184,6 +197,16 @@ def _load(ctx, lockfiles):
                     "backend": backend,
                     "provides": provides,
                 }
+            else:
+                # Tools without downloadable binaries (e.g. npm: backends with
+                # no platform entries, or entries without url+checksum) cannot
+                # be exposed as Bazel targets. Say so instead of silently
+                # dropping them.
+                skip_message = "rules_mise: tool '{tool}' has no supported platforms with url+checksum in {lockfile}, skipping".format(
+                    tool = tool_name,
+                    lockfile = lockfile,
+                )
+                print(skip_message)  # buildifier: disable=print
     return tools
 
 def _sorted(tools):

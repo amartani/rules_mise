@@ -32,12 +32,6 @@ def _extension(module_ctx):
                 else:
                     root_module_direct_deps[h.hub_name] = 1
 
-    # Ensure _DEFAULT_HUB_NAME is present in non-dev and dev deps when non-empty
-    if root_module_direct_deps:
-        root_module_direct_deps[_DEFAULT_HUB_NAME] = 1
-    if root_module_direct_dev_deps:
-        root_module_direct_dev_deps[_DEFAULT_HUB_NAME] = 1
-
     for hub_name, hub_lockfiles in lockfiles.items():
         bzlmod_hub(name = hub_name, lockfiles = hub_lockfiles, module_ctx = module_ctx)
 

@@ -6,6 +6,32 @@ The same `mise.toml` / `mise.lock` drives both your local developer environment 
 
 It also supports mise's `pkgx:` backend, which covers many tools that don't ship easily usable statically compiled binaries — e.g. PostgreSQL (`pkgx:postgresql.org`, see `e2e/pkgx`).
 
+## Usage
+
+In your `MODULE.bazel`:
+
+```starlark
+mise = use_extension("@rules_mise//mise:extensions.bzl", "mise")
+mise.hub(lockfile = "//:mise.lock")
+use_repo(mise, "mise")
+
+register_toolchains("@mise//toolchains:all")
+```
+
+Then depend on tools through the toolchain-resolved targets:
+
+```
+@mise//tools/ruff:tool            -> ruff for the current platform
+@mise//tools/ruff:cwd             -> wrapper running ruff from the current directory
+@mise//tools/ruff:workspace_root  -> wrapper running ruff from $BUILD_WORKSPACE_DIRECTORY
+@mise//tools/pkgx_postgresql.org:psql  -> pkgx-provided binary via the dispatcher
+```
+
+Only lockfile entries with both `url` and `checksum` on a supported
+platform (`linux-x64`, `linux-arm64`, `macos-x64`, `macos-arm64`,
+`windows-x64`) are exposed; anything else is skipped with a warning.
+`linux-*-musl` entries are ignored (folded into the non-musl entry).
+
 ## Installation
 
 From the release you wish to use:

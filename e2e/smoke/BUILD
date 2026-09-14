@@ -12,6 +12,18 @@ py_test(
     ],
 )
 
+py_test(
+    name = "test_cwd_wrapper",
+    srcs = ["test_cwd_wrapper.py"],
+    data = [
+        "@mise//tools/ruff:cwd",
+        "@mise//tools/ruff:workspace_root",
+    ],
+    deps = [
+        "@pypi//bazel_runfiles",
+    ],
+)
+
 compile_pip_requirements(
     name = "requirements",
     src = "requirements.in",

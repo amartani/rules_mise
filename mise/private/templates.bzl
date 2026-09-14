@@ -5,9 +5,6 @@ load("@platforms//host:constraints.bzl", "HOST_CONSTRAINTS")
 _HUB_TEMPLATE = "//mise/private:hub_repo_template/{filename}.template"
 _HUB_TOOL_TEMPLATE = "//mise/private:hub_repo_tool_template/{filename}.template"
 
-_TOOL_REPO_TEMPLATE = "//mise/private:tool_repo_template/{filename}.template"
-_TOOL_REPO_TOOL_TEMPLATE = "//mise/private:tool_repo_tool_template/{filename}.template"
-
 _HOST_CONSTRAINTS_MAPPING = {
     "@platforms//cpu:aarch64": "arm64",
     "@platforms//cpu:arm64": "arm64",
@@ -17,22 +14,6 @@ _HOST_CONSTRAINTS_MAPPING = {
     "@platforms//os:linux": "linux",
     "@platforms//os:windows": "windows",
 }
-
-def _render_tool_repo(rctx, filename, substitutions = None):
-    rctx.template(
-        filename,
-        Label(_TOOL_REPO_TEMPLATE.format(filename = filename)),
-        substitutions = substitutions or {},
-    )
-
-def _render_tool_repo_tool(rctx, tool_name, filename, substitutions = None):
-    rctx.template(
-        "tools/{tool_name}/{filename}".format(tool_name = tool_name, filename = filename),
-        Label(_TOOL_REPO_TOOL_TEMPLATE.format(filename = filename)),
-        substitutions = {
-            "{name}": tool_name,
-        } | (substitutions or {}),
-    )
 
 def _render_hub(rctx, filename, substitutions = None):
     rctx.template(
@@ -60,7 +41,7 @@ def _render_tool_labels(tools):
                     host_tool_keys.append(tool_key)
                 break
     return "".join([
-        '    "{tool_name}": Label("//tools/{tool_name}"),\n'.format(tool_name = tool_name)
+        '    "{tool_name}": Label("//tools/{tool_name}:tool"),\n'.format(tool_name = tool_name)
         for tool_name in host_tool_keys
     ])
 
@@ -101,7 +82,5 @@ def _tools_subs(hub_name, tools):
 templates = struct(
     hub = _render_hub,
     hub_tool = _render_hub_tool,
-    tool_repo = _render_tool_repo,
-    tool_repo_tool = _render_tool_repo_tool,
     tools_substitutions = _tools_subs,
 )

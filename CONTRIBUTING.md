@@ -28,7 +28,7 @@ Run `bazel run //:gazelle` to keep them up-to-date.
 
 You'll commonly find that you develop in another workspace, such as
 some other ruleset that depends on rules_mise, or in a nested
-workspace in the integration_tests folder.
+workspace in the e2e folder.
 
 To always tell Bazel to use this directory rather than some release
 artifact or a version fetched from the internet, include this in the
@@ -52,7 +52,7 @@ If you do nothing, eventually the newest commits will be released automatically 
 This automation is defined in .github/workflows/tag.yaml.
 
 Rather than wait for the cron event, you can trigger manually. Navigate to
-https://github.com/myorg/rules_mise/actions/workflows/tag.yaml
+https://github.com/rules_mise/rules_mise/actions/workflows/tag.yaml
 and press the "Run workflow" button.
 
 If you need control over the next release version, for example when making a release candidate for a new major,

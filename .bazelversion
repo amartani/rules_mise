@@ -3,5 +3,5 @@
 # the right version of Bazel is used to build and test this repo.
 # This also defines which version is used on CI.
 #
-# Note that you should also run integration_tests against other Bazel
+# Note that you should also run the e2e workspaces against other Bazel
 # versions you support.
