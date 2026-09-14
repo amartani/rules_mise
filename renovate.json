@@ -12,6 +12,10 @@
     {
       "matchFiles": ["MODULE.bazel"],
       "enabled": false
+    },
+    {
+      "matchManagers": ["mise"],
+      "lockFileMaintenance": { "enabled": true }
     }
   ]
 }
