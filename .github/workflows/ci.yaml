@@ -61,8 +61,8 @@ jobs:
             runner: macos-15-intel
           - name: windows-x86_64
             runner: windows-2025
-          - name: windows-arm64
-            runner: windows-11-arm
+            # No windows-arm64: ruff ships no Windows aarch64 binary upstream,
+            # so the smoke toolset cannot cover that platform.
     name: smoke (${{ matrix.platform.name }}, bazel ${{ matrix.bazel }})
     runs-on: ${{ matrix.platform.runner }}
     defaults:
