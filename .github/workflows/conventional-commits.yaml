@@ -2,7 +2,6 @@
 #
 # tag.yaml requires all commits to follow the conventional commit pattern so that it can
 # automatically derive the next release version based on the commit history
-
 name: Verify PR title/description
 on:
   pull_request_target:

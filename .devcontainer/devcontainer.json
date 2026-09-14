@@ -26,5 +26,5 @@
   "remoteEnv": {
     "PATH": "${containerEnv:PATH}:/mnt/mise-data/shims"
   },
-  "postCreateCommand": "sudo chown -R vscode:vscode /mnt/mise-data && mise install -y && prek install"
+  "postCreateCommand": "sudo chown -R vscode:vscode /mnt/mise-data && mise install -y && hk install --global --mise"
 }

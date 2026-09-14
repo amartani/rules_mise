@@ -6,63 +6,77 @@ backend = "aqua:bazelbuild/buildtools/buildozer"
 
 [tools."aqua:bazelbuild/buildtools/buildozer"."platforms.linux-arm64"]
 checksum = "sha256:87ee1d2d81d08ccae8f9147fc58503967c85878279e892f2990912412feef1a1"
-url = "https://github.com/bazelbuild/buildtools/releases/download/v8.5.1/buildozer-linux-arm64"
+url = "https://github.com/bazel-contrib/buildtools/releases/download/v8.5.1/buildozer-linux-arm64"
+url_api = "https://api.github.com/repos/bazel-contrib/buildtools/releases/assets/348132273"
 
 [tools."aqua:bazelbuild/buildtools/buildozer"."platforms.linux-arm64-musl"]
 checksum = "sha256:87ee1d2d81d08ccae8f9147fc58503967c85878279e892f2990912412feef1a1"
-url = "https://github.com/bazelbuild/buildtools/releases/download/v8.5.1/buildozer-linux-arm64"
+url = "https://github.com/bazel-contrib/buildtools/releases/download/v8.5.1/buildozer-linux-arm64"
+url_api = "https://api.github.com/repos/bazel-contrib/buildtools/releases/assets/348132273"
 
 [tools."aqua:bazelbuild/buildtools/buildozer"."platforms.linux-x64"]
 checksum = "sha256:2b745ca2ad41f1e01673fb59ac50af6b45ca26105c1d20fad64c3d05a95522f5"
-url = "https://github.com/bazelbuild/buildtools/releases/download/v8.5.1/buildozer-linux-amd64"
+url = "https://github.com/bazel-contrib/buildtools/releases/download/v8.5.1/buildozer-linux-amd64"
+url_api = "https://api.github.com/repos/bazel-contrib/buildtools/releases/assets/348132251"
 
 [tools."aqua:bazelbuild/buildtools/buildozer"."platforms.linux-x64-musl"]
 checksum = "sha256:2b745ca2ad41f1e01673fb59ac50af6b45ca26105c1d20fad64c3d05a95522f5"
-url = "https://github.com/bazelbuild/buildtools/releases/download/v8.5.1/buildozer-linux-amd64"
+url = "https://github.com/bazel-contrib/buildtools/releases/download/v8.5.1/buildozer-linux-amd64"
+url_api = "https://api.github.com/repos/bazel-contrib/buildtools/releases/assets/348132251"
 
 [tools."aqua:bazelbuild/buildtools/buildozer"."platforms.macos-arm64"]
 checksum = "sha256:d0cf2f6e11031d62bfd4584e46eb6bb708a883ff948be76538b34b83de833262"
-url = "https://github.com/bazelbuild/buildtools/releases/download/v8.5.1/buildozer-darwin-arm64"
+url = "https://github.com/bazel-contrib/buildtools/releases/download/v8.5.1/buildozer-darwin-arm64"
+url_api = "https://api.github.com/repos/bazel-contrib/buildtools/releases/assets/348132339"
 
 [tools."aqua:bazelbuild/buildtools/buildozer"."platforms.macos-x64"]
 checksum = "sha256:b85b9ad59c1543999a5d8bc8bee6e42b9f025be3ff520bc2d090213698850b43"
-url = "https://github.com/bazelbuild/buildtools/releases/download/v8.5.1/buildozer-darwin-amd64"
+url = "https://github.com/bazel-contrib/buildtools/releases/download/v8.5.1/buildozer-darwin-amd64"
+url_api = "https://api.github.com/repos/bazel-contrib/buildtools/releases/assets/348132305"
 
 [tools."aqua:bazelbuild/buildtools/buildozer"."platforms.windows-x64"]
 checksum = "sha256:e177155c2c8ef41569791de34f13077cefe3e5623f9f02e099347232bc028901"
-url = "https://github.com/bazelbuild/buildtools/releases/download/v8.5.1/buildozer-windows-amd64.exe"
+url = "https://github.com/bazel-contrib/buildtools/releases/download/v8.5.1/buildozer-windows-amd64.exe"
+url_api = "https://api.github.com/repos/bazel-contrib/buildtools/releases/assets/348132358"
 
 [[tools.bazel]]
-version = "9.1.0"
+version = "9.2.0"
 backend = "aqua:bazelbuild/bazel"
 
 [tools.bazel."platforms.linux-arm64"]
-checksum = "sha256:ba933bfc943e4c44f0743a5823aa2312a34b39628532add5dd037e08d8ec27a4"
-url = "https://github.com/bazelbuild/bazel/releases/download/9.1.0/bazel-9.1.0-linux-arm64"
+checksum = "sha256:049dd21f40ad979db11c3ee68c96a42ce75f1185e69ac61ab20de1501427a410"
+url = "https://github.com/bazelbuild/bazel/releases/download/9.2.0/bazel-9.2.0-linux-arm64"
+url_api = "https://api.github.com/repos/bazelbuild/bazel/releases/assets/475879141"
 
 [tools.bazel."platforms.linux-arm64-musl"]
-checksum = "sha256:ba933bfc943e4c44f0743a5823aa2312a34b39628532add5dd037e08d8ec27a4"
-url = "https://github.com/bazelbuild/bazel/releases/download/9.1.0/bazel-9.1.0-linux-arm64"
+checksum = "sha256:049dd21f40ad979db11c3ee68c96a42ce75f1185e69ac61ab20de1501427a410"
+url = "https://github.com/bazelbuild/bazel/releases/download/9.2.0/bazel-9.2.0-linux-arm64"
+url_api = "https://api.github.com/repos/bazelbuild/bazel/releases/assets/475879141"
 
 [tools.bazel."platforms.linux-x64"]
-checksum = "sha256:a667454f3f4f8878df8199136b82c199f6ada8477b337fae3b1ef854f01e4e2f"
-url = "https://github.com/bazelbuild/bazel/releases/download/9.1.0/bazel-9.1.0-linux-x86_64"
+checksum = "sha256:7668a95db1250f12c40407251e4e203b4ec8bf39bc495d2f485b2d8c99048694"
+url = "https://github.com/bazelbuild/bazel/releases/download/9.2.0/bazel-9.2.0-linux-x86_64"
+url_api = "https://api.github.com/repos/bazelbuild/bazel/releases/assets/475879151"
 
 [tools.bazel."platforms.linux-x64-musl"]
-checksum = "sha256:a667454f3f4f8878df8199136b82c199f6ada8477b337fae3b1ef854f01e4e2f"
-url = "https://github.com/bazelbuild/bazel/releases/download/9.1.0/bazel-9.1.0-linux-x86_64"
+checksum = "sha256:7668a95db1250f12c40407251e4e203b4ec8bf39bc495d2f485b2d8c99048694"
+url = "https://github.com/bazelbuild/bazel/releases/download/9.2.0/bazel-9.2.0-linux-x86_64"
+url_api = "https://api.github.com/repos/bazelbuild/bazel/releases/assets/475879151"
 
 [tools.bazel."platforms.macos-arm64"]
-checksum = "sha256:084a1784fa8f0dcae77fb4e88faa15048d8149a36c947ce198508bffb060e1bb"
-url = "https://github.com/bazelbuild/bazel/releases/download/9.1.0/bazel-9.1.0-darwin-arm64"
+checksum = "sha256:dd466352a3e4d3581b8898740ee1ff208866ccbe25f8d367c5dcb950219587e6"
+url = "https://github.com/bazelbuild/bazel/releases/download/9.2.0/bazel-9.2.0-darwin-arm64"
+url_api = "https://api.github.com/repos/bazelbuild/bazel/releases/assets/475879060"
 
 [tools.bazel."platforms.macos-x64"]
-checksum = "sha256:666c6c79eda285cada5f5c39c891c6dd7ee0971b20bff365ea87a4b897271433"
-url = "https://github.com/bazelbuild/bazel/releases/download/9.1.0/bazel-9.1.0-darwin-x86_64"
+checksum = "sha256:14c9bcb01303b38192e0e2895051c1bcf19bf89d7e416f5aeeeb48b6b624cfbf"
+url = "https://github.com/bazelbuild/bazel/releases/download/9.2.0/bazel-9.2.0-darwin-x86_64"
+url_api = "https://api.github.com/repos/bazelbuild/bazel/releases/assets/475879057"
 
 [tools.bazel."platforms.windows-x64"]
-checksum = "sha256:3da113b315dff34d66f0e16273612b311236e566fef405b79b506fd59657f842"
-url = "https://github.com/bazelbuild/bazel/releases/download/9.1.0/bazel-9.1.0-windows-x86_64.zip"
+checksum = "sha256:9508a1afba0400fc14e33b31d41ac0b4041f07684d0d26482956b347dc01838f"
+url = "https://github.com/bazelbuild/bazel/releases/download/9.2.0/bazel-9.2.0-windows-x86_64.zip"
+url_api = "https://api.github.com/repos/bazelbuild/bazel/releases/assets/475879205"
 
 [[tools.buildifier]]
 version = "8.5.1"
@@ -70,67 +84,215 @@ backend = "aqua:bazelbuild/buildtools/buildifier"
 
 [tools.buildifier."platforms.linux-arm64"]
 checksum = "sha256:947bf6700d708026b2057b09bea09abbc3cafc15d9ecea35bb3885c4b09ccd04"
-url = "https://github.com/bazelbuild/buildtools/releases/download/v8.5.1/buildifier-linux-arm64"
+url = "https://github.com/bazel-contrib/buildtools/releases/download/v8.5.1/buildifier-linux-arm64"
+url_api = "https://api.github.com/repos/bazel-contrib/buildtools/releases/assets/348132205"
 
 [tools.buildifier."platforms.linux-arm64-musl"]
 checksum = "sha256:947bf6700d708026b2057b09bea09abbc3cafc15d9ecea35bb3885c4b09ccd04"
-url = "https://github.com/bazelbuild/buildtools/releases/download/v8.5.1/buildifier-linux-arm64"
+url = "https://github.com/bazel-contrib/buildtools/releases/download/v8.5.1/buildifier-linux-arm64"
+url_api = "https://api.github.com/repos/bazel-contrib/buildtools/releases/assets/348132205"
 
 [tools.buildifier."platforms.linux-x64"]
 checksum = "sha256:887377fc64d23a850f4d18a077b5db05b19913f4b99b270d193f3c7334b5a9a7"
-url = "https://github.com/bazelbuild/buildtools/releases/download/v8.5.1/buildifier-linux-amd64"
+url = "https://github.com/bazel-contrib/buildtools/releases/download/v8.5.1/buildifier-linux-amd64"
+url_api = "https://api.github.com/repos/bazel-contrib/buildtools/releases/assets/348132197"
 
 [tools.buildifier."platforms.linux-x64-musl"]
 checksum = "sha256:887377fc64d23a850f4d18a077b5db05b19913f4b99b270d193f3c7334b5a9a7"
-url = "https://github.com/bazelbuild/buildtools/releases/download/v8.5.1/buildifier-linux-amd64"
+url = "https://github.com/bazel-contrib/buildtools/releases/download/v8.5.1/buildifier-linux-amd64"
+url_api = "https://api.github.com/repos/bazel-contrib/buildtools/releases/assets/348132197"
 
 [tools.buildifier."platforms.macos-arm64"]
 checksum = "sha256:62836a9667fa0db309b0d91e840f0a3f2813a9c8ea3e44b9cd58187c90bc88ba"
-url = "https://github.com/bazelbuild/buildtools/releases/download/v8.5.1/buildifier-darwin-arm64"
+url = "https://github.com/bazel-contrib/buildtools/releases/download/v8.5.1/buildifier-darwin-arm64"
+url_api = "https://api.github.com/repos/bazel-contrib/buildtools/releases/assets/348132225"
 
 [tools.buildifier."platforms.macos-x64"]
 checksum = "sha256:31de189e1a3fe53aa9e8c8f74a0309c325274ad19793393919e1ca65163ca1a4"
-url = "https://github.com/bazelbuild/buildtools/releases/download/v8.5.1/buildifier-darwin-amd64"
+url = "https://github.com/bazel-contrib/buildtools/releases/download/v8.5.1/buildifier-darwin-amd64"
+url_api = "https://api.github.com/repos/bazel-contrib/buildtools/releases/assets/348132219"
 
 [tools.buildifier."platforms.windows-x64"]
 checksum = "sha256:f4ecb9c73de2bc38b845d4ee27668f6248c4813a6647db4b4931a7556052e4e1"
-url = "https://github.com/bazelbuild/buildtools/releases/download/v8.5.1/buildifier-windows-amd64.exe"
+url = "https://github.com/bazel-contrib/buildtools/releases/download/v8.5.1/buildifier-windows-amd64.exe"
+url_api = "https://api.github.com/repos/bazel-contrib/buildtools/releases/assets/348132233"
 
-[[tools.prek]]
-version = "0.3.10"
-backend = "aqua:j178/prek"
+[[tools.hk]]
+version = "2.0.0"
+backend = "packslip:github.com/jdx/hk"
 
-[tools.prek."platforms.linux-arm64"]
-checksum = "sha256:50e585ce98988b70d79ec782b2cf6c787c2f0a97a448ba8594448b4a6a688943"
-url = "https://github.com/j178/prek/releases/download/v0.3.10/prek-aarch64-unknown-linux-musl.tar.gz"
-provenance = "github-attestations"
+[tools.hk."platforms.linux-arm64"]
+checksum = "sha256:1034ac9e07d7ffc18b58c72c6fe1013bd1e6ab1d8fa421bc4f4ac68ee08cb011"
+url = "https://github.com/jdx/hk/releases/download/v2.0.0/hk-aarch64-unknown-linux-gnu.tar.gz"
+signer = "sigstore-oidc:https://github.com/jdx/hk/.github/workflows/release.yml"
 
-[tools.prek."platforms.linux-arm64-musl"]
-checksum = "sha256:50e585ce98988b70d79ec782b2cf6c787c2f0a97a448ba8594448b4a6a688943"
-url = "https://github.com/j178/prek/releases/download/v0.3.10/prek-aarch64-unknown-linux-musl.tar.gz"
-provenance = "github-attestations"
+[tools.hk."platforms.linux-arm64-musl"]
+checksum = "sha256:494b4e1c6be73b44cffcead07a97681ec3f1ea72df05a6fbba5a2bfae3648604"
+url = "https://github.com/jdx/hk/releases/download/v2.0.0/hk-aarch64-unknown-linux-musl.tar.gz"
+signer = "sigstore-oidc:https://github.com/jdx/hk/.github/workflows/release.yml"
 
-[tools.prek."platforms.linux-x64"]
-checksum = "sha256:60a873474e2ff2f70a5ad524d1b51abb6fdf5991900001eb7c8979877d75dacd"
-url = "https://github.com/j178/prek/releases/download/v0.3.10/prek-x86_64-unknown-linux-musl.tar.gz"
-provenance = "github-attestations"
+[tools.hk."platforms.linux-x64"]
+checksum = "sha256:d2cdde7a68dba648b2d25605ceab364074a057fb93618b46ce7ac3e298bfba2c"
+url = "https://github.com/jdx/hk/releases/download/v2.0.0/hk-x86_64-unknown-linux-gnu.tar.gz"
+signer = "sigstore-oidc:https://github.com/jdx/hk/.github/workflows/release.yml"
 
-[tools.prek."platforms.linux-x64-musl"]
-checksum = "sha256:60a873474e2ff2f70a5ad524d1b51abb6fdf5991900001eb7c8979877d75dacd"
-url = "https://github.com/j178/prek/releases/download/v0.3.10/prek-x86_64-unknown-linux-musl.tar.gz"
-provenance = "github-attestations"
+[tools.hk."platforms.linux-x64-musl"]
+checksum = "sha256:8faf654847d8cc7432012d4b1277ae91b4bca78275f87776f0381aee26d7920d"
+url = "https://github.com/jdx/hk/releases/download/v2.0.0/hk-x86_64-unknown-linux-musl.tar.gz"
+signer = "sigstore-oidc:https://github.com/jdx/hk/.github/workflows/release.yml"
 
-[tools.prek."platforms.macos-arm64"]
-checksum = "sha256:e885e023ddb765ba31a2859bd4b9683f9b40fee3195c189a749bc4b28535ab5c"
-url = "https://github.com/j178/prek/releases/download/v0.3.10/prek-aarch64-apple-darwin.tar.gz"
-provenance = "github-attestations"
+[tools.hk."platforms.macos-arm64"]
+checksum = "sha256:9ee3f4350b321677e5ce291882c6441b153773b32705734d2208f93ac71ce12f"
+url = "https://github.com/jdx/hk/releases/download/v2.0.0/hk-aarch64-apple-darwin.tar.gz"
+signer = "sigstore-oidc:https://github.com/jdx/hk/.github/workflows/release.yml"
 
-[tools.prek."platforms.macos-x64"]
-checksum = "sha256:313882a8bfd76eb6930949ded36b23ce194ccb5431f474c62ae3fde12df100ae"
-url = "https://github.com/j178/prek/releases/download/v0.3.10/prek-x86_64-apple-darwin.tar.gz"
-provenance = "github-attestations"
+[tools.hk."platforms.windows-x64"]
+checksum = "sha256:81fca45c5e7697fdc114080f2fc1ea229bb053b4201a7f4e15e62d1a68820a65"
+url = "https://github.com/jdx/hk/releases/download/v2.0.0/hk-x86_64-pc-windows-msvc.zip"
+signer = "sigstore-oidc:https://github.com/jdx/hk/.github/workflows/release.yml"
 
-[tools.prek."platforms.windows-x64"]
-checksum = "sha256:43b85e061bbcf6febb9973a7859d029f29f5ddeeb7722bd234422d8b6bee4406"
-url = "https://github.com/j178/prek/releases/download/v0.3.10/prek-x86_64-pc-windows-msvc.zip"
-provenance = "github-attestations"
+[[tools.node]]
+version = "26.8.2"
+backend = "core:node"
+
+[tools.node."platforms.linux-arm64"]
+checksum = "sha256:746cdbf21565b4ea06f77642bb0e85466de8bb722242be2c5e006f272c361c63"
+url = "https://nodejs.org/dist/v26.8.2/node-v26.8.2-linux-arm64.tar.gz"
+
+[tools.node."platforms.linux-arm64-musl"]
+checksum = "sha256:125437a0b59d69592b8f4bb813a47245337afac8c973d15ab7720f0ec55d182d"
+url = "https://unofficial-builds.nodejs.org/download/release/v26.8.2/node-v26.8.2-linux-arm64-musl.tar.gz"
+
+[tools.node."platforms.linux-x64"]
+checksum = "sha256:badb3fe6a61b85e1352ca6564dc56b8b7bd5ecd5c474c52acc21dd0cdd586f35"
+url = "https://nodejs.org/dist/v26.8.2/node-v26.8.2-linux-x64.tar.gz"
+
+[tools.node."platforms.linux-x64-musl"]
+checksum = "sha256:696eb0180248a06c9893f3f07bcc4e2680891c83118c73aaf1de330efd053910"
+url = "https://unofficial-builds.nodejs.org/download/release/v26.8.2/node-v26.8.2-linux-x64-musl.tar.gz"
+
+[tools.node."platforms.macos-arm64"]
+checksum = "sha256:974b6d5fb2fc7c33ff2354db0902b4e91c2de01ec8acc6de48e543c97e18c9e1"
+url = "https://nodejs.org/dist/v26.8.2/node-v26.8.2-darwin-arm64.tar.gz"
+
+[tools.node."platforms.macos-x64"]
+checksum = "sha256:adb8feb2d4987df3d72d2ec46f4fc4b58039c859b8c3f0e3cc2d3c6cbaf8629c"
+url = "https://nodejs.org/dist/v26.8.2/node-v26.8.2-darwin-x64.tar.gz"
+
+[tools.node."platforms.windows-x64"]
+checksum = "sha256:cf02f5d0c06c794b84f277177d5cf3743d0924ca49f6641cd435dd7cb6ee9085"
+url = "https://nodejs.org/dist/v26.8.2/node-v26.8.2-win-x64.zip"
+
+[[tools."npm:prettier"]]
+version = "3.9.6"
+backend = "npm:prettier"
+
+[[tools.taplo]]
+version = "0.10.0"
+backend = "aqua:tamasfe/taplo"
+
+[tools.taplo."platforms.linux-arm64"]
+url = "https://github.com/tamasfe/taplo/releases/download/0.10.0/taplo-linux-aarch64.gz"
+url_api = "https://api.github.com/repos/tamasfe/taplo/releases/assets/257322597"
+
+[tools.taplo."platforms.linux-arm64-musl"]
+url = "https://github.com/tamasfe/taplo/releases/download/0.10.0/taplo-linux-aarch64.gz"
+url_api = "https://api.github.com/repos/tamasfe/taplo/releases/assets/257322597"
+
+[tools.taplo."platforms.linux-x64"]
+url = "https://github.com/tamasfe/taplo/releases/download/0.10.0/taplo-linux-x86_64.gz"
+url_api = "https://api.github.com/repos/tamasfe/taplo/releases/assets/257322600"
+
+[tools.taplo."platforms.linux-x64-musl"]
+url = "https://github.com/tamasfe/taplo/releases/download/0.10.0/taplo-linux-x86_64.gz"
+url_api = "https://api.github.com/repos/tamasfe/taplo/releases/assets/257322600"
+
+[tools.taplo."platforms.macos-arm64"]
+url = "https://github.com/tamasfe/taplo/releases/download/0.10.0/taplo-darwin-aarch64.gz"
+url_api = "https://api.github.com/repos/tamasfe/taplo/releases/assets/257323110"
+
+[tools.taplo."platforms.macos-x64"]
+url = "https://github.com/tamasfe/taplo/releases/download/0.10.0/taplo-darwin-x86_64.gz"
+url_api = "https://api.github.com/repos/tamasfe/taplo/releases/assets/257323116"
+
+[tools.taplo."platforms.windows-x64"]
+url = "https://github.com/tamasfe/taplo/releases/download/0.10.0/taplo-windows-x86_64.zip"
+url_api = "https://api.github.com/repos/tamasfe/taplo/releases/assets/257323062"
+
+[[tools.typos]]
+version = "1.50.1"
+backend = "aqua:crate-ci/typos"
+
+[tools.typos."platforms.linux-arm64"]
+checksum = "sha256:a48feb58c517977ca953e634507c72819d64df8717c33ced3e43868d174fd39e"
+url = "https://github.com/crate-ci/typos/releases/download/v1.50.1/typos-v1.50.1-aarch64-unknown-linux-musl.tar.gz"
+url_api = "https://api.github.com/repos/crate-ci/typos/releases/assets/539857357"
+
+[tools.typos."platforms.linux-arm64-musl"]
+checksum = "sha256:a48feb58c517977ca953e634507c72819d64df8717c33ced3e43868d174fd39e"
+url = "https://github.com/crate-ci/typos/releases/download/v1.50.1/typos-v1.50.1-aarch64-unknown-linux-musl.tar.gz"
+url_api = "https://api.github.com/repos/crate-ci/typos/releases/assets/539857357"
+
+[tools.typos."platforms.linux-x64"]
+checksum = "sha256:edf0545109aee6a22751d04ddecb97c45be47d3aa0409564fb895eeeace91b1e"
+url = "https://github.com/crate-ci/typos/releases/download/v1.50.1/typos-v1.50.1-x86_64-unknown-linux-musl.tar.gz"
+url_api = "https://api.github.com/repos/crate-ci/typos/releases/assets/539858793"
+
+[tools.typos."platforms.linux-x64-musl"]
+checksum = "sha256:edf0545109aee6a22751d04ddecb97c45be47d3aa0409564fb895eeeace91b1e"
+url = "https://github.com/crate-ci/typos/releases/download/v1.50.1/typos-v1.50.1-x86_64-unknown-linux-musl.tar.gz"
+url_api = "https://api.github.com/repos/crate-ci/typos/releases/assets/539858793"
+
+[tools.typos."platforms.macos-arm64"]
+checksum = "sha256:2c940734b44b6e199e165278b662b7e17c68f068471a2a8a5e491ce635414ae6"
+url = "https://github.com/crate-ci/typos/releases/download/v1.50.1/typos-v1.50.1-aarch64-apple-darwin.tar.gz"
+url_api = "https://api.github.com/repos/crate-ci/typos/releases/assets/539861019"
+
+[tools.typos."platforms.macos-x64"]
+checksum = "sha256:b31ccf2f21154b2bc8d2a84f395f746106edda0feec4817fbecdb12216df53bd"
+url = "https://github.com/crate-ci/typos/releases/download/v1.50.1/typos-v1.50.1-x86_64-apple-darwin.tar.gz"
+url_api = "https://api.github.com/repos/crate-ci/typos/releases/assets/539861041"
+
+[tools.typos."platforms.windows-x64"]
+checksum = "sha256:8740867a0d9e44a62f0803e37a669ec3c6cd17ab63cd49d00e14a96d3e03ccc3"
+url = "https://github.com/crate-ci/typos/releases/download/v1.50.1/typos-v1.50.1-x86_64-pc-windows-msvc.zip"
+url_api = "https://api.github.com/repos/crate-ci/typos/releases/assets/539862554"
+
+[[tools.yamlfmt]]
+version = "0.21.0"
+backend = "aqua:google/yamlfmt"
+
+[tools.yamlfmt."platforms.linux-arm64"]
+checksum = "sha256:5b2689c963b177271330c5ce8ca7396751107e5a826be46f03d2cb9b6f0c7784"
+url = "https://github.com/google/yamlfmt/releases/download/v0.21.0/yamlfmt_0.21.0_Linux_arm64.tar.gz"
+url_api = "https://api.github.com/repos/google/yamlfmt/releases/assets/336650208"
+
+[tools.yamlfmt."platforms.linux-arm64-musl"]
+checksum = "sha256:5b2689c963b177271330c5ce8ca7396751107e5a826be46f03d2cb9b6f0c7784"
+url = "https://github.com/google/yamlfmt/releases/download/v0.21.0/yamlfmt_0.21.0_Linux_arm64.tar.gz"
+url_api = "https://api.github.com/repos/google/yamlfmt/releases/assets/336650208"
+
+[tools.yamlfmt."platforms.linux-x64"]
+checksum = "sha256:1f300d9257b232bb3b541d7fb1b0e6b3c121bcbab381c86cd38cb8722be8a566"
+url = "https://github.com/google/yamlfmt/releases/download/v0.21.0/yamlfmt_0.21.0_Linux_x86_64.tar.gz"
+url_api = "https://api.github.com/repos/google/yamlfmt/releases/assets/336650203"
+
+[tools.yamlfmt."platforms.linux-x64-musl"]
+checksum = "sha256:1f300d9257b232bb3b541d7fb1b0e6b3c121bcbab381c86cd38cb8722be8a566"
+url = "https://github.com/google/yamlfmt/releases/download/v0.21.0/yamlfmt_0.21.0_Linux_x86_64.tar.gz"
+url_api = "https://api.github.com/repos/google/yamlfmt/releases/assets/336650203"
+
+[tools.yamlfmt."platforms.macos-arm64"]
+checksum = "sha256:4b417ecb94339d57e4c122ecc948c1a00fe328b5853266de9806e652a92858fa"
+url = "https://github.com/google/yamlfmt/releases/download/v0.21.0/yamlfmt_0.21.0_Darwin_arm64.tar.gz"
+url_api = "https://api.github.com/repos/google/yamlfmt/releases/assets/336650209"
+
+[tools.yamlfmt."platforms.macos-x64"]
+checksum = "sha256:060e943bcb8583c456810eb1ff4721b4f46c4a0c1a4432449d5dc3bbfe29a22b"
+url = "https://github.com/google/yamlfmt/releases/download/v0.21.0/yamlfmt_0.21.0_Darwin_x86_64.tar.gz"
+url_api = "https://api.github.com/repos/google/yamlfmt/releases/assets/336650207"
+
+[tools.yamlfmt."platforms.windows-x64"]
+checksum = "sha256:07f80ce5d741eb4b0a9380ac78a19c7cb5bd44e2a9a47a5a04839e3ba54dd463"
+url = "https://github.com/google/yamlfmt/releases/download/v0.21.0/yamlfmt_0.21.0_Windows_x86_64.tar.gz"
+url_api = "https://api.github.com/repos/google/yamlfmt/releases/assets/336650206"

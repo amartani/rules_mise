@@ -1,0 +1,47 @@
+amends "package://github.com/jdx/hk/releases/download/v2.0.0/hk@2.0.0#/Config.pkl"
+import "package://github.com/jdx/hk/releases/download/v2.0.0/hk@2.0.0#/Builtins.pkl"
+
+// Git hooks for this repo, replacing .pre-commit-config.yaml (prek).
+// Tools are provided by mise (see mise.toml). Install hooks with:
+//
+//   mise install
+//   hk install --mise
+//
+// Top-level `steps` are shared by the implicit `check`, `fix`, and
+// `pre-commit` hooks. `pre-commit` fixes and stages by default.
+// `commit-msg` is declared explicitly below.
+
+steps {
+  // Port of `pre-commit-hooks`: hk utilities, no extra tools required.
+  ["check-executables-have-shebangs"] = Builtins.check_executables_have_shebangs
+  ["check-shebang-scripts-are-executable"] = Builtins.check_shebang_scripts_are_executable
+  ["check-merge-conflict"] = Builtins.check_merge_conflict
+  ["check-symlinks"] = Builtins.check_symlinks
+  ["destroyed-symlinks"] = Builtins.destroyed_symlinks
+  ["detect-private-key"] = Builtins.detect_private_key
+  ["end-of-file-fixer"] = Builtins.newlines
+  ["trailing-whitespace"] = Builtins.trailing_whitespace
+  // TOML validation and formatting (mise: taplo).
+  ["check-toml"] = Builtins.taplo
+  ["toml-format"] = Builtins.taplo_format
+  // YAML formatting (mise: yamlfmt). YAML syntax is validated implicitly
+  // by yamlfmt and prettier, which both fail on invalid files.
+  ["yamlfmt"] = Builtins.yamlfmt
+  // General formatting (mise: node, prettier).
+  ["prettier"] = Builtins.prettier
+  // Spell checking (mise: typos). See .typos.toml for ignores.
+  ["typos"] = Builtins.typos
+  // Starlark formatting and linting (mise: buildifier).
+  ["buildifier-format"] = Builtins.buildifier_format
+  ["buildifier-lint"] = Builtins.buildifier_lint
+}
+
+hooks {
+  // Port of the commitizen `commit-msg` hook: enforce conventional commits
+  // so releases can be derived from the commit history (see tag.yaml).
+  ["commit-msg"] {
+    steps {
+      ["conventional-commit"] = Builtins.check_conventional_commit
+    }
+  }
+}

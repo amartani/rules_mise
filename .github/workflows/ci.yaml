@@ -40,15 +40,16 @@ jobs:
             ${{ matrix.folder == '.' && 'common --config=ci ' || '' }}
             ${{ matrix.folder == '.' && !startsWith(matrix.bazel, '9.') && 'common --lockfile_mode=update' || '' }}
       - run: bazel test //...
-  pre-commit:
+  hk:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: pre-commit/action@v3.0.1
+      - uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
+      - run: mise exec -- hk check --all
   # For branch protection settings, this job provides a "stable" name that can be used to gate PR merges
   # on "all matrix jobs were successful".
   conclusion:
-    needs: [test, pre-commit]
+    needs: [test, hk]
     runs-on: ubuntu-latest
     if: always()
     permissions:

@@ -9,10 +9,11 @@ contributing immediately and skip the next step.
 ## Formatting
 
 Starlark files should be formatted by buildifier.
-We suggest using prek to automate this:
+We suggest using hk to automate this:
 
 ```shell
-prek install
+mise install
+hk install --mise
 ```
 
 Otherwise later tooling on CI will yell at you about formatting/linting violations.
