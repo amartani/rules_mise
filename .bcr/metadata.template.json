@@ -1,7 +1,7 @@
 {
-  "homepage": "https://github.com/rules_mise/rules_mise",
+  "homepage": "https://github.com/amartani/rules_mise",
   "maintainers": [],
-  "repository": ["github:rules_mise/rules_mise"],
+  "repository": ["github:amartani/rules_mise"],
   "versions": [],
   "yanked_versions": {}
 }
