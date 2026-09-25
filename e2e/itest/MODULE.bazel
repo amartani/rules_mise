@@ -1,0 +1,28 @@
+bazel_dep(name = "rules_mise", version = "0.0.0", dev_dependency = True)
+bazel_dep(name = "bazel_skylib", version = "1.9.0", dev_dependency = True)
+bazel_dep(name = "rules_python", version = "1.9.0", dev_dependency = True)
+bazel_dep(name = "rules_itest", version = "0.0.61", dev_dependency = True)
+
+python = use_extension("@rules_python//python/extensions:python.bzl", "python")
+python.defaults(python_version = "3.14")
+python.toolchain(python_version = "3.14")
+
+pip = use_extension("@rules_python//python/extensions:pip.bzl", "pip")
+pip.parse(
+    hub_name = "pypi",
+    python_version = "3.14",
+    requirements_lock = "//:requirements.txt",
+)
+use_repo(pip, "pypi")
+
+local_path_override(
+    module_name = "rules_mise",
+    path = "../..",
+)
+
+mise = use_extension("@rules_mise//mise:extensions.bzl", "mise")
+mise.hub(lockfile = "//:mise.lock")
+use_repo(mise, "mise")
+
+# Register toolchains from the default mise hub
+register_toolchains("@mise//toolchains:all")
