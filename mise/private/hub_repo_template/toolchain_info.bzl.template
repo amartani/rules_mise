@@ -7,7 +7,6 @@ def _toolchain_info_impl(ctx):
             cpu = ctx.attr.cpu,
             os = ctx.attr.os,
             ext = ctx.attr.ext,
-            files = ctx.files.files,
         ),
     ]
 
@@ -17,7 +16,6 @@ toolchain_info = rule(
         cpu = attr.string(mandatory = True, values = ["arm64", "x86_64"]),
         os = attr.string(mandatory = True, values = ["linux", "macos", "windows"]),
         ext = attr.string(mandatory = True, values = ["", ".exe"]),
-        files = attr.label_list(allow_files = True),
     ),
     implementation = _toolchain_info_impl,
 )
@@ -30,30 +28,29 @@ def _extension(os):
 def declare_toolchain(name, os, cpu, toolchain_type, hub_name):
     ext = _extension(os)
     toolchain_info(
-        name = "{name}_{os}_{cpu}_toolchain_info".format(name=name, os=os, cpu=cpu),
-        executable = "@@{hub_name}.{name}.{os}_{cpu}//tools/{name}:{os}_{cpu}_executable{ext}".format(name=name, os=os, cpu=cpu, hub_name=hub_name, ext=ext),
+        name = "{name}_{os}_{cpu}_toolchain_info".format(name = name, os = os, cpu = cpu),
+        executable = "@@{hub_name}.{name}.{os}_{cpu}//tools/{name}:{os}_{cpu}_executable{ext}".format(name = name, os = os, cpu = cpu, hub_name = hub_name, ext = ext),
         os = os,
         cpu = cpu,
         ext = ext,
-        files = ["@@{hub_name}.{name}.{os}_{cpu}//tools/{name}:pkgx_files".format(name=name, os=os, cpu=cpu, hub_name=hub_name)],
     )
 
     native.toolchain(
-        name = "{name}_{os}_{cpu}_exec".format(name=name, os=os, cpu=cpu),
-        toolchain = ":{name}_{os}_{cpu}_toolchain_info".format(name=name, os=os, cpu=cpu),
+        name = "{name}_{os}_{cpu}_exec".format(name = name, os = os, cpu = cpu),
+        toolchain = ":{name}_{os}_{cpu}_toolchain_info".format(name = name, os = os, cpu = cpu),
         toolchain_type = toolchain_type,
         exec_compatible_with = [
-            "@platforms//cpu:{cpu}".format(cpu=cpu),
-            "@platforms//os:{os}".format(os=os),
+            "@platforms//cpu:{cpu}".format(cpu = cpu),
+            "@platforms//os:{os}".format(os = os),
         ],
     )
 
     native.toolchain(
-        name = "{name}_{os}_{cpu}_target".format(name=name, os=os, cpu=cpu),
-        toolchain = ":{name}_{os}_{cpu}_toolchain_info".format(name=name, os=os, cpu=cpu),
+        name = "{name}_{os}_{cpu}_target".format(name = name, os = os, cpu = cpu),
+        toolchain = ":{name}_{os}_{cpu}_toolchain_info".format(name = name, os = os, cpu = cpu),
         toolchain_type = toolchain_type,
         target_compatible_with = [
-            "@platforms//cpu:{cpu}".format(cpu=cpu),
-            "@platforms//os:{os}".format(os=os),
+            "@platforms//cpu:{cpu}".format(cpu = cpu),
+            "@platforms//os:{os}".format(os = os),
         ],
     )

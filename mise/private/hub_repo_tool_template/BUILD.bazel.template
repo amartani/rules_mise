@@ -13,7 +13,7 @@ tool(
     name = "tool",
     visibility = ["//visibility:public"],
 )
-{extra_tools}
+
 cwd(
     name = "cwd",
     tool = ":tool",

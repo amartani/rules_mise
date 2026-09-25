@@ -22,8 +22,6 @@ jobs:
         folder:
           - .
           - e2e/backends
-          - e2e/pkgx
-          - e2e/itest
     defaults:
       run:
         working-directory: ${{ matrix.folder }}

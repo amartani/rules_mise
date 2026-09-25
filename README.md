@@ -4,8 +4,6 @@ A Bazel module that exposes tools installed via [mise](https://mise.jdx.dev/) as
 It is an alternative to [rules_multitool](https://github.com/bazel-contrib/rules_multitool) that reuses your existing `mise.lock` instead of maintaining a separate lockfile.
 The same `mise.toml` / `mise.lock` drives both your local developer environment (`mise install`) and your Bazel toolchains, so tools don't have to run through Bazel to stay pinned to the same version — handy for linters and other dev tools you also run outside Bazel (see `e2e/smoke`, which uses `ruff` both ways).
 
-It also supports mise's `pkgx:` backend, which covers many tools that don't ship easily usable statically compiled binaries — e.g. PostgreSQL (`pkgx:postgresql.org`, see `e2e/pkgx`).
-
 ## Usage
 
 In your `MODULE.bazel`:
@@ -24,7 +22,6 @@ Then depend on tools through the toolchain-resolved targets:
 @mise//tools/ruff:tool            -> ruff for the current platform
 @mise//tools/ruff:cwd             -> wrapper running ruff from the current directory
 @mise//tools/ruff:workspace_root  -> wrapper running ruff from $BUILD_WORKSPACE_DIRECTORY
-@mise//tools/pkgx_postgresql.org:psql  -> pkgx-provided binary via the dispatcher
 ```
 
 Only lockfile entries with a downloadable `url` on a supported
@@ -38,19 +35,17 @@ be verified and the tool repo is marked non-reproducible.
 ## Supported mise backends
 
 `rules_mise` exposes tools whose lockfile entries contain direct download
-URLs. That covers these backends (all exercised in `e2e/backends`, except
-`pkgx` which is exercised in `e2e/pkgx`):
+URLs. These backends are exercised in `e2e/backends`:
 
-| Backend    | Supported          | Notes                                                               |
-| ---------- | ------------------ | ------------------------------------------------------------------- |
-| `aqua`     | yes                | includes registry shorthand entries such as `ruff = "latest"`       |
-| `core`     | yes                | e.g. `bun`, `node`                                                  |
-| `forgejo`  | yes                | self-hosted instances via the `api_url` tool option                 |
-| `github`   | yes                |                                                                     |
-| `gitlab`   | yes                |                                                                     |
-| `http`     | yes                | records no checksums: downloads are unverified and non-reproducible |
-| `packslip` | yes                |                                                                     |
-| `pkgx`     | yes (experimental) | needs `[settings] experimental = true`, see `e2e/pkgx`              |
+| Backend    | Supported | Notes                                                               |
+| ---------- | --------- | ------------------------------------------------------------------- |
+| `aqua`     | yes       | includes registry shorthand entries such as `ruff = "latest"`       |
+| `core`     | yes       | e.g. `bun`, `node`                                                  |
+| `forgejo`  | yes       | self-hosted instances via the `api_url` tool option                 |
+| `github`   | yes       |                                                                     |
+| `gitlab`   | yes       |                                                                     |
+| `http`     | yes       | records no checksums: downloads are unverified and non-reproducible |
+| `packslip` | yes       |                                                                     |
 
 These backends record no usable URLs in `mise.lock` (they install via a
 language runtime, plugin scripts, or install-time API resolution), so

@@ -28,8 +28,7 @@ common --lockfile_mode=error
 build:buildbuddy --bes_results_url=https://app.buildbuddy.io/invocation/ --bes_backend=grpcs://remote.buildbuddy.io
 # Run all remote actions in the Ubuntu 24.04 image from
 # buildbuddy-io/buildbuddy-toolchain (UBUNTU24_04_IMAGE). The default
-# execution platform is Ubuntu 16.04, which is too old for some of our
-# toolchains (e.g. pkgx bottles need glibc >= 2.25).
+# execution platform is Ubuntu 16.04, which is too old for some toolchains.
 common:buildbuddy --config=ci --remote_executor=grpcs://remote.buildbuddy.io --remote_default_exec_properties=container-image=docker://gcr.io/flame-public/rbe-ubuntu24-04:latest
 
 # Load any settings specific to the current user.
