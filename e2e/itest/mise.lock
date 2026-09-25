@@ -926,3 +926,71 @@ conda_deps = [
     "liblzma-5.8.3-hfd05255_1",
     "ca-certificates-2026.7.22-h4c7d964_0",
 ]
+
+[[tools."conda:valkey-server"]]
+version = "9.1.2"
+backend = "conda:valkey-server"
+specifiers = ["latest"]
+
+[tools."conda:valkey-server".options]
+channel = "conda-forge"
+
+[tools."conda:valkey-server"."platforms.linux-arm64"]
+checksum = "sha256:f80435cb930e1faac281f2bb41e2994e47ce8e028e5603d554d9aef077a00c5d"
+url = "https://conda.anaconda.org/conda-forge/linux-aarch64/valkey-server-9.1.2-h11cc495_0.conda"
+conda_deps = [
+    "libgcc-16.2.0-h205dda4_7",
+    "openssl-3.6.4-he6ad1d5_0",
+    "_openmp_mutex-4.5-20_gnu",
+    "libgomp-16.2.0-h8acb6b2_7",
+    "ca-certificates-2026.7.22-hbd8a1cb_0",
+]
+
+[tools."conda:valkey-server"."platforms.linux-arm64-musl"]
+checksum = "sha256:f80435cb930e1faac281f2bb41e2994e47ce8e028e5603d554d9aef077a00c5d"
+url = "https://conda.anaconda.org/conda-forge/linux-aarch64/valkey-server-9.1.2-h11cc495_0.conda"
+conda_deps = [
+    "libgcc-16.2.0-h205dda4_7",
+    "openssl-3.6.4-he6ad1d5_0",
+    "_openmp_mutex-4.5-20_gnu",
+    "libgomp-16.2.0-h8acb6b2_7",
+    "ca-certificates-2026.7.22-hbd8a1cb_0",
+]
+
+[tools."conda:valkey-server"."platforms.linux-x64"]
+checksum = "sha256:d713d97b1a6a21004e8e35beea1eaff659473abe01b26703a57678538570fed9"
+url = "https://conda.anaconda.org/conda-forge/linux-64/valkey-server-9.1.2-haf69b54_0.conda"
+conda_deps = [
+    "libgcc-16.2.0-ha9f2e26_7",
+    "openssl-3.6.4-h781a0a9_0",
+    "_openmp_mutex-4.5-20_gnu",
+    "libgomp-16.2.0-he0feb66_7",
+    "ca-certificates-2026.7.22-hbd8a1cb_0",
+]
+
+[tools."conda:valkey-server"."platforms.linux-x64-musl"]
+checksum = "sha256:d713d97b1a6a21004e8e35beea1eaff659473abe01b26703a57678538570fed9"
+url = "https://conda.anaconda.org/conda-forge/linux-64/valkey-server-9.1.2-haf69b54_0.conda"
+conda_deps = [
+    "libgcc-16.2.0-ha9f2e26_7",
+    "openssl-3.6.4-h781a0a9_0",
+    "_openmp_mutex-4.5-20_gnu",
+    "libgomp-16.2.0-he0feb66_7",
+    "ca-certificates-2026.7.22-hbd8a1cb_0",
+]
+
+[tools."conda:valkey-server"."platforms.macos-arm64"]
+checksum = "sha256:afab0f57fe27bdebcd93ff6664d51b7947b8db203efb4e2c7563ad6443c06b91"
+url = "https://conda.anaconda.org/conda-forge/osx-arm64/valkey-server-9.1.2-h5d6d5d7_0.conda"
+conda_deps = [
+    "openssl-3.6.4-h55eecbc_0",
+    "ca-certificates-2026.7.22-hbd8a1cb_0",
+]
+
+[tools."conda:valkey-server"."platforms.macos-x64"]
+checksum = "sha256:2e8f82122fcd02a8d575fcc82e1795cd7a6a3d9e20721ed8d6636d80a2dc3ec4"
+url = "https://conda.anaconda.org/conda-forge/osx-64/valkey-server-9.1.2-h7063364_0.conda"
+conda_deps = [
+    "openssl-3.6.4-h332eb6d_0",
+    "ca-certificates-2026.7.22-hbd8a1cb_0",
+]

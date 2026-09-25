@@ -29,11 +29,35 @@ itest_service(
     visibility = ["//visibility:public"],
 )
 
+itest_service(
+    name = "valkey",
+    args = [
+        "valkey-server",
+        "--port",
+        "$${PORT}",
+        "--save",
+        "",
+        "--appendonly",
+        "no",
+    ],
+    autoassign_port = True,
+    exe = "@mise//tools/conda_valkey-server:tool",
+    health_check = "@mise//tools/conda_valkey-server:tool",
+    health_check_args = [
+        "valkey-cli",
+        "-p",
+        "$${PORT}",
+        "ping",
+    ],
+    visibility = ["//visibility:public"],
+)
+
 py_test(
     name = "_test_psql_no_services",
     srcs = ["test_psql_itest.py"],
     data = [
         "@mise//tools/conda_postgresql:tool",
+        "@mise//tools/conda_valkey-server:tool",
     ],
     main = "test_psql_itest.py",
     tags = ["manual"],
@@ -48,9 +72,12 @@ service_test(
     env = {
         # buildifier: disable=canonical-repository
         "PGPORT": "$${@@//:postgres}",
+        # buildifier: disable=canonical-repository
+        "VALKEYPORT": "$${@@//:valkey}",
     },
     services = [
         ":postgres",
+        ":valkey",
     ],
     test = ":_test_psql_no_services",
 )

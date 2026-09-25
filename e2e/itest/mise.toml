@@ -1,2 +1,3 @@
 [tools]
 "conda:postgresql" = "18.4"
+"conda:valkey-server" = "latest"
