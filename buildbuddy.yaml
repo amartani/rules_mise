@@ -29,3 +29,13 @@ actions:
           - "*"
     steps:
       - run: "cd e2e/backends && bazel test --config=buildbuddy //..."
+  - name: buildbuddy e2e/conda
+    triggers:
+      push:
+        branches:
+          - "main"
+      pull_request:
+        branches:
+          - "*"
+    steps:
+      - run: "cd e2e/conda && bazel test --config=buildbuddy //..."

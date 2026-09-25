@@ -21,6 +21,51 @@ def _feature_sensitive_args(binary):
 def _extension(os):
     return ".exe" if os == "windows" else ""
 
+def _normalize_rel(path):
+    """Lexically normalizes a relative path (resolves `.` and `..`)."""
+    parts = []
+    for part in path.split("/"):
+        if part == "" or part == ".":
+            continue
+        elif part == "..":
+            if parts:
+                parts.pop()
+        else:
+            parts.append(part)
+    return "/".join(parts)
+
+def _drop_cyclic_links(links):
+    """Returns the subset of symlinks that must be dropped from the filegroup.
+
+    `links` maps package-relative link paths to package-relative targets
+    (absolute targets cannot cycle within the repo and are excluded upfront).
+    A link is dropped when following it reaches a cycle: neither Bazel's
+    glob nor runfiles tree creation can traverse those, so including them
+    fails the build. Cyclic links are untraversable garbage for any
+    tree-walking tool; everything else keeps working.
+    """
+    dropped = {}
+    changed = True
+    for _ in range(len(links) + 1):
+        if not changed:
+            break
+        changed = False
+        for start in links:
+            if start in dropped:
+                continue
+            seen = {}
+            node = start
+            for _ in range(len(links) + 1):
+                if node in dropped or node in seen:
+                    dropped[start] = True
+                    changed = True
+                    break
+                if node not in links:
+                    break
+                seen[node] = True
+                node = links[node]
+    return dropped
+
 def _list_files(rctx, root):
     """Returns the sorted list of files under `root`, portably across OSes.
 
@@ -67,6 +112,206 @@ def _match_rank(basename, tool_patterns, ext):
             return (2, i)
     return None
 
+def _download_extract_conda(rctx, tool_name, binary, conda):
+    """Installs a conda tool closure: main package plus transitive dependencies.
+
+    Mirrors `mise install` from a lockfile: every package is extracted into the
+    shared `conda-prefix/` layout and a dispatcher script sets the conda
+    runtime environment (`CONDA_PREFIX`, `PATH`, activation scripts) before
+    exec'ing the requested binary, selected via argv[0] or via the first
+    argument (so a single `:tool` target can run any binary in the prefix).
+
+    `.conda` packages are zipped `tar.zst` archives: the outer zip is extracted
+    with Bazel's built-in zip support, then the inner `pkg-*.tar.zst` with
+    Bazel's built-in `tar.zst` support (available in Bazel 8+). `.tar.bz2`
+    packages (old conda format) are extracted directly. Prefix-placeholder
+    replacement is skipped: postgres binaries are relocatable via `$ORIGIN`
+    RPATH and locate their `share/` files relative to the binary.
+    """
+    if binary["os"] == "windows":
+        fail("conda tool {tool}: Windows is not supported yet".format(tool = tool_name))
+
+    os_cpu = "{os}_{cpu}".format(os = binary["os"], cpu = binary["cpu"])
+    dispatcher = "tools/{tool_name}/{os_cpu}_executable".format(tool_name = tool_name, os_cpu = os_cpu)
+    fs_root = "tools/{tool_name}/conda-prefix".format(tool_name = tool_name)
+
+    reproducible = True
+    for pkg in conda["packages"]:
+        url = pkg["url"]
+        checksum = pkg["checksum"]
+        basename = pkg["basename"]
+        if not url:
+            fail("conda tool {tool}: missing url for package {basename}".format(
+                tool = tool_name,
+                basename = basename,
+            ))
+        kwargs = {}
+        if checksum:
+            kwargs["sha256"] = checksum
+        else:
+            reproducible = False
+        kwargs.update(_feature_sensitive_args(binary))
+        lower_url = url.lower()
+        if lower_url.endswith(".conda"):
+            zip_path = "tools/{tool_name}/downloads/{basename}.zip".format(
+                tool_name = tool_name,
+                basename = basename,
+            )
+            rctx.download(
+                url = url,
+                output = zip_path,
+                auth = _get_auth(rctx, [url], binary.get("auth_patterns", {})),
+                **kwargs
+            )
+            outer_dir = "tools/{tool_name}/outer/{basename}".format(
+                tool_name = tool_name,
+                basename = basename,
+            )
+            rctx.extract(zip_path, output = outer_dir)
+            inner = "{outer}/pkg-{basename}.tar.zst".format(
+                outer = outer_dir,
+                basename = basename,
+            )
+            if not rctx.path(inner).exists:
+                fail("conda tool {tool}: cannot find pkg archive {inner} in {url}".format(
+                    tool = tool_name,
+                    inner = inner,
+                    url = url,
+                ))
+            rctx.extract(inner, output = fs_root)
+        elif lower_url.endswith(".tar.bz2"):
+            rctx.download_and_extract(
+                url = url,
+                output = fs_root,
+                auth = _get_auth(rctx, [url], binary.get("auth_patterns", {})),
+                **kwargs
+            )
+
+            # Old-format packages ship an `info/` directory which must not
+            # pollute the shared prefix (and would collide across packages).
+            rctx.execute(["rm", "-rf", fs_root + "/info"])
+        else:
+            fail("conda tool {tool}: unsupported package URL {url} (expected .conda or .tar.bz2)".format(
+                tool = tool_name,
+                url = url,
+            ))
+
+    tool_runfiles_dir = "{repo}/tools/{tool}".format(repo = rctx.name, tool = tool_name)
+    lines = [
+        "#!/usr/bin/env bash",
+        "_MISE_SOURCE=\"$0\"",
+        "while [ -L \"$_MISE_SOURCE\" ]; do",
+        "  _MISE_DIR=\"$(cd -P \"$(dirname \"$_MISE_SOURCE\")\" && pwd)\"",
+        "  _MISE_SOURCE=\"$(readlink \"$_MISE_SOURCE\")\"",
+        "  case \"$_MISE_SOURCE\" in",
+        "    /*) ;;",
+        "    *) _MISE_SOURCE=\"$_MISE_DIR/$_MISE_SOURCE\" ;;",
+        "  esac",
+        "done",
+        "SCRIPT_DIR=\"$(cd -P \"$(dirname \"$_MISE_SOURCE\")\" && pwd)\"",
+        "unset _MISE_SOURCE _MISE_DIR",
+        "if [ ! -d \"$SCRIPT_DIR/conda-prefix\" ]; then",
+        "  _MISE_ROOT=\"$SCRIPT_DIR\"",
+        "  while [ \"$_MISE_ROOT\" != \"/\" ] && [ \"$_MISE_ROOT\" != \".\" ]; do",
+        "    case \"$_MISE_ROOT\" in",
+        "      *.runfiles) break ;;",
+        "    esac",
+        "    _MISE_ROOT=\"$(dirname \"$_MISE_ROOT\")\"",
+        "  done",
+        "  if [ -d \"$_MISE_ROOT/{runfiles_dir}/conda-prefix\" ]; then".format(runfiles_dir = tool_runfiles_dir),
+        "    SCRIPT_DIR=\"$_MISE_ROOT/{runfiles_dir}\"".format(runfiles_dir = tool_runfiles_dir),
+        "  fi",
+        "  unset _MISE_ROOT",
+        "fi",
+        "export CONDA_PREFIX=\"$SCRIPT_DIR/conda-prefix\"",
+        "export CONDA_DEFAULT_ENV=\"$CONDA_PREFIX\"",
+        "export CONDA_SHLVL=1",
+        "export PATH=\"$CONDA_PREFIX/bin:$CONDA_PREFIX/sbin${PATH:+:$PATH}\"",
+        "for _mise_conda_script in \"$CONDA_PREFIX\"/etc/conda/activate.d/*.sh; do",
+        "  if [ -f \"$_mise_conda_script\" ]; then",
+        "    . \"$_mise_conda_script\" || exit $?",
+        "  fi",
+        "done",
+        "unset _mise_conda_script",
+        "_MISE_BIN=\"$(basename \"$0\")\"",
+        "if [ \"$_MISE_BIN\" != \"tool\" ] && [ -x \"$CONDA_PREFIX/bin/$_MISE_BIN\" ]; then",
+        "  exec \"$CONDA_PREFIX/bin/$_MISE_BIN\" \"$@\"",
+        "fi",
+        "if [ \"$_MISE_BIN\" != \"tool\" ] && [ -x \"$CONDA_PREFIX/sbin/$_MISE_BIN\" ]; then",
+        "  exec \"$CONDA_PREFIX/sbin/$_MISE_BIN\" \"$@\"",
+        "fi",
+        "unset _MISE_BIN",
+        "if [ $# -gt 0 ]; then",
+        "  exec \"$@\"",
+        "fi",
+        "echo \"conda tool wrapper: no command given\" >&2",
+        "exit 1",
+    ]
+    rctx.file(dispatcher, "\n".join(lines) + "\n", executable = True)
+
+    # List extracted files explicitly instead of globbing, and only files and
+    # symlinks (never directories, which the runfiles tree would expand).
+    # Bottles may contain symlink cycles; those links are dropped via
+    # _drop_cyclic_links since no tree-walking tool can traverse them.
+    # POSIX-only tooling (find/sh/readlink) so this also runs on macOS.
+    listed = rctx.execute([
+        "sh",
+        "-c",
+        'find "$1" -mindepth 1 \\( -type f -o -type l \\) -exec sh -c \'for f do if [ -L "$f" ]; then printf "l %s -> %s\\n" "$f" "$(readlink "$f")"; else printf "f %s\\n" "$f"; fi; done\' _ {} +',
+        "_",
+        fs_root,
+    ])
+    if listed.return_code != 0:
+        fail("conda tool {tool}: cannot list {root}: {err}".format(
+            tool = tool_name,
+            root = fs_root,
+            err = listed.stderr,
+        ))
+
+    pkg_dir = "tools/{}/".format(tool_name)
+    files = []
+    links = {}
+    dropped = {}
+    for line in listed.stdout.splitlines():
+        if line.startswith("l "):
+            path, _, target = line[2:].rpartition(" -> ")
+            path = path[len(pkg_dir):]
+            if not target.startswith("/"):
+                base = path.rpartition("/")[0]
+                target = _normalize_rel(base + "/" + target if base else target)
+                if path == target or path.startswith(target + "/"):
+                    dropped[path] = True
+                else:
+                    links[path] = target
+        elif line.startswith("f "):
+            files.append(line[2:][len(pkg_dir):])
+    for link in _drop_cyclic_links(links):
+        dropped[link] = True
+    srcs = "\n".join([
+        '        "{path}",'.format(
+            path = path.replace("\\", "\\\\").replace('"', '\\"'),
+        )
+        for path in sorted(files + [link for link in links if link not in dropped])
+    ])
+
+    rctx.file("tools/{}/BUILD.bazel".format(tool_name), """# Generated by mise
+exports_files(["{target_filename}"])
+
+filegroup(
+    name = "conda_files",
+    srcs = [
+{srcs}
+        "{target_filename}",
+    ],
+    visibility = ["//visibility:public"],
+)
+""".format(
+        target_filename = "{os_cpu}_executable".format(os_cpu = os_cpu),
+        srcs = srcs,
+    ))
+
+    return reproducible
+
 def _download_extract_tool(rctx, tool_name, binary):
     # Entries without a checksum (e.g. `http:` backends) cannot be verified;
     # Bazel allows downloads without `sha256`, but the repo is then
@@ -76,6 +321,8 @@ def _download_extract_tool(rctx, tool_name, binary):
         checksum_kwargs["sha256"] = binary["checksum"]
     checksum_kwargs.update(_feature_sensitive_args(binary))
     reproducible = bool(binary["checksum"])
+    if "conda" in binary:
+        return _download_extract_conda(rctx, tool_name, binary, binary["conda"])
 
     os_cpu = "{os}_{cpu}".format(os = binary["os"], cpu = binary["cpu"])
     ext = _extension(binary["os"])
@@ -191,6 +438,12 @@ def _download_extract_tool(rctx, tool_name, binary):
     # Generate the BUILD file for the tool repo
     rctx.file("tools/{}/BUILD.bazel".format(tool_name), """# Generated by mise
 exports_files(["{target_filename}"])
+
+filegroup(
+    name = "conda_files",
+    srcs = [],
+    visibility = ["//visibility:public"],
+)
 """.format(target_filename = target_filename))
 
     return reproducible

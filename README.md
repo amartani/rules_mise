@@ -4,6 +4,8 @@ A Bazel module that exposes tools installed via [mise](https://mise.jdx.dev/) as
 It is an alternative to [rules_multitool](https://github.com/bazel-contrib/rules_multitool) that reuses your existing `mise.lock` instead of maintaining a separate lockfile.
 The same `mise.toml` / `mise.lock` drives both your local developer environment (`mise install`) and your Bazel toolchains, so tools don't have to run through Bazel to stay pinned to the same version — handy for linters and other dev tools you also run outside Bazel (see `e2e/smoke`, which uses `ruff` both ways).
 
+It also supports mise's `conda:` backend, which covers many tools that don't ship easily usable statically compiled binaries — e.g. PostgreSQL (`conda:postgresql`, see `e2e/conda`).
+
 ## Usage
 
 In your `MODULE.bazel`:
@@ -22,6 +24,7 @@ Then depend on tools through the toolchain-resolved targets:
 @mise//tools/ruff:tool            -> ruff for the current platform
 @mise//tools/ruff:cwd             -> wrapper running ruff from the current directory
 @mise//tools/ruff:workspace_root  -> wrapper running ruff from $BUILD_WORKSPACE_DIRECTORY
+@mise//tools/conda_postgresql:tool -> conda wrapper dispatching to the prefix's bin/ via the first argument (e.g. `tool psql --version`)
 ```
 
 Only lockfile entries with a downloadable `url` on a supported
@@ -35,22 +38,24 @@ be verified and the tool repo is marked non-reproducible.
 ## Supported mise backends
 
 `rules_mise` exposes tools whose lockfile entries contain direct download
-URLs. These backends are exercised in `e2e/backends`:
+URLs. That covers these backends (all exercised in `e2e/backends`, except
+`conda` which is exercised in `e2e/conda`):
 
-| Backend    | Supported | Notes                                                               |
-| ---------- | --------- | ------------------------------------------------------------------- |
-| `aqua`     | yes       | includes registry shorthand entries such as `ruff = "latest"`       |
-| `core`     | yes       | e.g. `bun`, `node`                                                  |
-| `forgejo`  | yes       | self-hosted instances via the `api_url` tool option                 |
-| `github`   | yes       |                                                                     |
-| `gitlab`   | yes       |                                                                     |
-| `http`     | yes       | records no checksums: downloads are unverified and non-reproducible |
-| `packslip` | yes       |                                                                     |
+| Backend    | Supported          | Notes                                                               |
+| ---------- | ------------------ | ------------------------------------------------------------------- |
+| `aqua`     | yes                | includes registry shorthand entries such as `ruff = "latest"`       |
+| `conda`    | yes (experimental) | needs a conda-forge package, see `e2e/conda`                        |
+| `core`     | yes                | e.g. `bun`, `node`                                                  |
+| `forgejo`  | yes                | self-hosted instances via the `api_url` tool option                 |
+| `github`   | yes                |                                                                     |
+| `gitlab`   | yes                |                                                                     |
+| `http`     | yes                | records no checksums: downloads are unverified and non-reproducible |
+| `packslip` | yes                |                                                                     |
 
 These backends record no usable URLs in `mise.lock` (they install via a
 language runtime, plugin scripts, or install-time API resolution), so
 supporting them would require significant additional work and they are
-skipped with a warning: `asdf`, `cargo`, `conda`, `dotnet`, `gem`, `go`,
+skipped with a warning: `asdf`, `cargo`, `dotnet`, `gem`, `go`,
 `npm`, `pipx`, `s3`, `spm`, `ubi`, `vfox`. Single-file-compressed assets
 such as `taplo`'s `.gz` files (as opposed to `.tar.gz` archives) are also
 skipped.

@@ -22,6 +22,7 @@ jobs:
         folder:
           - .
           - e2e/backends
+          - e2e/conda
     defaults:
       run:
         working-directory: ${{ matrix.folder }}

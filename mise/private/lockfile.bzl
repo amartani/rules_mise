@@ -71,10 +71,55 @@ def _parse_mise_platform(platform):
         return _MISE_PLATFORM_TO_BAZEL[platform]
     return None
 
+def _conda_basename(url):
+    """Derives the conda package basename from its URL.
+
+    E.g. `.../postgresql-18.4-h3dddfe3_1.conda` -> `postgresql-18.4-h3dddfe3_1`,
+    `.../libntlm-1.4-hf897c2e_1002.tar.bz2` -> `libntlm-1.4-hf897c2e_1002`.
+    """
+    filename = url.rsplit("/", 1)[-1]
+    if filename.endswith(".conda"):
+        return filename[:-len(".conda")]
+    if filename.endswith(".tar.bz2"):
+        return filename[:-len(".tar.bz2")]
+    return filename
+
+def _conda_payload(tool_name, url, checksum, platform, platform_data, conda_packages):
+    """Builds the conda closure payload for one platform entry of a conda tool.
+
+    Mirrors `mise install` from a lockfile: the main package plus every
+    transitive dependency listed in `conda_deps`, with package info taken from
+    the shared `[conda-packages]` lockfile section (deps first, main last).
+    """
+    platform_pkgs = conda_packages.get(platform, {})
+    packages = []
+    for dep_id in platform_data.get("conda_deps", []):
+        info = platform_pkgs.get(dep_id, None)
+        if info == None:
+            fail("conda tool {tool}: dependency {dep} has no [conda-packages.{platform}] entry in the lockfile".format(
+                tool = tool_name,
+                dep = dep_id,
+                platform = platform,
+            ))
+        packages.append({
+            "basename": dep_id,
+            "url": info.get("url", ""),
+            "checksum": _strip_sha256(info.get("checksum", "")),
+        })
+    packages.append({
+        "basename": _conda_basename(url),
+        "url": url,
+        "checksum": checksum,
+    })
+    return {
+        "packages": packages,
+    }
+
 def _load(ctx, lockfiles):
     tools = {}
     for lockfile in lockfiles:
         parsed = toml.decode(ctx.read(lockfile))
+        conda_packages = parsed.get("conda-packages", {})
 
         tools_dict = parsed.get("tools", {})
         for tool_name, tool_data in tools_dict.items():
@@ -96,6 +141,8 @@ def _load(ctx, lockfiles):
                     version = entry_version
                 if not backend:
                     backend = entry_backend
+
+                is_conda = entry_backend.startswith("conda:")
 
                 for platform_key, platform_data in tool_entry.items():
                     if not platform_key.startswith("platforms."):
@@ -136,6 +183,15 @@ def _load(ctx, lockfiles):
                         "backend": entry_backend,
                         "hint": hint,
                     }
+                    if is_conda:
+                        binary["conda"] = _conda_payload(
+                            tool_name,
+                            url,
+                            checksum,
+                            platform_suffix,
+                            platform_data,
+                            conda_packages,
+                        )
                     binaries.append(binary)
 
             if binaries:
