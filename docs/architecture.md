@@ -71,7 +71,7 @@ The `_mise_hub` repository itself contains no binaries — it declares toolchain
 
 Tools resolve through the toolchain, so the same label picks the right binary per execution platform:
 
-```
+```text
 @mise//tools/ruff:tool                          -> ruff for the current platform
 @mise//tools/ruff:cwd                           -> wrapper running ruff with $PWD = Bazel's cwd
 @mise//tools/ruff:workspace_root                -> wrapper running ruff with $BUILD_WORKSPACE_DIRECTORY
@@ -83,7 +83,7 @@ Tools resolve through the toolchain, so the same label picks the right binary pe
 
 ## File Structure
 
-```
+```text
 mise/
 ├── BUILD.bazel              # bzl_library targets: extensions, hub, cwd, workspace_root
 ├── extensions.bzl           # module extension (hub tag -> bzlmod_hub)

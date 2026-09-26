@@ -16,7 +16,7 @@ bazel run //:gazelle                    # regenerate bzl_library deps after touc
 bazel mod tidy --lockfile_mode=refresh  # only way to update MODULE.bazel.lock (.bazelrc sets --lockfile_mode=error)
 
 mise install && hk install --mise  # one-time lint setup (CONTRIBUTING.md)
-mise exec -- hk check --all        # what CI's hk job runs (buildifier, prettier, taplo, yamlfmt, typos)
+mise exec -- hk check --all        # what CI's hk job runs (buildifier, rumdl, taplo, yamlfmt, typos)
 ```
 
 ## Architecture

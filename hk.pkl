@@ -25,10 +25,10 @@ steps {
   ["check-toml"] = Builtins.taplo
   ["toml-format"] = Builtins.taplo_format
   // YAML formatting (mise: yamlfmt). YAML syntax is validated implicitly
-  // by yamlfmt and prettier, which both fail on invalid files.
+  // by yamlfmt, which fails on invalid files.
   ["yamlfmt"] = Builtins.yamlfmt
-  // General formatting (mise: node, prettier).
-  ["prettier"] = Builtins.prettier
+  // Markdown formatting (mise: rumdl).
+  ["rumdl-format"] = Builtins.rumdl_format
   // Spell checking (mise: typos). See .typos.toml for ignores.
   ["typos"] = Builtins.typos
   // Starlark formatting and linting (mise: buildifier).

@@ -47,12 +47,12 @@ This means that any usage of `@rules_mise` on your system will point to this fol
 
 Releases are automated on a cron trigger.
 The new version is determined automatically from the commit history, assuming the commit messages follow conventions, using
-https://github.com/marketplace/actions/conventional-commits-versioner-action.
+<https://github.com/marketplace/actions/conventional-commits-versioner-action>.
 If you do nothing, eventually the newest commits will be released automatically as a patch or minor release.
 This automation is defined in .github/workflows/tag.yaml.
 
 Rather than wait for the cron event, you can trigger manually. Navigate to
-https://github.com/rules_mise/rules_mise/actions/workflows/tag.yaml
+<https://github.com/rules_mise/rules_mise/actions/workflows/tag.yaml>
 and press the "Run workflow" button.
 
 If you need control over the next release version, for example when making a release candidate for a new major,

@@ -20,7 +20,7 @@ register_toolchains("@mise//toolchains:all")
 
 Then depend on tools through the toolchain-resolved targets:
 
-```
+```text
 @mise//tools/ruff:tool            -> ruff for the current platform
 @mise//tools/ruff:cwd             -> wrapper running ruff from the current directory
 @mise//tools/ruff:workspace_root  -> wrapper running ruff from $BUILD_WORKSPACE_DIRECTORY
