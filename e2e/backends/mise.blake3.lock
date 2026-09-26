@@ -1,0 +1,35 @@
+# NOT @generated - hand-maintained regression fixture, do NOT let
+# `mise lock` overwrite this file.
+#
+# `mise exec` may record checksums with an algorithm other than SHA-256
+# (e.g. `blake3:`). Bazel's `rctx.download(sha256 = ...)` only accepts
+# SHA-256, so rules_mise must ignore such checksums and download those
+# entries unverified instead of hard-failing (see `_strip_sha256` in
+# mise/private/lockfile.bzl). This fixture pins that behavior: every entry
+# below carries a `blake3:` checksum for the real yq 4.53.6 binaries (the
+# same URLs as the checksum-less `http:yq` tool), so the backends test fails
+# if a non-SHA-256 checksum ever reaches Bazel's `sha256` attribute again.
+
+[[tools."http:yq_blake3"]]
+version = "4.53.6"
+backend = "http:yq_blake3"
+
+[tools."http:yq_blake3"."platforms.linux-arm64"]
+checksum = "blake3:d7b6b59c6c5b1bd92685ebd00eb4e71ee744e1e7ce63f012f3b9add83c043c1c"
+url = "https://github.com/mikefarah/yq/releases/download/v4.53.6/yq_linux_arm64"
+
+[tools."http:yq_blake3"."platforms.linux-x64"]
+checksum = "blake3:2b42d2333b1c0672c042f1158b1b690410fcbfe253740295fd02f3d9a4041060"
+url = "https://github.com/mikefarah/yq/releases/download/v4.53.6/yq_linux_amd64"
+
+[tools."http:yq_blake3"."platforms.macos-arm64"]
+checksum = "blake3:c09e91dbb6cfe206bf232b329a248b1136fce1de72826e32e155343c2fa39a42"
+url = "https://github.com/mikefarah/yq/releases/download/v4.53.6/yq_darwin_arm64"
+
+[tools."http:yq_blake3"."platforms.macos-x64"]
+checksum = "blake3:727491c8dcf75462165ff7eaea2323ff8367e9c969a18577aa22acd31b7ab457"
+url = "https://github.com/mikefarah/yq/releases/download/v4.53.6/yq_darwin_amd64"
+
+[tools."http:yq_blake3"."platforms.windows-x64"]
+checksum = "blake3:d50b493abf523421aa1dd4b1776eed6aac3a5192068decc5e3c7f3bad012605b"
+url = "https://github.com/mikefarah/yq/releases/download/v4.53.6/yq_windows_amd64.exe"

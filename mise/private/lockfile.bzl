@@ -44,6 +44,11 @@ def _exe_hint(tool_name):
 def _strip_sha256(checksum):
     if checksum.startswith("sha256:"):
         return checksum[len("sha256:"):]
+    if ":" in checksum:
+        # Bazel only verifies SHA-256. Other algorithms recorded by mise
+        # (e.g. `blake3:`) cannot be passed to `rctx.download(sha256 = ...)`
+        # and are treated as unverified, like entries with no checksum.
+        return ""
     return checksum
 
 def _is_archive(url):

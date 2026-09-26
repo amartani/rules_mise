@@ -3,7 +3,8 @@
 Each entry maps the runfiles path of a `@mise//tools/...:tool` target to a
 substring expected in its `--version` output. This exercises the
 backend-specific lockfile shapes (plain `aqua:`/`core:` registry entries,
-explicit `backend:` prefixes, `http:` URLs without checksums, ...).
+explicit `backend:` prefixes, `http:` URLs without checksums, `blake3:`
+checksums that must be ignored as unverifiable, ...).
 """
 
 import subprocess
@@ -21,6 +22,7 @@ TOOLS = [
     ("mise/tools/aqua_mikefarah_yq/tool", "yq"),
     ("mise/tools/github_mikefarah_yq/tool", "yq"),
     ("mise/tools/http_yq/tool", "yq"),
+    ("mise/tools/http_yq_blake3/tool", "yq"),
     ("mise/tools/gitlab_gitlab-org_release-cli/tool", "release-cli"),
     ("mise/tools/forgejo_gitea_tea/tool", None),
     ("mise/tools/packslip_github.com_jdx_hk/tool", "hk"),

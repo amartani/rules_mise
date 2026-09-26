@@ -21,6 +21,10 @@ local_path_override(
 
 mise = use_extension("@rules_mise//mise:extensions.bzl", "mise")
 mise.hub(lockfile = "//:mise.lock")
+# Hand-maintained regression fixture (NOT @generated, so `mise lock` never
+# overwrites it): every entry carries a `blake3:` checksum, which rules_mise
+# must ignore and download unverified instead of rejecting as invalid SHA-256.
+mise.hub(lockfile = "//:mise.blake3.lock")
 use_repo(mise, "mise")
 
 # Register toolchains from the default mise hub
