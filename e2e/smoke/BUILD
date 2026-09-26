@@ -37,5 +37,5 @@ genrule(
         "@mise//tools/ruff:tool",
     ],
     outs = ["ruff_output.txt"],
-    cmd = "$(location @mise//tools/ruff:tool) check $(location :test_sample.py) > $@ 2>&1 || true",
+    cmd = "$(execpath @mise//tools/ruff:tool) check $(execpath :test_sample.py) > $@ 2>&1 || true",
 )
