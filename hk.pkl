@@ -27,7 +27,8 @@ steps {
   // YAML formatting (mise: yamlfmt). YAML syntax is validated implicitly
   // by yamlfmt, which fails on invalid files.
   ["yamlfmt"] = Builtins.yamlfmt
-  // Markdown formatting (mise: rumdl).
+  // Markdown linting and formatting (mise: rumdl).
+  ["rumdl"] = Builtins.rumdl
   ["rumdl-format"] = Builtins.rumdl_format
   // Spell checking (mise: typos). See .typos.toml for ignores.
   ["typos"] = Builtins.typos

@@ -2,7 +2,8 @@
 
 ## Using devcontainers
 
-If you are using [devcontainers](https://code.visualstudio.com/docs/devcontainers/containers)
+If you are using
+[devcontainers](https://code.visualstudio.com/docs/devcontainers/containers)
 and/or [codespaces](https://github.com/features/codespaces) then you can start
 contributing immediately and skip the next step.
 
@@ -16,7 +17,8 @@ mise install
 hk install --mise
 ```
 
-Otherwise later tooling on CI will yell at you about formatting/linting violations.
+Otherwise later tooling on CI will yell at you about formatting/linting
+violations.
 
 ## Updating BUILD files
 
@@ -41,22 +43,26 @@ local_path_override(
 )
 ```
 
-This means that any usage of `@rules_mise` on your system will point to this folder.
+This means that any usage of `@rules_mise` on your system will point to this
+folder.
 
 ## Releasing
 
-Releases are automated on a cron trigger.
-The new version is determined automatically from the commit history, assuming the commit messages follow conventions, using
+Releases are automated on a cron trigger. The new version is determined
+automatically from the commit history, assuming the commit messages follow
+conventions, using
 <https://github.com/marketplace/actions/conventional-commits-versioner-action>.
-If you do nothing, eventually the newest commits will be released automatically as a patch or minor release.
-This automation is defined in .github/workflows/tag.yaml.
+If you do nothing, eventually the newest commits will be released automatically
+as a patch or minor release. This automation is defined in
+.github/workflows/tag.yaml.
 
 Rather than wait for the cron event, you can trigger manually. Navigate to
 <https://github.com/rules_mise/rules_mise/actions/workflows/tag.yaml>
 and press the "Run workflow" button.
 
-If you need control over the next release version, for example when making a release candidate for a new major,
-then: tag the repo and push the tag, for example
+If you need control over the next release version, for example when making a
+release candidate for a new major, then: tag the repo and push the tag, for
+example
 
 ```sh
 % git fetch
