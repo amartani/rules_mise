@@ -115,6 +115,22 @@ def _conda_payload(tool_name, url, checksum, platform, platform_data, conda_pack
         "packages": packages,
     }
 
+def _tool_key(tool_name, version, multi_version, index):
+    """Returns the Bazel tool key for one version group of a lockfile tool.
+
+    A tool requested at a single version keeps the legacy `_clean(tool_name)`
+    key so existing labels are unaffected. When a tool is requested at
+    multiple versions (`"conda:postgresql" = ["17.7", "18.4"]`), each version
+    becomes its own tool keyed by `_clean(tool_name + "@" + version)` (e.g.
+    `conda_postgresql_17.7`), reusing the `_clean` sanitizing. Entries
+    without a version fall back to a positional suffix.
+    """
+    if not multi_version:
+        return _clean(tool_name)
+    if version:
+        return _clean(tool_name + "@" + version)
+    return "{clean}_{n}".format(clean = _clean(tool_name), n = index + 1)
+
 def _load(ctx, lockfiles):
     tools = {}
     for lockfile in lockfiles:
@@ -128,96 +144,128 @@ def _load(ctx, lockfiles):
             else:
                 tool_entries = [tool_data]
 
-            binaries = []
-            version = ""
-            backend = ""
-            hint = _exe_hint(tool_name)
-            unverified = False
-
+            # A tool requested at multiple versions is recorded as one list
+            # entry per version. Group entries by version so each version
+            # becomes its own Bazel tool: merging them would emit duplicate
+            # (os, cpu) binaries under a single tool name, and the hub cannot
+            # create two repos with the same name. Entries sharing a version
+            # (e.g. distribution-specific duplicates) stay merged, preserving
+            # the previous behavior for them.
+            versions = []
+            grouped = {}
             for tool_entry in tool_entries:
                 entry_version = tool_entry.get("version", "")
-                entry_backend = tool_entry.get("backend", "")
-                if not version:
-                    version = entry_version
-                if not backend:
-                    backend = entry_backend
+                if entry_version not in grouped:
+                    grouped[entry_version] = []
+                    versions.append(entry_version)
+                grouped[entry_version].append(tool_entry)
+            multi_version = len(versions) > 1
 
-                is_conda = entry_backend.startswith("conda:")
+            for index, entry_version in enumerate(versions):
+                version_entries = grouped[entry_version]
+                binaries = []
+                version = ""
+                backend = ""
+                hint = _exe_hint(tool_name)
+                unverified = False
 
-                for platform_key, platform_data in tool_entry.items():
-                    if not platform_key.startswith("platforms."):
-                        continue
+                for tool_entry in version_entries:
+                    entry_backend = tool_entry.get("backend", "")
+                    if not version:
+                        version = tool_entry.get("version", "")
+                    if not backend:
+                        backend = entry_backend
 
-                    platform_suffix = platform_key[len("platforms."):]
-                    bazel_constraints = _parse_mise_platform(platform_suffix)
-                    if not bazel_constraints:
-                        continue
+                    is_conda = entry_backend.startswith("conda:")
 
-                    url = platform_data.get("url", "")
-                    if not url or _is_single_file_compressed(url):
-                        continue
+                    for platform_key, platform_data in tool_entry.items():
+                        if not platform_key.startswith("platforms."):
+                            continue
 
-                    # Checksums are optional: backends such as `http:` (and
-                    # some `gitlab:` releases) record no checksum, so those
-                    # downloads cannot be verified and are marked
-                    # non-reproducible in the tool repo.
-                    checksum = _strip_sha256(platform_data.get("checksum", ""))
-                    if not checksum:
-                        unverified = True
+                        platform_suffix = platform_key[len("platforms."):]
+                        bazel_constraints = _parse_mise_platform(platform_suffix)
+                        if not bazel_constraints:
+                            continue
 
-                    lower_url = url.lower()
-                    if _is_archive(url):
-                        kind = "archive"
-                    elif lower_url.endswith(".pkg"):
-                        kind = "pkg"
-                    else:
-                        kind = "file"
+                        url = platform_data.get("url", "")
+                        if not url or _is_single_file_compressed(url):
+                            continue
 
-                    binary = {
-                        "os": bazel_constraints.os,
-                        "cpu": bazel_constraints.cpu,
-                        "url": url,
-                        "checksum": checksum,
-                        "kind": kind,
-                        "version": entry_version,
-                        "backend": entry_backend,
-                        "hint": hint,
-                    }
-                    if is_conda:
-                        binary["conda"] = _conda_payload(
-                            tool_name,
-                            url,
-                            checksum,
-                            platform_suffix,
-                            platform_data,
-                            conda_packages,
+                        # Checksums are optional: backends such as `http:` (and
+                        # some `gitlab:` releases) record no checksum, so those
+                        # downloads cannot be verified and are marked
+                        # non-reproducible in the tool repo.
+                        checksum = _strip_sha256(platform_data.get("checksum", ""))
+                        if not checksum:
+                            unverified = True
+
+                        lower_url = url.lower()
+                        if _is_archive(url):
+                            kind = "archive"
+                        elif lower_url.endswith(".pkg"):
+                            kind = "pkg"
+                        else:
+                            kind = "file"
+
+                        binary = {
+                            "os": bazel_constraints.os,
+                            "cpu": bazel_constraints.cpu,
+                            "url": url,
+                            "checksum": checksum,
+                            "kind": kind,
+                            "version": tool_entry.get("version", ""),
+                            "backend": entry_backend,
+                            "hint": hint,
+                        }
+                        if is_conda:
+                            binary["conda"] = _conda_payload(
+                                tool_name,
+                                url,
+                                checksum,
+                                platform_suffix,
+                                platform_data,
+                                conda_packages,
+                            )
+                        binaries.append(binary)
+
+                display_name = tool_name
+                if multi_version and entry_version:
+                    display_name = tool_name + "@" + entry_version
+                if binaries:
+                    clean_name = _tool_key(tool_name, entry_version, multi_version, index)
+                    if multi_version:
+                        # No `while` in Starlark; at most len(tools) candidates
+                        # collide, so this loop always terminates with a free key
+                        # and never clobbers an unrelated tool.
+                        base_name = clean_name
+                        suffix = 2
+                        for _ in range(len(tools) + 1):
+                            if clean_name not in tools:
+                                break
+                            clean_name = "{base}_{n}".format(base = base_name, n = suffix)
+                            suffix += 1
+                    if unverified:
+                        unverified_message = "rules_mise: tool '{tool}' has platforms without checksums in {lockfile}, those downloads will not be verified".format(
+                            tool = display_name,
+                            lockfile = lockfile,
                         )
-                    binaries.append(binary)
-
-            if binaries:
-                clean_name = _clean(tool_name)
-                if unverified:
-                    unverified_message = "rules_mise: tool '{tool}' has platforms without checksums in {lockfile}, those downloads will not be verified".format(
-                        tool = tool_name,
+                        print(unverified_message)  # buildifier: disable=print
+                    tools[clean_name] = {
+                        "binaries": binaries,
+                        "version": version,
+                        "backend": backend,
+                    }
+                else:
+                    # Tools without downloadable binaries (e.g. language-manager
+                    # backends like `npm:`/`cargo:`/`go:` that build from source,
+                    # or single-file-compressed URLs we cannot extract) cannot
+                    # be exposed as Bazel targets. Say so instead of silently
+                    # dropping them.
+                    skip_message = "rules_mise: tool '{tool}' has no supported platforms with a downloadable url in {lockfile}, skipping".format(
+                        tool = display_name,
                         lockfile = lockfile,
                     )
-                    print(unverified_message)  # buildifier: disable=print
-                tools[clean_name] = {
-                    "binaries": binaries,
-                    "version": version,
-                    "backend": backend,
-                }
-            else:
-                # Tools without downloadable binaries (e.g. language-manager
-                # backends like `npm:`/`cargo:`/`go:` that build from source,
-                # or single-file-compressed URLs we cannot extract) cannot
-                # be exposed as Bazel targets. Say so instead of silently
-                # dropping them.
-                skip_message = "rules_mise: tool '{tool}' has no supported platforms with a downloadable url in {lockfile}, skipping".format(
-                    tool = tool_name,
-                    lockfile = lockfile,
-                )
-                print(skip_message)  # buildifier: disable=print
+                    print(skip_message)  # buildifier: disable=print
     return tools
 
 def _sorted(tools):

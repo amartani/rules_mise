@@ -23,6 +23,7 @@ jobs:
           - .
           - e2e/backends
           - e2e/conda
+          - e2e/conda_multi_version
           - e2e/itest
     defaults:
       run:

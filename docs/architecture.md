@@ -26,6 +26,7 @@ Key aspects (see `mise/private/lockfile.bzl`):
 - Recognized platforms: `linux-x64`, `linux-arm64`, `macos-x64`, `macos-arm64`, `windows-x64`. `linux-*-musl` entries are ignored (folded into the non-musl entry); anything else is skipped.
 - Entries without both `url` and `checksum` are skipped. `sha256:` prefixes are stripped before use. Tools left with no supported platform entries are skipped with a warning.
 - Tool names are sanitized for Bazel (`_clean`): only `:`, `/`, `+`, `@`, and space become `_`; `-` and `.` are kept (e.g. `npm:prettier` → `npm_prettier`). The trailing name segment is also kept as an executable-discovery hint (`hint`) for archives whose binary omits the backend prefix.
+- A tool requested at multiple versions (`"conda:postgresql" = ["17.7", "18.4"]`, one `[[tools.<name>]]` entry per version) becomes one Bazel tool per version, keyed by `_clean(<name>@<version>)` (e.g. `conda_postgresql_17.7`); single-version tools keep the legacy `_clean(<name>)` key. Entries sharing a version stay merged.
 - conda tools (`backend = "conda:..."`) additionally carry `conda_deps` per platform, resolved against a shared `[conda-packages.<platform>]` lockfile section. Only `bin/` and `sbin/` provides become Bazel targets via the dispatcher (currently a single `:tool` wrapper dispatching on its first argument and on `argv[0]`).
 
 ### 2. Module Extension
@@ -52,7 +53,7 @@ The extension collects lockfiles per `hub_name` across modules (later modules wi
 - `kind = "file"`: `rctx.download()` straight to `tools/<tool>/<os>_<cpu>_executable[.exe]`.
 - `kind = "archive"` (`.tar.gz`, `.tgz`, `.tar.xz`, `.tar.bz2`, `.tar`, `.zip`): `download_and_extract`, then locate the executable — explicit `file` attribute first, then `<tool-name>` pattern matches, then first executable file — and symlink it to the `..._executable` path.
 - `kind = "pkg"` (macOS installer packages): expanded with `pkgutil --expand-full` (macOS-only; requires `pkgutil`, marked non-reproducible).
-- conda tools: every package in the closure (transitive deps first, root last) is extracted under `tools/<tool>/conda-prefix/`, reproducing mise's install layout (`.conda` outer zip via `extract` as `zip`, then inner `pkg-*.tar.zst` via `extract` as `tar.zst`; `.tar.bz2` direct). A generated bash dispatcher (`<os>_<cpu>_executable`) sets the conda runtime environment (`CONDA_PREFIX`, `PATH`, activation scripts) and dispatches on `argv[0]` (for per-binary symlinks) or on its first argument (so a single `:tool` can run any `bin/` binary, e.g. `tool psql --version`). Windows conda is unsupported and fails fast.
+- conda tools: every package in the closure (transitive deps first, root last) is extracted under `tools/<tool>/conda-prefix/`, reproducing mise's install layout (`.conda` outer zip via `extract` as `zip`, then inner `pkg-*.tar.zst` via `extract` as `tar.zst`; `.tar.bz2` direct). Packages whose `info/files` manifest names no files (empty metapackages such as `libgcc-ng`) contribute nothing to the prefix, so their payload is skipped — Bazel's extractor rejects empty tars. A generated bash dispatcher (`<os>_<cpu>_executable`) sets the conda runtime environment (`CONDA_PREFIX`, `PATH`, activation scripts) and dispatches on `argv[0]` (for per-binary symlinks) or on its first argument (so a single `:tool` can run any `bin/` binary, e.g. `tool psql --version`). Windows conda is unsupported and fails fast.
 
 Downloads honor private registries via netrc (`NETRC` env / user netrc matched against per-URL auth patterns), and forward `headers` on Bazel versions that support `download_has_headers_param`. Extracted conda file lists are enumerated explicitly (files + symlinks, never directories); symlink cycles are dropped since neither globs nor runfiles trees can traverse them.
 
@@ -75,6 +76,7 @@ Tools resolve through the toolchain, so the same label picks the right binary pe
 @mise//tools/ruff:cwd                           -> wrapper running ruff with $PWD = Bazel's cwd
 @mise//tools/ruff:workspace_root                -> wrapper running ruff with $BUILD_WORKSPACE_DIRECTORY
 @mise//tools/conda_postgresql:tool              -> conda wrapper dispatching to the prefix's bin/ via first arg (e.g. `tool psql --version`)
+@mise//tools/conda_postgresql_17.7:tool         -> same, for the 17.7 install when several majors are requested
 ```
 
 `:cwd` / `:workspace_root` (`mise/private/run_in.bzl`) expand a small wrapper script (`.sh`, or `.bat` for `.exe` tools) that `cd`s into `$PWD` / `$BUILD_WORKSPACE_DIRECTORY` and execs the resolved tool. The wrapper locates the tool next to itself first (works under `bazel run`, direct execution, and in the runfiles tree), then via `$RUNFILES_DIR` / the runfiles manifest, and finally via the legacy `$PWD`-relative short path.

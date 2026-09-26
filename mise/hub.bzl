@@ -178,6 +178,27 @@ def _download_extract_conda(rctx, tool_name, binary, conda):
                     inner = inner,
                     url = url,
                 ))
+
+            # Metapackages (e.g. conda-forge's `libgcc-ng`) ship an empty
+            # payload: their `pkg-*.tar.zst` decompresses to an empty tar,
+            # which Bazel's extractor rejects. The `info-*.tar.zst` component
+            # is never empty, so consult its `info/files` manifest (the same
+            # file list conda itself installs from): when it names no files,
+            # the package contributes nothing to the prefix and its payload
+            # is skipped. When the manifest is absent, fall back to
+            # extracting the payload as before.
+            payload_files = None
+            info_inner = "{outer}/info-{basename}.tar.zst".format(
+                outer = outer_dir,
+                basename = basename,
+            )
+            if rctx.path(info_inner).exists:
+                rctx.extract(info_inner, output = outer_dir)
+                files_manifest = "{outer}/info/files".format(outer = outer_dir)
+                if rctx.path(files_manifest).exists:
+                    payload_files = rctx.read(files_manifest).strip()
+            if payload_files == "":
+                continue
             rctx.extract(inner, output = fs_root)
         elif lower_url.endswith(".tar.bz2"):
             rctx.download_and_extract(
