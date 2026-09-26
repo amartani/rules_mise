@@ -49,6 +49,16 @@ actions:
           - "*"
     steps:
       - run: "cd e2e/conda_multi_version && bazel test --config=buildbuddy //..."
+  - name: buildbuddy e2e/conda_redis
+    triggers:
+      push:
+        branches:
+          - "main"
+      pull_request:
+        branches:
+          - "*"
+    steps:
+      - run: "cd e2e/conda_redis && bazel test --config=buildbuddy //..."
   - name: buildbuddy e2e/itest
     triggers:
       push:
