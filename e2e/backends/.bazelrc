@@ -3,6 +3,8 @@ import ../../tools/preset.bazelrc
 common --@rules_python//python/config_settings:bootstrap_impl=script
 
 build:buildbuddy --bes_results_url=https://app.buildbuddy.io/invocation/ --bes_backend=grpcs://remote.buildbuddy.io
+common:buildbuddy --remote_cache_compression
+common:buildbuddy --experimental_remote_cache_chunking
 # Run all remote actions in the Ubuntu 24.04 image from
 # buildbuddy-io/buildbuddy-toolchain (UBUNTU24_04_IMAGE). The default
 # execution platform is Ubuntu 16.04, which is too old for some toolchains.
