@@ -8,7 +8,9 @@ environment (`CONDA_PREFIX`, `PATH`, activation scripts) like `mise` does.
 
 `test_psql.py` runs a full server lifecycle against the packaged binaries:
 `initdb`, `pg_ctl start`, a `CREATE/INSERT/SELECT` round-trip through `psql`
-over a Unix socket, then `pg_ctl stop`. All binaries are reached through the
+over a Unix socket, timezone lookups (`pg_timezone_names`,
+`SET timezone='America/New_York'`, which need the tzdata files), then
+`pg_ctl stop`. All binaries are reached through the
 single `@mise//tools/conda_postgresql:tool` wrapper, which dispatches on its
 first argument (e.g. `tool psql --version`) and also supports `argv[0]`
 dispatch for per-binary symlinks.
@@ -30,9 +32,15 @@ Related `rules_mise` behavior worth knowing: conda packages (`.conda` files)
 are zipped `tar.zst` archives. The tool repo extracts the outer zip with
 Bazel's built-in zip support, then extracts the inner `pkg-*.tar.zst` with
 Bazel's built-in `tar.zst` support (available in Bazel 8+), overlaying all
-packages into a shared `conda-prefix/` layout. Prefix-placeholder replacement
-is skipped: postgres binaries are relocatable via `$ORIGIN` RPATH and locate
-their `share/` files relative to the binary, so they work when relocated.
+packages into a shared `conda-prefix/` layout. Build-prefix placeholders
+from each package's `info/has_prefix` are replaced at fetch time with a short
+stable prefix (`/tmp/mise_conda_<hash>`, text as plain replacement, binaries
+null-padded like `conda` does so file sizes are preserved); at tool runtime
+the wrapper symlinks that stable prefix to the real `CONDA_PREFIX` (which
+lives under Bazel runfiles and differs between local and remote execution).
+Without this, postgres cannot find its tzdata: its
+`--with-system-tzdata .../share/zoneinfo` path is baked in as an absolute
+build-prefix path.
 
 ## Note on regenerating `mise.lock`
 

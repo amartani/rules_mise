@@ -114,6 +114,21 @@ try:
     assert out.strip().splitlines()[-1] == "42", (
         "unexpected query result: %r" % out
     )
+
+    # The conda-forge postgres build bakes its build prefix into the
+    # --with-system-tzdata path, so without build-prefix placeholder
+    # replacement every timezone lookup fails with "could not open
+    # directory .../share/zoneinfo". Exercise pg_timezone_names and a
+    # named time zone to cover the conda prefix-replacement logic.
+    tz_count = run(pg(psql + ["-h", sockdir, "-U", "postgres", "-tAc",
+                              "SELECT count(*) FROM pg_timezone_names();"]))
+    assert int(tz_count.strip().splitlines()[-1]) > 100, (
+        "unexpected timezone count: %r" % tz_count
+    )
+    tz_now = run(pg(psql + ["-h", sockdir, "-U", "postgres", "-tAc",
+                            "SET timezone='America/New_York';"
+                            " SELECT now();"]))
+    assert tz_now.strip(), "empty result for timezone query: %r" % tz_now
 finally:
     if started:
         subprocess.run(pg(pg_ctl + ["-D", pgdata, "-m", "fast", "stop"]),

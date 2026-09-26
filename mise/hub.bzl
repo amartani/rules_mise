@@ -124,9 +124,17 @@ def _download_extract_conda(rctx, tool_name, binary, conda):
     `.conda` packages are zipped `tar.zst` archives: the outer zip is extracted
     with Bazel's built-in zip support, then the inner `pkg-*.tar.zst` with
     Bazel's built-in `tar.zst` support (available in Bazel 8+). `.tar.bz2`
-    packages (old conda format) are extracted directly. Prefix-placeholder
-    replacement is skipped: postgres binaries are relocatable via `$ORIGIN`
-    RPATH and locate their `share/` files relative to the binary.
+    packages (old conda format) are extracted directly.
+
+    Build-prefix placeholders from each package's `info/has_prefix` are
+    replaced at fetch time with a short deterministic stable prefix
+    (`/tmp/mise_conda_<hash>`), using conda's own scheme (plain replacement
+    for text, null-padded replacement for binaries so file sizes are
+    preserved). At tool runtime the wrapper symlinks the stable prefix to the
+    real `CONDA_PREFIX` (which lives under Bazel runfiles and differs between
+    local and remote execution), so baked-in absolute paths such as postgres'
+    `--with-system-tzdata .../share/zoneinfo` resolve correctly in both
+    environments.
     """
     if binary["os"] == "windows":
         fail("conda tool {tool}: Windows is not supported yet".format(tool = tool_name))
@@ -201,6 +209,10 @@ def _download_extract_conda(rctx, tool_name, binary, conda):
                 continue
             rctx.extract(inner, output = fs_root)
         elif lower_url.endswith(".tar.bz2"):
+            outer_dir = "tools/{tool_name}/outer/{basename}".format(
+                tool_name = tool_name,
+                basename = basename,
+            )
             rctx.download_and_extract(
                 url = url,
                 output = fs_root,
@@ -210,12 +222,59 @@ def _download_extract_conda(rctx, tool_name, binary, conda):
 
             # Old-format packages ship an `info/` directory which must not
             # pollute the shared prefix (and would collide across packages).
+            # Preserve its `has_prefix` for prefix replacement below, stored
+            # next to the `.conda` packages' manifests so the relocator can
+            # walk a single location.
+            has_prefix = fs_root + "/info/has_prefix"
+            if rctx.path(has_prefix).exists:
+                rctx.file(
+                    "{outer}/info/has_prefix".format(outer = outer_dir),
+                    rctx.read(has_prefix),
+                )
             rctx.execute(["rm", "-rf", fs_root + "/info"])
         else:
             fail("conda tool {tool}: unsupported package URL {url} (expected .conda or .tar.bz2)".format(
                 tool = tool_name,
                 url = url,
             ))
+
+    outer_base = "tools/{tool_name}/outer".format(tool_name = tool_name)
+    relocate_script = "tools/{tool_name}/relocate.pl".format(tool_name = tool_name)
+    rctx.template(
+        relocate_script,
+        Label("//mise/private:conda_relocate.pl"),
+        {},
+        executable = True,
+    )
+    perl = rctx.which("perl")
+    if not perl:
+        fail("conda tool {tool}: need perl for build-prefix placeholder replacement".format(tool = tool_name))
+
+    # The stable prefix is a short deterministic path baked into the binaries
+    # at fetch time. The wrapper symlinks it to the real CONDA_PREFIX at
+    # runtime (runfiles layout differs between local and remote execution, so
+    # the real prefix is only known then). It must fit inside every build
+    # placeholder (conda pads those to ~255 chars); the hash keeps distinct
+    # closures on distinct paths when several workspaces share /tmp.
+    basenames = sorted([p["basename"] for p in conda["packages"]])
+    stable_key = "{tool}|{os_cpu}|{pkgs}".format(
+        tool = tool_name,
+        os_cpu = os_cpu,
+        pkgs = ",".join(basenames),
+    )
+    stable_prefix = "/tmp/mise_conda_" + str(abs(hash(stable_key)) % 100000000)
+    relocated = rctx.execute([
+        perl,
+        relocate_script,
+        fs_root,
+        outer_base,
+        stable_prefix,
+    ])
+    if relocated.return_code != 0:
+        fail("conda tool {tool}: prefix replacement failed: {err}".format(
+            tool = tool_name,
+            err = relocated.stderr,
+        ))
 
     tool_runfiles_dir = "{repo}/tools/{tool}".format(repo = rctx.name, tool = tool_name)
     lines = [
@@ -245,6 +304,17 @@ def _download_extract_conda(rctx, tool_name, binary, conda):
         "  unset _MISE_ROOT",
         "fi",
         "export CONDA_PREFIX=\"$SCRIPT_DIR/conda-prefix\"",
+        "_MISE_STABLE=\"" + stable_prefix + "\"",
+        "if [ ! -e \"$_MISE_STABLE\" ]; then",
+        "  mkdir -p \"$(dirname \"$_MISE_STABLE\")\" 2>/dev/null || true",
+        "  if [ -L \"$_MISE_STABLE\" ] && [ ! -e \"$_MISE_STABLE\" ]; then",
+        "    rm -f \"$_MISE_STABLE\"",
+        "  fi",
+        # `ln -s` without `-f` so concurrent first runs do not replace each
+        # other's valid symlink; identical closures share the path harmlessly.
+        "  ln -s \"$CONDA_PREFIX\" \"$_MISE_STABLE\" 2>/dev/null || true",
+        "fi",
+        "unset _MISE_STABLE",
         "export CONDA_DEFAULT_ENV=\"$CONDA_PREFIX\"",
         "export CONDA_SHLVL=1",
         "export PATH=\"$CONDA_PREFIX/bin:$CONDA_PREFIX/sbin${PATH:+:$PATH}\"",
