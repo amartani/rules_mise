@@ -97,6 +97,20 @@ try:
                   "SELECT count(*) FROM pg_extension WHERE extname = 'vector';")
     assert count.strip() == "1", "vector extension not registered: %r" % count
 
+    # The conda-forge postgres build bakes its build prefix into the
+    # --with-system-tzdata path, so without build-prefix placeholder
+    # replacement every timezone lookup fails with "could not open
+    # directory .../share/zoneinfo". Exercise pg_timezone_names and a named
+    # time zone to cover the conda prefix-replacement logic. The env's
+    # relocation pass has to patch the manifests of *every* merged package,
+    # not just one closure, so this is worth asserting here too.
+    tz_count = query(sockdir, "SELECT count(*) FROM pg_timezone_names();")
+    assert int(tz_count.strip()) > 100, (
+        "unexpected timezone count: %r" % tz_count
+    )
+    tz_now = query(sockdir, "SET timezone='America/New_York'; SELECT now();")
+    assert tz_now.strip(), "empty result for timezone query: %r" % tz_now
+
     print("pgvector end-to-end OK")
 finally:
     if started:
