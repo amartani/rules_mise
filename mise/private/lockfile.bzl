@@ -120,6 +120,214 @@ def _conda_payload(tool_name, url, checksum, platform, platform_data, conda_pack
         "packages": packages,
     }
 
+def _conda_pkg_parts(basename):
+    """Splits a conda package basename into `(name, version, build)`.
+
+    Conda package filenames are `<name>-<version>-<build>`, and the split is
+    from the right: only the version and build fields are known to be free of
+    `-`, so a name like `libxml2-16` stays intact. The two `libxml2*` packages
+    of the same version are genuinely distinct conda packages and are named
+    differently, which is why this splitting is safe.
+    """
+    fields = basename.split("-")
+    if len(fields) < 3:
+        return basename, "", ""
+    return "-".join(fields[:-2]), fields[-2], fields[-1]
+
+def _version_segment(segment, numeric):
+    # Numeric segments sort before alphabetic ones and compare as numbers
+    # (`18.10` > `18.9`); alphabetic segments (e.g. `1.0rc1`) compare as
+    # strings. Every segment is the same 3-tuple shape so tuples and the
+    # lists of them built by `_conda_version_key` stay mutually comparable.
+    if numeric:
+        return (0, int(segment), "")
+    return (1, 0, segment)
+
+def _conda_version_key(version):
+    """A comparable key approximating conda's version ordering.
+
+    The version is split into runs of digits and non-digits; each run becomes
+    a tuple that sorts numerically when it is a number and lexically
+    otherwise. Comparing the resulting lists compares the versions
+    segment-wise, and a prefix sorts before its extensions (`18.4` < `18.4.1`).
+    """
+    key = []
+    segment = ""
+    segment_numeric = None
+    for i in range(len(version)):
+        char = version[i]
+        is_numeric = char.isdigit()
+        if is_numeric != segment_numeric:
+            if segment:
+                key.append(_version_segment(segment, segment_numeric))
+            segment = ""
+            segment_numeric = is_numeric
+        segment += char
+    if segment:
+        key.append(_version_segment(segment, segment_numeric))
+    return key
+
+def _merge_conda_packages(env_name, os_cpu, member_binaries):
+    """Unifies the package closures of an env's members into one list.
+
+    A single conda environment holds exactly one build of each package, so
+    closures that disagree (e.g. `libpq` 18.4 for `postgresql` vs 18.6 for
+    `pgvector`) cannot all be installed side by side: they would overwrite
+    each other's files. The highest version wins, which is the choice conda's
+    own solver converges on, and every dropped build is reported so the merge
+    is never silent.
+
+    The result keeps the input ordering (dependencies before the packages
+    that pull them in), with replaced entries updated in place so the install
+    order stays deterministic.
+    """
+    chosen = {}
+    packages = []
+    for binary in member_binaries:
+        for package in binary["conda"]["packages"]:
+            name, version, _build = _conda_pkg_parts(package["basename"])
+            key = (_conda_version_key(version), package["basename"])
+            existing = chosen.get(name, None)
+            if existing == None:
+                chosen[name] = (key, len(packages))
+                packages.append(package)
+            elif key > existing[0]:
+                dropped = packages[existing[1]]["basename"]
+                packages[existing[1]] = package
+                chosen[name] = (key, existing[1])
+                conflict_message = "rules_mise: conda env '{env}' ({os_cpu}) installs {name} {version} instead of {dropped} (higher version)".format(
+                    env = env_name,
+                    os_cpu = os_cpu,
+                    name = name,
+                    version = version,
+                    dropped = dropped,
+                )
+                print(conflict_message)  # buildifier: disable=print
+    return packages
+
+def _resolve_env_tools(env_name, specs, tools):
+    """Maps an env's `tools` specs onto keys of the parsed lockfile tools.
+
+    A spec is a mise tool name optionally suffixed with `@version`
+    (`conda:postgresql@18.4`), matching how the same tool is written in
+    `mise.toml`. Omitting the version requires the lockfile to pin exactly
+    one, so an env can never silently pick between several.
+    """
+    keys = []
+    for spec in specs:
+        name, _, version = spec.rpartition("@")
+        if not name:
+            name, version = spec, ""
+
+        matches = []
+        for key, tool in tools.items():
+            if tool["name"] == name and (not version or tool["version"] == version):
+                matches.append(key)
+        if not matches:
+            fail("conda env '{env}': no tool '{spec}' in the lockfile".format(
+                env = env_name,
+                spec = spec,
+            ))
+        if len(matches) > 1:
+            if not version:
+                fail("conda env '{env}': tool '{name}' is locked at several versions ({versions}), pick one with '{name}@<version>'".format(
+                    env = env_name,
+                    name = name,
+                    versions = ", ".join([tools[key]["version"] for key in matches]),
+                ))
+            fail("conda env '{env}': tool '{spec}' matches several lockfile entries ({keys})".format(
+                env = env_name,
+                spec = spec,
+                keys = ", ".join(matches),
+            ))
+        if not tools[matches[0]]["backend"].startswith("conda:"):
+            fail("conda env '{env}': tool '{spec}' uses the '{backend}' backend, only conda tools can share an environment".format(
+                env = env_name,
+                spec = spec,
+                backend = tools[matches[0]]["backend"],
+            ))
+        keys.append(matches[0])
+    return keys
+
+def _env_binary(env_name, os, cpu, member_binaries):
+    return {
+        "os": os,
+        "cpu": cpu,
+        "url": "",
+        "checksum": "",
+        "kind": "conda_env",
+        "version": "",
+        "backend": "conda:env",
+        "hint": env_name,
+        "conda": {
+            "packages": _merge_conda_packages(env_name, "{os}_{cpu}".format(os = os, cpu = cpu), member_binaries),
+        },
+    }
+
+def _load_envs(envs, tools, lockfile):
+    """Builds one synthetic tool definition per requested conda environment.
+
+    A conda environment is exposed as a tool named `conda_env:<name>` (i.e.
+    the `conda_env_<name>` Bazel key) so it gets the same targets as any other
+    tool: `:tool`, `:cwd`, `:workspace_root` and a registered toolchain. The
+    members' package closures are merged into a single `conda-prefix/`, which
+    is the whole point: extensions such as pgvector are only loadable by a
+    server sharing their prefix.
+    """
+    env_defs = {}
+    for env in envs:
+        env_name = env["name"]
+        key = _clean("conda_env:" + env_name)
+        if key in env_defs:
+            fail("conda env '{env}' is declared more than once".format(env = env_name))
+        members = _resolve_env_tools(env_name, env["tools"], tools)
+
+        # A platform is only usable when every member provides it: an
+        # environment missing one of its packages would install successfully
+        # and then fail at runtime, which is far worse than not offering the
+        # target at all.
+        by_platform = {}
+        for member in members:
+            for binary in tools[member]["binaries"]:
+                by_platform.setdefault((binary["os"], binary["cpu"]), []).append(binary)
+
+        binaries = []
+        for os_cpu in sorted(by_platform.keys()):
+            member_binaries = by_platform[os_cpu]
+            if len(member_binaries) != len(members):
+                missing = []
+                for member in members:
+                    available = False
+                    for binary in tools[member]["binaries"]:
+                        if (binary["os"], binary["cpu"]) == os_cpu:
+                            available = True
+                    if not available:
+                        missing.append(member)
+                skip_message = "rules_mise: conda env '{env}' has no {os}_{cpu} build, skipping it ({tools} unavailable there)".format(
+                    env = env_name,
+                    os = os_cpu[0],
+                    cpu = os_cpu[1],
+                    tools = ", ".join(missing),
+                )
+                print(skip_message)  # buildifier: disable=print
+                continue
+            binaries.append(_env_binary(env_name, os_cpu[0], os_cpu[1], member_binaries))
+
+        if not binaries:
+            skip_message = "rules_mise: conda env '{env}' has no platform available from all of its tools in {lockfile}, skipping".format(
+                env = env_name,
+                lockfile = lockfile,
+            )
+            print(skip_message)  # buildifier: disable=print
+            continue
+        env_defs[key] = {
+            "binaries": binaries,
+            "version": env_name,
+            "backend": "conda:env",
+            "name": "conda_env:" + env_name,
+        }
+    return env_defs
+
 def _tool_key(tool_name, version, multi_version, index):
     """Returns the Bazel tool key for one version group of a lockfile tool.
 
@@ -136,7 +344,7 @@ def _tool_key(tool_name, version, multi_version, index):
         return _clean(tool_name + "@" + version)
     return "{clean}_{n}".format(clean = _clean(tool_name), n = index + 1)
 
-def _load(ctx, lockfiles):
+def _load(ctx, lockfiles, envs = None):
     tools = {}
     for lockfile in lockfiles:
         parsed = toml.decode(ctx.read(lockfile))
@@ -259,6 +467,9 @@ def _load(ctx, lockfiles):
                         "binaries": binaries,
                         "version": version,
                         "backend": backend,
+                        # The unextended mise tool name (`conda:postgresql`),
+                        # needed to resolve the specs of a conda env's members.
+                        "name": tool_name,
                     }
                 else:
                     # Tools without downloadable binaries (e.g. language-manager
@@ -271,6 +482,8 @@ def _load(ctx, lockfiles):
                         lockfile = lockfile,
                     )
                     print(skip_message)  # buildifier: disable=print
+    if envs:
+        tools.update(_load_envs(envs, tools, ", ".join([str(lockfile) for lockfile in lockfiles])))
     return tools
 
 def _sorted(tools):

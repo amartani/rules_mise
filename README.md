@@ -13,6 +13,44 @@ It also supports mise's `conda:` backend, which covers many tools that don't
 ship easily usable statically compiled binaries — e.g. PostgreSQL
 (`conda:postgresql`, see `e2e/conda`).
 
+## Conda environments
+
+Each `conda:` tool gets its own conda prefix, which is not enough for
+PostgreSQL extensions: `pgvector` installs `lib/vector.so` and
+`share/extension/vector.control`, and a server can only load them from its own
+prefix. Adding both `conda:postgresql` and `conda:pgvector` to a lockfile
+leaves them in separate prefixes, so `CREATE EXTENSION vector` fails.
+
+`mise.conda_env` installs several conda packages into a single prefix instead:
+
+```starlark
+mise = use_extension("@rules_mise//mise:extensions.bzl", "mise")
+mise.hub(lockfile = "//:mise.lock")
+mise.conda_env(
+    name = "pg",
+    lockfile = "//:mise.lock",
+    tools = [
+        "conda:postgresql@18.4",
+        "conda:pgvector@0.8.1",
+    ],
+)
+use_repo(mise, "mise")
+```
+
+Each environment is exposed as a tool of its own, keyed
+`conda_env_<name>`, with the same targets as any other tool:
+
+```text
+@mise//tools/conda_env_pg:tool  -> runs any binary in the merged prefix
+```
+
+`tools` entries are mise tool names with an optional `@version`, resolved
+against the same `mise.lock`. An environment holds one build of each conda
+package, so members whose closures disagree (here `libpq` 18.4 vs 18.6) are
+merged by package name with the highest version winning, and each dropped
+build is reported. A platform is only offered when every member has a build
+for it. See `e2e/conda-env`.
+
 ## Usage
 
 In your `MODULE.bazel`:

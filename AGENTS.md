@@ -10,6 +10,7 @@ bazel test //...          # root workspace (CI also runs Bazel 8.x and 9.x)
 cd e2e/smoke && bazel test //...
 cd e2e/backends && bazel test //...
 cd e2e/conda && bazel test //...
+cd e2e/conda-env && bazel test //...
 cd e2e/itest && bazel test //...
 
 bazel run //:gazelle                    # regenerate deps after .bzl edits
@@ -24,7 +25,7 @@ mise exec -- hk check --all
 ## Architecture
 
 - Bzlmod-only, no WORKSPACE. Entry: `mise/extensions.bzl`
-  (`mise.hub(lockfile, hub_name)`).
+  (`mise.hub(lockfile, hub_name)`, `mise.conda_env(name, lockfile, tools)`).
 - `mise/private/lockfile.bzl` parses `mise.lock` TOML (`toml.bzl`);
   `mise/hub.bzl` (`bzlmod_hub`/`workspace_hub`) creates one tool repo per
   platform plus a toolchain hub. Consumer pattern (see
@@ -48,6 +49,15 @@ mise exec -- hk check --all
   against a shared `[conda-packages.<platform>]` lockfile section (`.conda`
   outer zip + inner `pkg-*.tar.zst`, `.tar.bz2` direct). `mise.lock` is
   `@generated` by `mise lock` — bump versions in `mise.toml`, don't hand-edit.
+- `mise.conda_env` (`_load_envs`) merges several `conda:` tools' closures into
+  one prefix, exposed as the tool `conda_env_<name>`. Needed because a
+  PostgreSQL extension only loads from the server's own prefix (see
+  `e2e/conda-env`): separate `conda:` tools are separate prefixes. Merging is
+  by conda package name (one build per package per env), highest version wins,
+  and each dropped build is printed. A platform is only offered when *every*
+  member has a build there. Env `tools` specs are mise names + optional
+  `@version`, resolved against the same lockfile; they need the per-tool
+  `name` field that `lockfile.bzl` now records.
 
 ## Conventions
 

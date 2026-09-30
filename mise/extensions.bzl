@@ -14,8 +14,17 @@ hub = tag_class(
     },
 )
 
+conda_env = tag_class(
+    attrs = {
+        "name": attr.string(mandatory = True),
+        "lockfile": attr.label(mandatory = True, allow_single_file = True),
+        "tools": attr.string_list(mandatory = True),
+    },
+)
+
 def _extension(module_ctx):
     lockfiles = {}
+    envs = {}
     root_module_direct_deps = {}
     root_module_direct_dev_deps = {}
 
@@ -32,8 +41,25 @@ def _extension(module_ctx):
                 else:
                     root_module_direct_deps[h.hub_name] = 1
 
+        for e in mod.tags.conda_env:
+            envs.setdefault(e.lockfile, []).append({
+                "name": e.name,
+                "tools": e.tools,
+            })
+
     for hub_name, hub_lockfiles in lockfiles.items():
-        bzlmod_hub(name = hub_name, lockfiles = hub_lockfiles, module_ctx = module_ctx)
+        # Environments are declared against a specific lockfile rather than a
+        # hub, so they are collected across all hubs and attached to the ones
+        # that read the same lockfile.
+        hub_envs = []
+        for lockfile in hub_lockfiles:
+            hub_envs.extend(envs.get(lockfile, []))
+        bzlmod_hub(
+            name = hub_name,
+            lockfiles = hub_lockfiles,
+            envs = hub_envs,
+            module_ctx = module_ctx,
+        )
 
     return module_ctx.extension_metadata(
         root_module_direct_deps = root_module_direct_deps.keys(),
@@ -44,6 +70,7 @@ def _extension(module_ctx):
 mise = module_extension(
     implementation = _extension,
     tag_classes = {
+        "conda_env": conda_env,
         "hub": hub,
     },
 )

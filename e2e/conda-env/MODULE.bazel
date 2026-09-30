@@ -1,0 +1,38 @@
+bazel_dep(name = "rules_mise", version = "0.0.0", dev_dependency = True)
+bazel_dep(name = "bazel_skylib", version = "1.9.0", dev_dependency = True)
+bazel_dep(name = "rules_python", version = "1.9.0", dev_dependency = True)
+
+python = use_extension("@rules_python//python/extensions:python.bzl", "python")
+python.defaults(python_version = "3.14")
+python.toolchain(python_version = "3.14")
+
+pip = use_extension("@rules_python//python/extensions:pip.bzl", "pip")
+pip.parse(
+    hub_name = "pypi",
+    python_version = "3.14",
+    requirements_lock = "//:requirements.txt",
+)
+use_repo(pip, "pypi")
+
+local_path_override(
+    module_name = "rules_mise",
+    path = "../..",
+)
+
+mise = use_extension("@rules_mise//mise:extensions.bzl", "mise")
+mise.hub(lockfile = "//:mise.lock")
+
+# A single conda environment holding both the server and its extension. The
+# two `conda:` entries in `mise.toml` are separate mise tools (and therefore
+# separate conda prefixes), so pgvector is only usable through this env.
+mise.conda_env(
+    name = "pg",
+    lockfile = "//:mise.lock",
+    tools = [
+        "conda:pgvector@0.8.1",
+        "conda:postgresql@18.4",
+    ],
+)
+use_repo(mise, "mise")
+
+register_toolchains("@mise//toolchains:all")

@@ -1,0 +1,3 @@
+[tools]
+"conda:postgresql" = "18.4"
+"conda:pgvector" = "0.8.1"

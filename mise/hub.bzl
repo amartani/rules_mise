@@ -556,7 +556,7 @@ tool_repo = repository_rule(
 )
 
 def _mise_hub_impl(rctx):
-    tools = lockfile.load_defs(rctx, rctx.attr.lockfiles)
+    tools = lockfile.load_defs(rctx, rctx.attr.lockfiles, json.decode(rctx.attr.envs))
 
     # Generate hub-level files
     templates.hub(rctx, "toolchain_info.bzl", {
@@ -630,19 +630,23 @@ def _mise_hub_impl(rctx):
 _mise_hub = repository_rule(
     attrs = {
         "lockfiles": attr.label_list(mandatory = True, allow_files = True),
+        "envs": attr.string(default = "[]"),
     },
     implementation = _mise_hub_impl,
 )
 
-def bzlmod_hub(name, lockfiles, module_ctx):
+def bzlmod_hub(name, lockfiles, module_ctx, envs = None):
     """Creates per-platform tool repos and the toolchain hub for bzlmod.
 
     Args:
         name: The name of the hub repository to create.
         lockfiles: Labels of the mise.lock files to parse.
         module_ctx: The module extension context.
+        envs: Conda environments to build from the parsed tools, as dicts with
+            `name` and `tools` keys. Each becomes a tool of its own.
     """
-    tools = lockfile.load_defs(module_ctx, lockfiles)
+    envs = envs or []
+    tools = lockfile.load_defs(module_ctx, lockfiles, envs)
     for tool_name, tool in lockfile.sorted_defs(tools):
         for binary in tool["binaries"]:
             os_cpu = "{os}_{cpu}".format(os = binary["os"], cpu = binary["cpu"])
@@ -655,9 +659,13 @@ def bzlmod_hub(name, lockfiles, module_ctx):
                 tool_name = tool_name,
                 binary = json.encode(binary),
             )
-    _mise_hub(name = name, lockfiles = lockfiles)
+    _mise_hub(
+        name = name,
+        lockfiles = lockfiles,
+        envs = json.encode(envs),
+    )
 
-def workspace_hub(name, lockfiles):
+def workspace_hub(name, lockfiles, envs = None):
     """Creates the toolchain hub for WORKSPACE mode.
 
     Per-platform tool repos are created by calling `register_tools()`
@@ -666,5 +674,11 @@ def workspace_hub(name, lockfiles):
     Args:
         name: The name of the hub repository to create.
         lockfiles: Labels of the mise.lock files to parse.
+        envs: Conda environments to build from the parsed tools, as dicts with
+            `name` and `tools` keys. Each becomes a tool of its own.
     """
-    _mise_hub(name = name, lockfiles = lockfiles)
+    _mise_hub(
+        name = name,
+        lockfiles = lockfiles,
+        envs = json.encode(envs or []),
+    )
