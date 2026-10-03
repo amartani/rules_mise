@@ -91,13 +91,16 @@ and prepares its own binary:
 - conda tools: every package in the closure (transitive deps first, root last)
   is extracted under `tools/<tool>/conda-prefix/`, reproducing mise's install
   layout (`.conda` outer zip via `extract` as `zip`, then inner `pkg-*.tar.zst`
-  via `extract` as `tar.zst`; `.tar.bz2` direct). Packages whose `info/files`
-  manifest names no files (empty metapackages such as `libgcc-ng`) contribute
-  nothing to the prefix, so their payload is skipped — Bazel's extractor rejects
-  empty tars. A generated bash dispatcher (`<os>_<cpu>_executable`) sets the
-  conda runtime environment (`CONDA_PREFIX`, `PATH`, activation scripts) and
-  dispatches on `argv[0]` (for per-binary symlinks) or on its first argument (so
-  a single `:tool` can run any `bin/` binary, e.g. `tool psql --version`).
+  via `extract` as `tar.zst`; `.tar.bz2` direct). Packages whose file manifest
+  names no files (empty metapackages such as conda-forge's `libgcc-ng`, or
+  `fonts-conda-forge-1`, which rattler-build builds with `info/paths.json` and
+  no `info/files` at all) contribute nothing to the prefix, so their payload is
+  skipped — Bazel's extractor rejects empty tars. Both manifest layouts are
+  read, since either may be the only one present. A generated bash dispatcher
+  (`<os>_<cpu>_executable`) sets the conda runtime environment (`CONDA_PREFIX`,
+  `PATH`, activation scripts) and dispatches on `argv[0]` (for per-binary
+  symlinks) or on its first argument (so a single `:tool` can run any `bin/`
+  binary, e.g. `tool psql --version`).
   Windows conda is unsupported and fails fast.
 
 Downloads honor private registries via netrc (`NETRC` env / user netrc matched
@@ -207,10 +210,17 @@ The dispatcher composes env vars like mise's conda launcher:
 `bin/` and `sbin/` first, plus sourcing `etc/conda/activate.d/*.sh`. It resolves
 its own location through symlinks, with a runfiles-tree fallback for remote
 execution where the `tool` output symlink may materialize as a plain file.
-Prefix-placeholder replacement is skipped: conda-forge postgres binaries are
-relocatable via `$ORIGIN` RPATH (verified by extracting without replacement and
-running `initdb`/`psql`), though `share/zoneinfo` warnings from the stale
-placeholder are harmless.
+
+Build-prefix placeholders from each package's `info/has_prefix` are replaced at
+fetch time with a short stable prefix (`/tmp/mise_conda_<hash>`), text by plain
+replacement and binaries null-padded so sizes are preserved; the dispatcher
+symlinks that stable prefix to the real `CONDA_PREFIX` at runtime, since only
+then is the real path known. Without this, postgres cannot find its tzdata,
+whose `--with-system-tzdata` path is baked in as an absolute build-prefix path.
+
+See [conda-prefix-paths.md](conda-prefix-paths.md) for the path hazards that
+the runfiles fallback implies (symlink dereferencing, and `+` in canonical repo
+names) and the proposed fixes.
 
 ## Comparison with rules_multitool
 
