@@ -25,6 +25,7 @@ jobs:
           - e2e/conda
           - e2e/conda-env
           - e2e/conda_multi_version
+          - e2e/conda_opensearch
           - e2e/conda_redis
           - e2e/itest
     defaults:
