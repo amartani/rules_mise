@@ -38,28 +38,21 @@ opensearch = [tool, "opensearch"]
 def conda_prefix():
     """Returns the conda prefix the tool wrapper dispatches into.
 
-    The wrapper exports `CONDA_PREFIX` to the binary it execs, and normally
-    lives right next to that prefix's `bin/`. But depending on how the
-    runfiles tree is materialized it can also sit in the hub repo, where the
-    wrapper falls back to the tool's own repo inside the runfiles tree. Both
-    layouts have to be handled, and neither is discoverable from the
-    `CONDA_PREFIX` of the test process itself.
+    Asks the wrapper itself via `--rules-mise-conda-prefix`, so the test
+    shares the dispatcher's layout resolution (sibling, runfiles-root, and
+    manifest modes) instead of re-implementing it.
     """
-    script_dir = os.path.dirname(os.path.realpath(tool))
-    nearby = os.path.join(script_dir, "conda-prefix")
-    if os.path.isdir(nearby):
-        return nearby
-    root = script_dir
-    while root != os.sep and not root.endswith(".runfiles"):
-        root = os.path.dirname(root)
-    matches = sorted(
-        os.path.join(root, entry, "tools", "conda_opensearch", "conda-prefix")
-        for entry in os.listdir(root)
-    )
-    matches = [path for path in matches if os.path.isdir(path)]
-    if len(matches) != 1:
-        sys.exit("cannot locate the conda prefix from %s (found %r)" % (tool, matches))
-    return matches[0]
+    result = subprocess.run(
+        [tool, "--rules-mise-conda-prefix"],
+        capture_output=True, text=True)
+    print(result.stdout)
+    print(result.stderr, file=sys.stderr)
+    if result.returncode != 0:
+        sys.exit(result.returncode)
+    path = result.stdout.strip()
+    if not os.path.isdir(path):
+        sys.exit("cannot locate the conda prefix from %s (got %r)" % (tool, path))
+    return path
 
 
 # OpenSearch refuses to run as root, and remote-execution containers run as

@@ -321,6 +321,52 @@ Cost: small. Risk: none.
    general fix.
 5. **P6** — docs.
 
+## Implementation status
+
+Recorded when P1/P2 landed; P3–P5 were deliberately deferred (see below).
+The current `e2e/conda_opensearch` scratch copy (`cp -a libexec/opensearch`
+into `$TMPDIR`) remains the supported path: it is real and `+`-free, so it
+fixes both symptoms without any dispatcher copy.
+
+- **P1 — done** (`mise/hub.bzl`). The dispatcher now fails loudly when no
+  layout resolves (`cannot locate the conda prefix for <tool>`), handles the
+  manifest-only runfiles mode the original walk missed (locates itself via
+  `$RUNFILES_MANIFEST_FILE`, mirroring `run_in.template.sh`), and warns when
+  the resolved prefix contains no symlinks near the top (`find
+  "$CONDA_PREFIX" -maxdepth 2 -type l`). The check is a warning, not a
+  failure, and it scans the whole prefix rather than `bin/<tool>`: the
+  dispatcher does not know which entry points are supposed to be links
+  without a fetch-time manifest, and some prefixes (e.g. postgres `bin/`)
+  legitimately contain real files.
+- **P2 — done with a deviation** (`mise/hub.bzl`, `e2e/conda_opensearch`).
+  Instead of a sibling `tool_env` target emitting the full environment as
+  JSON, the dispatcher accepts `--rules-mise-conda-prefix`, which prints the
+  resolved `CONDA_PREFIX` and exits. The flag reuses the exact resolution
+  the binary path uses, with no new Bazel rule, template, or toolchain
+  plumbing; the prefix is all current callers need. `test_opensearch.py`
+  now asks the wrapper instead of carrying its own two-layout resolution.
+  If a caller later needs `PATH` or activation-script results, extend the
+  flag (e.g. `--rules-mise-conda-env` emitting JSON) rather than adding a
+  target.
+- **P3 — deferred.** A static `tool_env = {"conda_opensearch":
+  {"OPENSEARCH_HOME": "$CONDA_PREFIX/libexec/opensearch"}}` cannot express
+  the per-test scratch copy the e2e needs (`$TMPDIR` is only known at test
+  runtime), and on its own it does not fix symptom 2: `$CONDA_PREFIX` under
+  remote runfiles still contains the canonical `++`/`+` segments, so
+  `URLDecoder.decode()` still breaks. It also needs naming care against the
+  existing `mise.conda_env` `envs` concept. Keeping `OPENSEARCH_HOME` in
+  the test is the smaller, correct surface for now.
+- **P4/P5 — deferred.** The scratch copy already gives every run a
+  `+`-free, link-independent home at the cost of 191 MB per test run; moving
+  that copy into the dispatcher (opt-in `plain_prefix` with `links.json`
+  reconstruction, portable `cp -a` fallback, staging + rename for concurrent
+  first runs) is retained below as the design, but it must wait for the P5
+  measurement (cold-copy time on the BuildBuddy container filesystem, `/tmp`
+  persistence, disk pressure, macOS behaviour) before becoming the default
+  or an opt-in flag.
+- **P6 — done** (`docs/architecture.md`, this file). The dispatcher section
+  now records both hazards next to the resolution logic.
+
 ## Open questions
 
 - Which executors currently dereference the input tree? Only local and

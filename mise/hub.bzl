@@ -287,6 +287,10 @@ def _download_extract_conda(rctx, tool_name, binary, conda):
         ))
 
     tool_runfiles_dir = "{repo}/tools/{tool}".format(repo = rctx.name, tool = tool_name)
+    dispatcher_runfiles = "{runfiles_dir}/{os_cpu}_executable".format(
+        runfiles_dir = tool_runfiles_dir,
+        os_cpu = os_cpu,
+    )
     lines = [
         "#!/usr/bin/env bash",
         "_MISE_SOURCE=\"$0\"",
@@ -313,7 +317,37 @@ def _download_extract_conda(rctx, tool_name, binary, conda):
         "  fi",
         "  unset _MISE_ROOT",
         "fi",
+        # Manifest-only runfiles is a real mode (see run_in.template.sh): the
+        # directory walk above finds nothing there, so fall back to locating
+        # this dispatcher through the manifest and re-deriving its directory.
+        "if [ ! -d \"$SCRIPT_DIR/conda-prefix\" ] && [ -n \"${RUNFILES_MANIFEST_FILE:-}\" ] && [ -f \"$RUNFILES_MANIFEST_FILE\" ]; then",
+        "  _MISE_MANIFEST_TOOL=\"$(grep -m1 -F \"{dispatcher_runfiles} \" \"$RUNFILES_MANIFEST_FILE\" | cut -d ' ' -f 2-)\"".format(dispatcher_runfiles = dispatcher_runfiles),
+        "  if [ -n \"$_MISE_MANIFEST_TOOL\" ]; then",
+        "    SCRIPT_DIR=\"$(cd -P \"$(dirname \"$_MISE_MANIFEST_TOOL\")\" && pwd)\"",
+        "  fi",
+        "  unset _MISE_MANIFEST_TOOL",
+        "fi",
+        "if [ ! -d \"$SCRIPT_DIR/conda-prefix\" ]; then",
+        "  echo \"rules_mise: cannot locate the conda prefix for {tool} (tried '$SCRIPT_DIR/conda-prefix' and '$RUNFILES_DIR/{runfiles_dir}/conda-prefix')\" >&2".format(tool = tool_name, runfiles_dir = tool_runfiles_dir),
+        "  exit 1",
+        "fi",
         "export CONDA_PREFIX=\"$SCRIPT_DIR/conda-prefix\"",
+        # The runfiles tree may arrive with symlinks dereferenced as plain
+        # files (RBE uploads file-type artifacts as regular files, even when
+        # they are symlinks on local disk). Binaries that resolve their own
+        # location through a symlink then fail far from the cause (e.g. a JVM
+        # ClassNotFoundException). A conda prefix normally carries many
+        # symlinks, so the absence of any near the top is worth a warning.
+        "if ! find \"$CONDA_PREFIX\" -maxdepth 2 -type l 2>/dev/null | grep -q .; then",
+        "  echo \"rules_mise: warning: no symlinks under $CONDA_PREFIX for {tool}; the runfiles tree may have been dereferenced (see docs/conda-prefix-paths.md)\" >&2".format(tool = tool_name),
+        "fi",
+        # Prints the resolved prefix without execing a binary, so tests and
+        # callers share the dispatcher's layout resolution instead of
+        # re-implementing it (P2). Must precede the argv[0]/first-arg dispatch.
+        "if [ \"${1:-}\" = \"--rules-mise-conda-prefix\" ]; then",
+        "  printf '%s\\n' \"$CONDA_PREFIX\"",
+        "  exit 0",
+        "fi",
         "_MISE_STABLE=\"" + stable_prefix + "\"",
         "if [ ! -e \"$_MISE_STABLE\" ]; then",
         "  mkdir -p \"$(dirname \"$_MISE_STABLE\")\" 2>/dev/null || true",

@@ -208,8 +208,27 @@ in `templates.bzl` additionally accepts `osx`/`aarch64` aliases.)
 The dispatcher composes env vars like mise's conda launcher:
 `CONDA_PREFIX`/`CONDA_DEFAULT_ENV`/`CONDA_SHLVL`, `PATH` with the prefix's
 `bin/` and `sbin/` first, plus sourcing `etc/conda/activate.d/*.sh`. It resolves
-its own location through symlinks, with a runfiles-tree fallback for remote
+its own location through symlinks, with a runfiles-tree fallback (directory
+walk plus `$RUNFILES_MANIFEST_FILE` lookup, mirroring `run_in`) for remote
 execution where the `tool` output symlink may materialize as a plain file.
+It fails loudly when no layout resolves, warns when the resolved prefix
+contains no symlinks near the top (a dereferenced input tree symptom), and
+accepts `--rules-mise-conda-prefix` to print the resolved prefix without
+execing a binary.
+
+Two path hazards apply to every conda prefix and are easy to misdiagnose
+(see [conda-prefix-paths.md](conda-prefix-paths.md) for the full analysis):
+
+- The runfiles tree assumes a symlink forest that remote execution does not
+  preserve: file-type artifacts upload as regular files even when they are
+  symlinks on disk, so self-locating binaries (symlink `$0` walks) break in
+  confusing ways. `e2e/conda_opensearch` works around this by copying the
+  distribution into a scratch dir.
+- Bzlmod canonical repository names contain `+` (`<module>++<ext>+<repo>`),
+  so any tool that parses its own path as a URL (e.g. OpenSearch's
+  `URLDecoder.decode()` on policy files) breaks on remote executors, where
+  the path is materialized, while accidentally passing locally via the
+  `+`-free repository cache.
 
 Build-prefix placeholders from each package's `info/has_prefix` are replaced at
 fetch time with a short stable prefix (`/tmp/mise_conda_<hash>`), text by plain
