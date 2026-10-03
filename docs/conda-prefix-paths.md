@@ -43,8 +43,8 @@ file paths). `+` becomes a space, so the file cannot be opened.
 ## Root cause 1: the runfiles tree materializes symlinks as plain files
 
 The `conda_files` filegroup lists symlinks explicitly so the runfiles tree can
-recreate them (`mise/hub.bzl`). That only works when the executor materializes
-the input tree as a symlink forest. It does not always.
+recreate them (`mise/hub.bzl`). That only works when the input tree arrives
+with its symlink structure intact. It does not always.
 
 Observed on the same commit, same machine, two executors:
 
@@ -59,12 +59,19 @@ Observed on the same commit, same machine, two executors:
 This is not opensearch-specific. The `conda:opensearch` prefix contains
 **1653** symlinks (`share/terminfo` 1038, `lib/jvm` 205, `share/man` 51,
 `include/ncurses*` 36, …) and the `conda:postgresql` prefix is **160 MB**.
-Any executor that dereferences the input tree duplicates all of them, and
+Any input tree that arrives dereferenced duplicates all of them, and
 breaks every binary that resolves its own location through a symlink.
 
+The dereferencing happens on the Bazel client side, not in the executor:
+source artifacts are tracked as `file` type, and file-type artifacts are
+uploaded to remote execution as regular files even when they are symlinks
+on local disk (see `bazelbuild/bazel#23620`, `#16070`, `#26551`). No
+executor-side "preserve symlinks" flag can restore what was already
+dereferenced at upload time; only `declare_symlink` outputs preserve
+"symlinkness" over RBE, which a `filegroup` of repo files cannot use.
+
 `rules_mise` depends on symlink semantics here but nowhere documents or
-asserts it, which is the actual defect. Which executors can be asked to
-preserve symlinks needs confirming before relying on any flag.
+asserts it, which is the actual defect.
 
 ## Root cause 2: `+` is unavoidable in bzlmod canonical repository names
 
@@ -120,8 +127,7 @@ so the bundled JDK is still the conda one.
 
 Two costs make this a poor thing to leave as the only answer:
 
-- **191 MB copied per test run.** `cp -a --reflink=auto` would be nearly free
-  on a CoW-capable filesystem; `--reflink=auto` is not the default.
+- **191 MB copied per test run.**
 - **`conda_prefix()` is duplicated logic.** The test re-implements the
   dispatcher's two-layout resolution (~20 lines) because the resolved prefix
   is not exposed as a target.
@@ -129,7 +135,8 @@ Two costs make this a poor thing to leave as the only answer:
 ## Proposed changes
 
 Ordered by value per unit of risk. P1 and P2 are independent and can land
-separately; P4 is the real fix but needs the P5 validation first.
+separately; P3 alone fixes OpenSearch without any copy; P4 is the general
+fix but needs the P5 validation first.
 
 ### P1 — Fail loudly when the prefix cannot be resolved
 
@@ -147,10 +154,18 @@ fi
 ```
 
 The same commit should add the layout the dispatcher is missing.
-`run_in.template.sh:17-24` handles three — sibling, `$RUNFILES_DIR`, and
-`$RUNFILES_MANIFEST_FILE` (by grepping the manifest) — while the conda
-dispatcher only walks directories. Manifest-only runfiles is a real mode, so
-the dispatcher would fail there silently today.
+`run_in.template.sh:15-28` handles sibling, `$RUNFILES_DIR`,
+`$RUNFILES_MANIFEST_FILE` (by grepping the manifest), and the legacy
+`$PWD`-relative short path — while the conda dispatcher only walks
+directories. Manifest-only runfiles is a real mode, so the dispatcher
+would fail there silently today.
+
+Failing on a missing directory is not enough: the observed remote failure
+passes `[ -d ]` with a dereferenced tree. The same commit should also log
+(or check) symlink state — e.g. whether well-known entry points such as
+`$CONDA_PREFIX/bin/<tool>` are still symlinks — so the next dereferencing
+regression fails fast instead of resurfacing as a JVM
+`ClassNotFoundException`.
 
 Cost: small. Risk: low; it converts a confusing failure into a clear one.
 
@@ -193,7 +208,12 @@ with `$CONDA_PREFIX` expanded when the dispatcher is generated. `hub()` has no
 such attribute today; `mise.conda_env` already has an `envs` concept, so the
 naming needs care to avoid confusion with it.
 
-This removes the repeated `env=` plumbing in tests and fixes *this* symptom.
+This removes the repeated `env=` plumbing in tests and fixes *this* symptom
+on its own: with `OPENSEARCH_HOME` pointing directly at
+`$CONDA_PREFIX/libexec/opensearch`, the `opensearch-env` walk starts from a
+real `bin/` inside the distribution and no longer depends on the outer
+`bin/opensearch -> ../libexec/...` symlink that remote execution
+dereferences.
 It does not fix root cause 1 in general, because a package can self-locate in
 ways no environment variable reaches.
 
@@ -204,31 +224,59 @@ Cost: small. Risk: low.
 The dispatcher already publishes a stable, runfiles-independent prefix at
 `/tmp/mise_conda_<hash>` (`mise/hub.bzl:275`), created at tool runtime because
 only then is the real `CONDA_PREFIX` known. Extend it so that, for tools that
-opt in, that path is a **real directory** rather than a symlink:
+opt in, that path is a **real directory** rather than a symlink, with
+symlinks reconstructed from a manifest:
 
 ```bash
-cp -a --reflink=auto "$CONDA_PREFIX/." "$staging/" && mv "$staging" "$_MISE_PLAIN"
+cp -a "$CONDA_PREFIX/." "$staging/" && <recreate links> && mv "$staging" "$_MISE_PLAIN"
 ```
 
-Staging plus a rename keeps concurrent first runs from interleaving, the same
-concern the existing `ln -s` (deliberately without `-f`) addresses. The rename
-is atomic because the target does not exist yet; `mv -T` is not needed and
-would be a GNU-only dependency this rule set cannot take, since it also
-supports macOS.
+A plain copy alone is not sufficient. By the time the dispatcher runs, the
+runfiles tree has already arrived dereferenced (see root cause 1), so
+`cp -a` would just copy plain files elsewhere: `<plain>/bin/opensearch`
+would still be a regular file and `opensearch-env` would still derive
+`<plain>` as its home. `hub.bzl` already computes the `links: path ->
+target` map at fetch time when enumerating `conda_files`; P4 must emit that
+map (e.g. `links.json` next to the dispatcher) and, after the copy, replace
+each dereferenced file with the recorded symlink (`rm` + `ln -s`). Most
+targets are relative and intra-prefix, so this restores the `$0` walk even
+though RBE cannot transport the symlinks themselves.
 
-That one change resolves both symptoms for every self-locating tool, and it
+Portability and concurrency notes for the implementation:
+
+- `cp -a --reflink=auto` is GNU coreutils-only and must not be the only
+  path: macOS `cp` has no `--reflink` flag. Fall back to plain `cp -a`
+  (or equivalent) where the flag is unsupported. Do not use `cp -al`
+  hardlinks as a cheaper copy: shared inodes mean anything a tool writes
+  would corrupt the runfiles tree.
+- Staging plus a rename keeps concurrent first runs from interleaving, the
+  same concern the existing `ln -s` (deliberately without `-f`) addresses.
+  The second concurrent `mv` to an already-created `$plain` must be treated
+  as success (clean up the staging dir), not as failure. The rename is
+  atomic because the target does not exist yet; `mv -T` is not needed and
+  would be a GNU-only dependency this rule set cannot take, since it also
+  supports macOS.
+- The copy must be scoped and its lifetime explicit: whole-prefix copies are
+  160 MB (postgres) / 191 MB (opensearch) per cold worker, `/tmp` persistence
+  across actions is executor-dependent, and a copied tree goes stale if a
+  tool writes into `CONDA_PREFIX` (the conda layout says it should not).
+  The existing hash (`tool|os_cpu|basenames`) already rotates the stable
+  path when the closure changes, which the copy must preserve.
+
+That combination resolves both symptoms for every self-locating tool, and it
 removes the 191 MB mirror from the test:
 
 - `$CONDA_PREFIX` is `+`-free, so `URLDecoder.decode()` is harmless
-- it is a real tree with intact symlinks, so the `$0` walk in
-  `opensearch-env` resolves correctly
+- links are recreated from the fetch-time manifest, so the `$0` walk in
+  `opensearch-env` resolves correctly even from a dereferenced input tree
 - users hitting this with their own JVM or `.NET` tool get fixed without
   knowing any of this exists
 
 **It must be opt-in.** 160 MB (postgres) / 191 MB (opensearch) per prefix,
 copied on first invocation, is not a reasonable default to impose on every
 conda user to fix a JVM-specific problem. A per-tool flag makes both the cost
-and the escape hatch visible:
+and the escape hatch visible (keys are the Bazel tool keys, so versioned
+tools use e.g. `conda_postgresql_17.7`):
 
 ```python
 mise.hub(lockfile = "//:mise.lock", plain_prefix = ["conda_opensearch"])
@@ -242,50 +290,43 @@ tool writes into `CONDA_PREFIX` (the conda layout says it should not).
 
 ### P5 — Validate the copy cost on the target executor
 
-`cp --reflink=auto` is nearly free on btrfs/xfs and degrades to a full copy
-elsewhere. On an executor whose container filesystem supports neither CoW nor
-reflinks, the opt-in flag in P4 becomes a 190 MB copy on every cold worker,
-which changes its character from "prudent" to "load-bearing".
+A full prefix copy is 160–191 MB per cold worker. On an executor whose
+container filesystem supports neither CoW nor reflinks, the opt-in flag in
+P4 is a full copy on every cold worker, which changes its character from
+"prudent" to "load-bearing".
 
-Measure before committing to P4: check reflink support on the BuildBuddy
-container filesystem, and time a cold copy.
+Measure before committing to P4: time a cold copy (including the
+link-recreation step) on the BuildBuddy container filesystem, confirm the
+portable `cp -a` fallback path and its macOS behaviour, and check `/tmp`
+persistence, disk pressure, and concurrent-first-run behaviour.
 
 Cost: small. Risk: none (measurement only). Blocks P4.
 
-### P6 — A generic reflink copy helper
-
-The test shells out to `cp -a`. A small `copy_directory` rule, or at minimum
-documenting the `--reflink=auto` idiom, keeps e2e workspaces from
-re-deriving it. Hardlinks (`cp -al`) are cheaper still but share inodes, so
-anything a tool writes would corrupt the runfiles tree — worth documenting as
-a trap rather than defaulting to it.
-
-Cost: small. Risk: low.
-
-### P7 — Document both hazards
+### P6 — Document both hazards
 
 Neither root cause is discoverable from the code or from the error messages.
 `docs/architecture.md` describes the dispatcher's symlink resolution without
-noting that it assumes a symlink forest, and nothing records that bzlmod
-canonical repo names contain `+`.
+noting that it assumes a symlink forest that RBE does not preserve, and
+nothing records that bzlmod canonical repo names contain `+`.
 
 Cost: small. Risk: none.
 
 ## Recommendation
 
-1. **P1** — diagnostics; would have cut the initial investigation
-   substantially on its own.
+1. **P1** — diagnostics (including the symlink-state check); would have cut
+   the initial investigation substantially on its own.
 2. **P2** — removes real duplication and makes every future e2e cheaper.
-3. **P5** (measure), then **P4** as opt-in — the actual fix.
-4. **P3**, **P6**, **P7** — independent cleanups.
+3. **P3** — declarative env; fixes OpenSearch without any copy.
+4. **P5** (measure), then **P4** as opt-in with link reconstruction — the
+   general fix.
+5. **P6** — docs.
 
 ## Open questions
 
-- Can BuildBuddy's executor be configured to preserve input-tree symlinks? If
-  so, root cause 1 is partly an executor configuration question and P4 is
-  narrower than it looks.
 - Which executors currently dereference the input tree? Only local and
-  BuildBuddy were exercised here.
+  BuildBuddy were exercised here — but since the dereferencing happens
+  client-side at RBE upload time, executor coverage matters less than which
+  Bazel versions/flags are in play.
 - Do other conda tools in common use self-locate through symlinks? `psql`,
   `initdb` and `pg_ctl` are real files in the postgres prefix, which is why
   `e2e/conda` passes on remote execution even though that prefix also carries
