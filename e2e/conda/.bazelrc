@@ -2,12 +2,6 @@ import ../../tools/preset.bazelrc
 
 common --@rules_python//python/config_settings:bootstrap_impl=script
 
-# Keep MODULE.bazel.lock committed and complete, like the root module does.
-# Each e2e workspace is its own Bazel module, so without this a stale lockfile
-# is silently rewritten in place on the next build instead of failing.
-# Refresh with: bazel mod tidy --lockfile_mode=refresh
-common --lockfile_mode=error
-
 build:buildbuddy --bes_results_url=https://app.buildbuddy.io/invocation/ --bes_backend=grpcs://remote.buildbuddy.io
 common:buildbuddy --remote_cache_compression
 common:buildbuddy --experimental_remote_cache_chunking

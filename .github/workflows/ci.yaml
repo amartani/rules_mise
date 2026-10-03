@@ -41,7 +41,7 @@ jobs:
           repository-cache: true
           bazelrc: |
             ${{ matrix.folder == '.' && 'common --config=ci ' || '' }}
-            ${{ !startsWith(matrix.bazel, '9.') && 'common --lockfile_mode=update' || '' }}
+            ${{ matrix.folder == '.' && !startsWith(matrix.bazel, '9.') && 'common --lockfile_mode=update' || '' }}
       - run: bazel test //...
   smoke:
     # e2e/smoke is the BCR presubmit module: run it on every OS x arch so
@@ -80,12 +80,6 @@ jobs:
           bazelisk-cache: true
           disk-cache: ${{ github.workflow }}
           repository-cache: true
-          # e2e workspaces pin --lockfile_mode=error so a stale lockfile fails
-          # loudly instead of being rewritten in place. The committed lockfile
-          # is written in the .bazelversion format though, and the lock file
-          # format changes between Bazel releases, so relax it on 8.x.
-          bazelrc: |
-            ${{ !startsWith(matrix.bazel, '9.') && 'common --lockfile_mode=update' || '' }}
       - run: bazel test //...
   hk:
     runs-on: ubuntu-latest
