@@ -1,7 +1,11 @@
-9.2.0
+9.3.1
 # The first line of this file is used by Bazelisk and Bazel to be sure
 # the right version of Bazel is used to build and test this repo.
-# This also defines which version is used on CI.
+# This also defines which version is used on CI. Since the root
+# .bazelrc pins --lockfile_mode=error, bump this in lockstep with
+# MODULE.bazel.lock (regenerate it with the new version via
+# `bazel mod deps --lockfile_mode=update`) so strict runs below and
+# BuildBuddy stay consistent with the committed lockfile.
 #
 # Note that you should also run the e2e workspaces against other Bazel
 # versions you support.
