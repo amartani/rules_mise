@@ -1,5 +1,7 @@
+[settings]
+idiomatic_version_file_enable_tools = ["bazel"]
+
 [tools]
-bazel = "latest"
 buildifier = "latest"
 "aqua:bazelbuild/buildtools/buildozer" = "latest"
 hk = "latest"

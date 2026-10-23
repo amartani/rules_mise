@@ -45,7 +45,10 @@ url_api = "https://api.github.com/repos/bazel-contrib/buildtools/releases/assets
 [[tools.bazel]]
 version = "9.3.1"
 backend = "aqua:bazelbuild/bazel"
-specifiers = ["latest"]
+specifiers = [
+    "9.3.1",
+    "latest",
+]
 
 [tools.bazel."platforms.linux-arm64"]
 checksum = "sha256:10ba9cb76d4ee748d274dcc2981992bb12b74a203dc41a9c2eceeb8f29359366"
