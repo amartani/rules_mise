@@ -28,14 +28,17 @@ Key aspects (see `mise/private/lockfile.bzl`):
 
 - Tools are `[[tools.<name>]]` (array of tables) or a single `[tools.<name>]`
   table; each entry has `version`, `backend`, and `platforms.<os>-<arch>`
-  subtables. Each entry's `version`/`backend` is recorded on its own binaries
-  (entries may differ).
+  subtables. Entries are grouped by `version` (so one entry per version), and
+  each group carries the first entry's `version`/`backend`.
 - Recognized platforms: `linux-x64`, `linux-arm64`, `macos-x64`, `macos-arm64`,
   `windows-x64`. `linux-*-musl` entries are ignored (folded into the non-musl
   entry); anything else is skipped.
-- Entries without both `url` and `checksum` are skipped. `sha256:` prefixes are
-  stripped before use. Tools left with no supported platform entries are skipped
-  with a warning.
+- Entries without a usable `url` are skipped, as are single-file-compressed
+  assets (`.gz`/`.bz2`/`.xz`/`.zst` — lone compressed binaries that Bazel
+  cannot extract). A `sha256:`-prefixed `checksum` is verified; a checksum in
+  any other format (e.g. mise's `blake3:`), or no checksum at all, leaves the
+  download unverified and marks the tool repo non-reproducible. Tools left with
+  no supported platform entries are skipped with a warning.
 - Tool names are sanitized for Bazel (`_clean`): only `:`, `/`, `+`, `@`, and
   space become `_`; `-` and `.` are kept (e.g. `npm:prettier` → `npm_prettier`).
   The trailing name segment is also kept as an executable-discovery hint
@@ -55,23 +58,34 @@ Key aspects (see `mise/private/lockfile.bzl`):
 ### 2. Module Extension
 
 The module extension (`mise/extensions.bzl`) provides the entry point. It
-accepts a `hub` tag:
+accepts two tags:
 
-- `lockfile`: label of a `mise.lock` file (mandatory, single file).
-- `hub_name`: name of the hub repository (defaults to `"mise"`).
+- `hub`: parses a `mise.lock` into a hub repository.
+  - `lockfile`: label of a `mise.lock` file (mandatory, single file).
+  - `hub_name`: name of the hub repository (defaults to `"mise"`).
+- `conda_env`: exposes several conda tools merged into one prefix (see below).
+  - `name`: environment name; the tool is keyed `conda_env_<name>`.
+  - `lockfile`: label of the `mise.lock` used to resolve `tools`.
+  - `tools`: mise tool names with optional `@version` suffixes.
 
 ```python
 mise = use_extension("@rules_mise//mise:extensions.bzl", "mise")
 mise.hub(lockfile = "//:mise.lock")
+mise.conda_env(
+    name = "pg",
+    lockfile = "//:mise.lock",
+    tools = ["conda:postgresql@18.4", "conda:pgvector@0.8.1"],
+)
 use_repo(mise, "mise")
 
 register_toolchains("@mise//toolchains:all")
 ```
 
-The extension collects lockfiles per `hub_name` across modules (later modules
-win), so multiple lockfiles / modules can feed one hub. Hub names used by the
-root module are reported as direct deps, and the extension reports
-`reproducible = True` metadata.
+The extension collects lockfiles per `hub_name` across modules (a hub may be
+fed by several lockfiles), while `conda_env` entries are collected per
+lockfile label and attached to every hub reading the same lockfile. Hub names
+declared by the root module are reported as direct (or dev) deps, and the
+extension reports `reproducible = True` metadata.
 
 ### 3. Per-Platform Tool Repositories
 
@@ -82,9 +96,13 @@ and prepares its own binary:
 - `kind = "file"`: `rctx.download()` straight to
   `tools/<tool>/<os>_<cpu>_executable[.exe]`.
 - `kind = "archive"` (`.tar.gz`, `.tgz`, `.tar.xz`, `.tar.bz2`, `.tar`, `.zip`):
-  `download_and_extract`, then locate the executable — explicit `file` attribute
-  first, then `<tool-name>` pattern matches, then first executable file — and
-  symlink it to the `..._executable` path.
+  `download_and_extract`, then locate the executable — an explicit `file` path
+  when the tool entry declares one, otherwise the best basename match: patterns
+  try the `hint` (the trailing segment of a backend-prefixed name) before the
+  tool name, in `-`/`_` variants, ranked as exact match (with the platform
+  `.exe` extension), prefix match with no file extension in the remainder
+  (native binaries conventionally have none), then any prefix match. With no
+  match at all, the first file in sorted order is used.
 - `kind = "pkg"` (macOS installer packages): expanded with
   `pkgutil --expand-full` (macOS-only; requires `pkgutil`, marked
   non-reproducible).
@@ -172,7 +190,8 @@ mise/
    `mise.hub(lockfile = "//:mise.lock")`, `use_repo(mise, "mise")`,
    `register_toolchains("@mise//toolchains:all")`.
 2. **Extension execution** (`extensions.bzl`): gathers lockfile labels per hub,
-   calls `bzlmod_hub(name, lockfiles, module_ctx)`.
+   collects `conda_env` declarations per lockfile, and calls
+   `bzlmod_hub(name, lockfiles, module_ctx, envs)`.
 3. **Tool repo creation** (`bzlmod_hub`): parses the lockfiles via
    `lockfile.load_defs()`, instantiates one `tool_repo` per binary (JSON-encoded
    binary descriptor), then creates `_mise_hub` with the lockfile labels.

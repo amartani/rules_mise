@@ -1,4 +1,11 @@
-"mise hub repository"
+"""Mise hub and per-platform tool repositories.
+
+`bzlmod_hub()` (bzlmod mode) and `workspace_hub()` (WORKSPACE mode) create the
+toolchain hub: public entry points that parse the lockfiles, fetch every binary
+with `tool_repo`, and generate the hub's `toolchain_info`/`tool`/`cwd`/... code.
+Users should not call `tool_repo` or `_mise_hub` directly; they are driven by
+the extension and by `register_tools()`.
+"""
 
 load("@bazel_features//:features.bzl", "bazel_features")
 load("@bazel_tools//tools/build_defs/repo:utils.bzl", "read_netrc", "read_user_netrc", "use_netrc")
@@ -591,9 +598,24 @@ def _tool_repo_impl(rctx):
         return None
     return rctx.repo_metadata(reproducible = reproducible)
 
+# Fetches the binary of one tool for one platform into a small repository.
+#
+# Created by `bzlmod_hub()` and by `register_tools()` (WORKSPACE); one repo per
+# (tool, os, cpu) binary under the name `{hub}.{tool}.{os}_{cpu}`. The repo
+# materializes `tools/<tool>/<os>_<cpu>_executable[.exe]` (a symlink into an
+# extracted archive, a downloaded standalone file, or a conda dispatcher for
+# `kind = "conda_env"`), plus for conda tools the full `conda-prefix/` and an
+# explicit-srcs `conda_files` filegroup. Reports `repo_metadata(reproducible =)`
+# depending on whether every download was checksum-verified.
 tool_repo = repository_rule(
     attrs = {
+        # Sanitized mise tool name; also the archive member basename patterns
+        # (with backend prefix disambiguated via the lockfile `hint`).
         "tool_name": attr.string(mandatory = True),
+        # JSON-encoded per-platform binary descriptor built by
+        # `lockfile.load_defs()`: os, cpu, url, checksum, kind, version,
+        # backend, hint, optional file/type/auth_patterns, and for conda
+        # tools the `conda` package closure.
         "binary": attr.string(mandatory = True),
     },
     implementation = _tool_repo_impl,
@@ -671,6 +693,11 @@ def _mise_hub_impl(rctx):
         return None
     return rctx.repo_metadata(reproducible = True)
 
+# Creates the hub repository itself: renders `toolchain_info.bzl` (the
+# `toolchain_info` rule and `declare_toolchain()`), one `tool.bzl`/`BUILD.bazel`
+# per tool package, `toolchains/BUILD.bazel` declaring every toolchain, and
+# `tools.bzl` (`TOOLS` + `register_tools()`) for WORKSPACE usage. Host-generic;
+# all actual binaries live in the per-platform `tool_repo`s.
 _mise_hub = repository_rule(
     attrs = {
         "lockfiles": attr.label_list(mandatory = True, allow_files = True),
@@ -681,6 +708,10 @@ _mise_hub = repository_rule(
 
 def bzlmod_hub(name, lockfiles, module_ctx, envs = None):
     """Creates per-platform tool repos and the toolchain hub for bzlmod.
+
+    Also creates one `tool_repo` per (tool, os, cpu) binary, named
+    `{name}.{tool}.{os}_{cpu}`. Call this from a module extension; use
+    `workspace_hub()` for WORKSPACE mode.
 
     Args:
         name: The name of the hub repository to create.
@@ -713,7 +744,8 @@ def workspace_hub(name, lockfiles, envs = None):
     """Creates the toolchain hub for WORKSPACE mode.
 
     Per-platform tool repos are created by calling `register_tools()`
-    from `@<hub>//:tools.bzl` after this.
+    from `@<hub>//:tools.bzl` after this (the hub repo itself contains no
+    binaries). For bzlmod mode use `bzlmod_hub()` instead.
 
     Args:
         name: The name of the hub repository to create.

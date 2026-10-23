@@ -1,13 +1,23 @@
 "mise run_in provides a shared implementation for cwd and workspace_root execution"
 
 run_in_attrs = {
-    "tool": attr.label(mandatory = True, executable = True, cfg = "exec"),
+    "tool": attr.label(
+        doc = "The wrapped tool executable (typically a hub `tool` target).",
+        mandatory = True,
+        executable = True,
+        cfg = "exec",
+    ),
     "_template_sh": attr.label(default = "//mise/private:run_in.template.sh", allow_single_file = True),
     "_template_bat": attr.label(default = "//mise/private:run_in.template.bat", allow_single_file = True),
 }
 
 def run_in(ctx, env_var):
-    """Expands the run_in wrapper script for a tool.
+    """Expands the run_in wrapper script for a tool (shared by `cwd` and `workspace_root`).
+
+    Renders `run_in.template.sh` (or `run_in.template.bat` when the tool output
+    is a `.exe`, Windows-only) with the wrapped tool's short path and the name
+    of the env var holding the desired working directory, and publish the
+    wrapper as the rule's executable with the tool's runfiles attached.
 
     Args:
         ctx: The rule context. Must provide `tool`, `_template_sh`, and `_template_bat`.

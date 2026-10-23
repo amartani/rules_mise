@@ -43,7 +43,9 @@ mise exec -- hk check --all
   (`_tool_key`: `<tool>@<version>` → e.g. `conda_postgresql_17.7`);
   single-version keys are unchanged.
 - Lockfile gotchas: `linux-*-musl` entries are ignored (folded into non-musl);
-  entries without `url`+`checksum` are silently skipped; only
+  entries without `url` are skipped, as are single-file-compressed urls
+  (`.gz`/`.bz2`/`.xz`/`.zst`) — `checksum` is optional, but non-`sha256:`
+  checksums (or none) leave the download unverified; only
   linux/macOS/windows x64+arm64 (no macos-musl, no windows-arm64) are
   recognized. conda tools additionally carry `conda_deps` per platform, resolved
   against a shared `[conda-packages.<platform>]` lockfile section (`.conda`
