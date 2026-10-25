@@ -31,7 +31,7 @@ register_toolchains("@mise//toolchains:all")
 Then depend on tools through the toolchain-resolved targets:
 
 ```text
-@mise//tools/ruff:tool            -> ruff for the current platform
+@mise//tools/ruff                 -> ruff for the current platform
 @mise//tools/ruff:cwd             -> wrapper running ruff from the current directory
 @mise//tools/ruff:workspace_root  -> wrapper running ruff from $BUILD_WORKSPACE_DIRECTORY
 ```
@@ -101,7 +101,7 @@ Each environment is exposed as a tool of its own, keyed
 `conda_env_<name>`, with the same targets as any other tool:
 
 ```text
-@mise//tools/conda_env_pg:tool  -> runs any binary in the merged prefix
+@mise//tools/conda_env_pg  -> runs any binary in the merged prefix
 ```
 
 `tools` entries are mise tool names with an optional `@version`, resolved

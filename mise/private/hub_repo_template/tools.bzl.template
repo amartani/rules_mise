@@ -5,7 +5,8 @@ In WORKSPACE mode, `workspace_hub()` (from `@rules_mise//mise:hub.bzl`) creates
 the hub, but a hub contains no binaries until its per-platform tool repos
 exist: call `register_tools()` from this file once, then register the tool
 toolchains (`register_toolchains("@<hub>//toolchains:all")`). `TOOLS` maps
-sanitized tool names to the hub's `:tool` labels for BUILD files.
+sanitized tool names to the hub's main tool labels (`//tools/<name>`) for BUILD
+files.
 """
 
 load("@rules_mise//mise:hub.bzl", "tool_repo")

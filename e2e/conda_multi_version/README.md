@@ -10,8 +10,8 @@ Exercises **two major versions** of a `conda:`-backend tool from one
 
 `mise lock` records one `[[tools."conda:postgresql"]]` entry per version, and
 `rules_mise` exposes one tool repo per version
-(`@mise//tools/conda_postgresql_17.7:tool` and
-`@mise//tools/conda_postgresql_18.4:tool`).
+(`@mise//tools/conda_postgresql_17.7` and
+`@mise//tools/conda_postgresql_18.4`).
 
 `test_psql_multi.py` starts both servers at the same time (each `pg_ctl
 start` backgrounds its server), waits until both accept connections, then

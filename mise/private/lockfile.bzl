@@ -269,10 +269,10 @@ def _load_envs(envs, tools, lockfile):
 
     A conda environment is exposed as a tool named `conda_env:<name>` (i.e.
     the `conda_env_<name>` Bazel key) so it gets the same targets as any other
-    tool: `:tool`, `:cwd`, `:workspace_root` and a registered toolchain. The
-    members' package closures are merged into a single `conda-prefix/`, which
-    is the whole point: extensions such as pgvector are only loadable by a
-    server sharing their prefix.
+    tool: `:conda_env_<name>`, `:cwd`, `:workspace_root` and a registered
+    toolchain. The members' package closures are merged into a single
+    `conda-prefix/`, which is the whole point: extensions such as pgvector are
+    only loadable by a server sharing their prefix.
     """
     env_defs = {}
     for env in envs:

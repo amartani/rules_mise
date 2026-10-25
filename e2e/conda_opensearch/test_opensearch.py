@@ -27,7 +27,7 @@ from runfiles import Runfiles
 r = Runfiles.Create()
 
 REPO = "mise/tools/conda_opensearch"
-tool = r.Rlocation(os.path.join(REPO, "tool"))
+tool = r.Rlocation(os.path.join(REPO, "conda_opensearch"))
 
 # The conda tool wrapper dispatches to the conda prefix's bin/ via its first
 # argument (e.g. `tool opensearch --version`), while also supporting argv[0]

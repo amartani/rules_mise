@@ -52,7 +52,7 @@ Key aspects (see `mise/private/lockfile.bzl`):
 - conda tools (`backend = "conda:..."`) additionally carry `conda_deps` per
   platform, resolved against a shared `[conda-packages.<platform>]` lockfile
   section. Only `bin/` and `sbin/` provides become Bazel targets via the
-  dispatcher (currently a single `:tool` wrapper dispatching on its first
+  dispatcher (currently a single `:<tool>` wrapper dispatching on its first
   argument and on `argv[0]`).
 
 ### 2. Module Extension
@@ -117,8 +117,10 @@ and prepares its own binary:
   read, since either may be the only one present. A generated bash dispatcher
   (`<os>_<cpu>_executable`) sets the conda runtime environment (`CONDA_PREFIX`,
   `PATH`, activation scripts) and dispatches on `argv[0]` (for per-binary
-  symlinks) or on its first argument (so a single `:tool` can run any `bin/`
-  binary, e.g. `tool psql --version`).
+  symlinks) or on its first argument (so a single `:<tool>` can run any `bin/`
+  binary, e.g. `conda_postgresql psql --version`). The basename of the hub's
+  own target (`<tool>`, or `tool`) always dispatches on the first argument,
+  even when a tool name matches a binary.
   Windows conda is unsupported and fails fast.
 
 Downloads honor private registries via netrc (`NETRC` env / user netrc matched
@@ -141,8 +143,13 @@ and the user-facing rules:
 - `tools/<tool>/tool.bzl` — a `tool` rule that resolves
   `//tools/<tool>:toolchain_type` and symlinks the selected toolchain executable
   to its own output (plus runfiles, so conda closures travel with it).
-- `tools/<tool>/BUILD.bazel` — `toolchain_type`, `:tool`, plus `:cwd` and
-  `:workspace_root` wrappers (below).
+- `tools/<tool>/BUILD.bazel` — `toolchain_type`, the `:<tool>` `tool` target
+  (`@mise//tools/<tool>`), a deprecated `:tool` alias of it, plus `:cwd` and
+  `:workspace_root` wrappers (below). Naming the target after the tool keeps
+  the tool's basename on its output (plus `.exe` on Windows), which
+  `argv[0]`-dispatching binaries such as mise require. Tools whose name clashes
+  with another target in the package (`tool`, `cwd`, `workspace_root`,
+  `toolchain_type`) keep the `tool` target at `:tool`, with no alias.
 - `tools.bzl` — `TOOLS` label map + `register_tools()` for non-bzlmod
   `WORKSPACE` usage (`workspace_hub()` path).
 
@@ -152,11 +159,11 @@ Tools resolve through the toolchain, so the same label picks the right binary
 per execution platform:
 
 ```text
-@mise//tools/ruff:tool -> ruff for the current platform
+@mise//tools/ruff -> ruff for the current platform
 @mise//tools/ruff:cwd -> wrapper running ruff with $PWD = Bazel's cwd
 @mise//tools/ruff:workspace_root -> ruff with $BUILD_WORKSPACE_DIRECTORY as cwd
-@mise//tools/conda_postgresql:tool -> conda wrapper for prefix bin/ binaries
-@mise//tools/conda_postgresql_17.7:tool -> same, for the 17.7 install
+@mise//tools/conda_postgresql -> conda wrapper for prefix bin/ binaries
+@mise//tools/conda_postgresql_17.7 -> same, for the 17.7 install
 ```
 
 `:cwd` / `:workspace_root` (`mise/private/run_in.bzl`) expand a small wrapper
@@ -201,7 +208,7 @@ mise/
 5. **Hub generation** (`_mise_hub_impl`): renders `toolchain_info.bzl`,
    root/tool `BUILD` files, per-tool `tool.bzl` + `BUILD.bazel`,
    `toolchains/BUILD.bazel`, and `tools.bzl`.
-6. **Build usage**: `@mise//tools/<tool>:tool` resolves through the registered
+6. **Build usage**: `@mise//tools/<tool>` resolves through the registered
    toolchain for the execution platform.
 
 ## Key Implementation Details
@@ -229,7 +236,7 @@ The dispatcher composes env vars like mise's conda launcher:
 `bin/` and `sbin/` first, plus sourcing `etc/conda/activate.d/*.sh`. It resolves
 its own location through symlinks, with a runfiles-tree fallback (directory
 walk plus `$RUNFILES_MANIFEST_FILE` lookup, mirroring `run_in`) for remote
-execution where the `tool` output symlink may materialize as a plain file.
+execution where the `tool` rule's output symlink may materialize as a plain file.
 It fails loudly when no layout resolves, warns when the resolved prefix
 contains no symlinks near the top (a dereferenced input tree symptom), and
 accepts `--rules-mise-conda-prefix` to print the resolved prefix without

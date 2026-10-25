@@ -25,9 +25,9 @@ r = Runfiles.Create()
 # its own wrapper dispatching to its own conda prefix's bin/.
 VERSIONS = {
     "17": r.Rlocation(os.path.join(
-        "mise/tools/conda_postgresql_17.7", "tool")),
+        "mise/tools/conda_postgresql_17.7", "conda_postgresql_17.7")),
     "18": r.Rlocation(os.path.join(
-        "mise/tools/conda_postgresql_18.4", "tool")),
+        "mise/tools/conda_postgresql_18.4", "conda_postgresql_18.4")),
 }
 
 # postgres refuses to run as root, and remote-execution containers run as

@@ -126,7 +126,7 @@ def _download_extract_conda(rctx, tool_name, binary, conda):
     shared `conda-prefix/` layout and a dispatcher script sets the conda
     runtime environment (`CONDA_PREFIX`, `PATH`, activation scripts) before
     exec'ing the requested binary, selected via argv[0] or via the first
-    argument (so a single `:tool` target can run any binary in the prefix).
+    argument (so a single tool target can run any binary in the prefix).
 
     `.conda` packages are zipped `tar.zst` archives: the outer zip is extracted
     with Bazel's built-in zip support, then the inner `pkg-*.tar.zst` with
@@ -376,12 +376,20 @@ def _download_extract_conda(rctx, tool_name, binary, conda):
         "done",
         "unset _mise_conda_script",
         "_MISE_BIN=\"$(basename \"$0\")\"",
-        "if [ \"$_MISE_BIN\" != \"tool\" ] && [ -x \"$CONDA_PREFIX/bin/$_MISE_BIN\" ]; then",
-        "  exec \"$CONDA_PREFIX/bin/$_MISE_BIN\" \"$@\"",
-        "fi",
-        "if [ \"$_MISE_BIN\" != \"tool\" ] && [ -x \"$CONDA_PREFIX/sbin/$_MISE_BIN\" ]; then",
-        "  exec \"$CONDA_PREFIX/sbin/$_MISE_BIN\" \"$@\"",
-        "fi",
+        # The hub's main tool target runs this dispatcher under the tool's
+        # name (or `tool`) and always dispatches on its first argument, even
+        # when the tool name (e.g. a `[tool_alias]`) matches a binary.
+        "case \"$_MISE_BIN\" in",
+        "  tool|\"{tool}\") ;;".format(tool = tool_name),
+        "  *)",
+        "    if [ -x \"$CONDA_PREFIX/bin/$_MISE_BIN\" ]; then",
+        "      exec \"$CONDA_PREFIX/bin/$_MISE_BIN\" \"$@\"",
+        "    fi",
+        "    if [ -x \"$CONDA_PREFIX/sbin/$_MISE_BIN\" ]; then",
+        "      exec \"$CONDA_PREFIX/sbin/$_MISE_BIN\" \"$@\"",
+        "    fi",
+        "    ;;",
+        "esac",
         "unset _MISE_BIN",
         "if [ $# -gt 0 ]; then",
         "  exec \"$@\"",
@@ -678,7 +686,7 @@ def _mise_hub_impl(rctx):
         defines.append("declare_{clean_name}_toolchains()".format(clean_name = clean_name))
 
         # Generate BUILD.bazel for this tool (without calling declare_toolchains)
-        templates.hub_tool(rctx, tool_name, "BUILD.bazel", {})
+        templates.hub_tool(rctx, tool_name, "BUILD.bazel", templates.main_target_substitutions(tool_name))
 
     # Generate toolchains/BUILD.bazel
     templates.hub(rctx, "toolchains/BUILD.bazel", {

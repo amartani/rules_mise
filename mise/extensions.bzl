@@ -13,9 +13,9 @@ hub = tag_class(
 
 Several `hub` tags (from this or other modules) declaring the same `hub_name`
 feed a single hub: every lockfile is parsed and its tools are merged there.
-Tools become `@<hub_name>//tools/<sanitized name>:tool` targets plus `:cwd` and
-`:workspace_root` wrappers, and `@<hub_name>//toolchains:all` must be
-registered for toolchain resolution.""",
+Tools become `@<hub_name>//tools/<sanitized name>` targets (with a deprecated
+`:tool` alias) plus `:cwd` and `:workspace_root` wrappers, and `@<hub_name>//toolchains:all` must be registered for toolchain
+resolution.""",
     attrs = {
         "hub_name": attr.string(
             doc = "Name of the hub repository to create (default `mise`).",

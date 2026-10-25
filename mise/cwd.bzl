@@ -1,7 +1,7 @@
 """Mise execution rule that runs a tool from Bazel's client working directory.
 
 `cwd` wraps an executable tool target (typically a hub `tool` such as
-`@mise//tools/ruff:tool`) into an executable wrapper that `exec`s the tool with
+`@mise//tools/ruff`) into an executable wrapper that `exec`s the tool with
 its working directory set to `$PWD` — the directory from which Bazel was
 invoked — so the tool processes the user's files instead of Bazel's execroot or
 runfiles directory. The wrapper locates the tool next to itself first, then

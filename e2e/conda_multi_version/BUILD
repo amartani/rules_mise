@@ -6,8 +6,8 @@ py_test(
     timeout = "moderate",
     srcs = ["test_psql_multi.py"],
     data = [
-        "@mise//tools/conda_postgresql_17.7:tool",
-        "@mise//tools/conda_postgresql_18.4:tool",
+        "@mise//tools/conda_postgresql_17.7",
+        "@mise//tools/conda_postgresql_18.4",
     ],
     deps = [
         "@pypi//bazel_runfiles",
