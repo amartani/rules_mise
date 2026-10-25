@@ -16,8 +16,9 @@ def run_in(ctx, env_var):
 
     Renders `run_in.template.sh` (or `run_in.template.bat` when the tool output
     is a `.exe`, Windows-only) with the wrapped tool's short path and the name
-    of the env var holding the desired working directory, and publish the
-    wrapper as the rule's executable with the tool's runfiles attached.
+    of the env var holding the desired working directory (the wrapper stays in
+    the current directory when it is unset), and publish the wrapper as the
+    rule's executable with the tool's runfiles attached.
 
     Args:
         ctx: The rule context. Must provide `tool`, `_template_sh`, and `_template_bat`.

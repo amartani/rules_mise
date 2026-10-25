@@ -153,15 +153,17 @@ per execution platform:
 
 ```text
 @mise//tools/ruff:tool -> ruff for the current platform
-@mise//tools/ruff:cwd -> wrapper running ruff with $PWD = Bazel's cwd
+@mise//tools/ruff:cwd -> wrapper running ruff with $BUILD_WORKING_DIRECTORY as cwd
 @mise//tools/ruff:workspace_root -> ruff with $BUILD_WORKSPACE_DIRECTORY as cwd
 @mise//tools/conda_postgresql:tool -> conda wrapper for prefix bin/ binaries
 @mise//tools/conda_postgresql_17.7:tool -> same, for the 17.7 install
 ```
 
 `:cwd` / `:workspace_root` (`mise/private/run_in.bzl`) expand a small wrapper
-script (`.sh`, or `.bat` for `.exe` tools) that `cd`s into `$PWD` /
-`$BUILD_WORKSPACE_DIRECTORY` and execs the resolved tool. The wrapper locates
+script (`.sh`, or `.bat` for `.exe` tools) that `cd`s into
+`$BUILD_WORKING_DIRECTORY` (the directory `bazel run` was invoked from) /
+`$BUILD_WORKSPACE_DIRECTORY` and execs the resolved tool. Run directly, outside
+`bazel run`, the wrapper stays in the current directory. The wrapper locates
 the tool next to itself first (works under `bazel run`, direct execution, and in
 the runfiles tree), then via `$RUNFILES_DIR` / the runfiles manifest, and
 finally via the legacy `$PWD`-relative short path.
