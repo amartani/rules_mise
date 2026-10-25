@@ -134,8 +134,11 @@ and the user-facing rules:
 
 - `toolchain_info.bzl` — `toolchain_info` rule (`executable`, `os`, `cpu`,
   `ext`, `files`) plus `declare_toolchain()`, which wires each `tool_repo`
-  executable into `exec` + `target` toolchains constrained on
-  `@platforms//os:{os}` / `@platforms//cpu:{cpu}`.
+  executable into a toolchain whose `target_compatible_with` is
+  `@platforms//os:{os}` / `@platforms//cpu:{cpu}`. There is no
+  `exec_compatible_with` toolchain: in a cross build it would also match and
+  hand targets the execution platform's binary, while a tool used in the exec
+  configuration is built for the execution platform and so matches anyway.
 - `toolchains/BUILD.bazel` — calls every tool's `declare_toolchains()`. Users
   register them with `register_toolchains("@mise//toolchains:all")`.
 - `tools/<tool>/tool.bzl` — a `tool` rule that resolves
@@ -149,7 +152,7 @@ and the user-facing rules:
 ### 5. Tool Usage
 
 Tools resolve through the toolchain, so the same label picks the right binary
-per execution platform:
+for the platform it is built for:
 
 ```text
 @mise//tools/ruff:tool -> ruff for the current platform
@@ -202,7 +205,7 @@ mise/
    root/tool `BUILD` files, per-tool `tool.bzl` + `BUILD.bazel`,
    `toolchains/BUILD.bazel`, and `tools.bzl`.
 6. **Build usage**: `@mise//tools/<tool>:tool` resolves through the registered
-   toolchain for the execution platform.
+   toolchain for the platform it is built for.
 
 ## Key Implementation Details
 
