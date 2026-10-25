@@ -95,8 +95,9 @@ and prepares its own binary:
 
 - `kind = "file"`: `rctx.download()` straight to
   `tools/<tool>/<os>_<cpu>_executable[.exe]`.
-- `kind = "archive"` (`.tar.gz`, `.tgz`, `.tar.xz`, `.tar.bz2`, `.tar`, `.zip`):
-  `download_and_extract`, then locate the executable — an explicit `file` path
+- `kind = "archive"` (`.tar.gz`, `.tgz`, `.tar.xz`, `.tar.bz2`, `.tar.zst`,
+  `.tzst`, `.tar`, `.zip`): `download_and_extract`, then locate the executable —
+  an explicit `file` path
   when the tool entry declares one, otherwise the best basename match: patterns
   try the `hint` (the trailing segment of a backend-prefixed name) before the
   tool name, in `-`/`_` variants, ranked as exact match (with the platform
