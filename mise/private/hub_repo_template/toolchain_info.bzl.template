@@ -2,8 +2,8 @@
 """Toolchain plumbing for tools in the mise hub.
 
 `toolchain_info` carries one platform's resolved tool executable as a
-ToolchainInfo provider; `declare_toolchain()` declares the exec + target
-toolchain pair for a platform, wired to the matching per-platform tool repo.
+ToolchainInfo provider; `declare_toolchain()` declares the toolchain for a
+target platform, wired to the matching per-platform tool repo.
 Users register the generated toolchains via
 `register_toolchains("@<hub>//toolchains:all")`.
 """
@@ -37,7 +37,7 @@ def _extension(os):
     return ""
 
 def declare_toolchain(name, os, cpu, toolchain_type, hub_name):
-    """Declares the toolchain_info targets and exec + target toolchains for a platform.
+    """Declares the toolchain_info target and toolchain for a target platform.
 
     Generated code: called for every locked (tool, os, cpu) binary. The
     generated toolchains resolve the executable from the per-platform tool
@@ -62,18 +62,12 @@ def declare_toolchain(name, os, cpu, toolchain_type, hub_name):
         files = ["@@{hub_name}.{name}.{os}_{cpu}//tools/{name}:conda_files".format(name = name, os = os, cpu = cpu, hub_name = hub_name)],
     )
 
+    # Only a target-constrained toolchain: an exec-constrained one would also
+    # match a cross build (e.g. a Windows test built on Linux) and hand it the
+    # execution platform's binary. A tool used in the exec configuration is
+    # built for the execution platform, so this toolchain still matches there.
     native.toolchain(
-        name = "{name}_{os}_{cpu}_exec".format(name = name, os = os, cpu = cpu),
-        toolchain = ":{name}_{os}_{cpu}_toolchain_info".format(name = name, os = os, cpu = cpu),
-        toolchain_type = toolchain_type,
-        exec_compatible_with = [
-            "@platforms//cpu:{cpu}".format(cpu = cpu),
-            "@platforms//os:{os}".format(os = os),
-        ],
-    )
-
-    native.toolchain(
-        name = "{name}_{os}_{cpu}_target".format(name = name, os = os, cpu = cpu),
+        name = "{name}_{os}_{cpu}_toolchain".format(name = name, os = os, cpu = cpu),
         toolchain = ":{name}_{os}_{cpu}_toolchain_info".format(name = name, os = os, cpu = cpu),
         toolchain_type = toolchain_type,
         target_compatible_with = [

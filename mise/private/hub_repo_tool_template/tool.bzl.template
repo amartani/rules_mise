@@ -2,9 +2,10 @@
 """The toolchain-resolved executable target of one hub tool.
 
 Resolves the registered toolchain of this package's toolchain_type for the
-execution platform and symlinks the selected toolchain's executable (plus its
-runfiles, so conda closures travel with it) next to whichever target this rule
-belongs to. `bazel run` / execs descend through the resolved binary.
+platform this target is built for (the target platform, or the execution
+platform in the exec configuration) and symlinks the selected toolchain's
+executable (plus its runfiles, so conda closures travel with it) next to
+whichever target this rule belongs to. `bazel run` / execs descend through the resolved binary.
 """
 
 load("//:toolchain_info.bzl", "declare_toolchain")
@@ -19,12 +20,12 @@ def _tool_impl(ctx):
     return [DefaultInfo(executable = output, runfiles = runfiles)]
 
 tool = rule(
-    doc = "Runs the mise tool of this package for the execution platform.",
+    doc = "Runs the mise tool of this package for the platform it is built for.",
     executable = True,
     implementation = _tool_impl,
     toolchains = [_TOOLCHAIN_TYPE],
 )
 
 def declare_toolchains():
-    """Declares the exec + target toolchains of this tool, one per platform."""
+    """Declares the toolchains of this tool, one per target platform."""
 {toolchains}
