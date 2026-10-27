@@ -15,7 +15,7 @@ _MUSL_VARIANTS = {
     "linux-arm64-musl": "linux-arm64",
 }
 
-_ARCHIVE_SUFFIXES = [".tar.gz", ".tgz", ".tar.xz", ".tar.bz2", ".tar", ".zip"]
+_ARCHIVE_SUFFIXES = [".tar.gz", ".tgz", ".tar.xz", ".tar.bz2", ".tar.zst", ".tzst", ".tar", ".zip"]
 
 # Single-file compression suffixes that are NOT archives: a lone `.gz`
 # (e.g. taplo's `taplo-linux-x86_64.gz`) is one compressed binary, not a
