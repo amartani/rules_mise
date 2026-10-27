@@ -6,9 +6,9 @@ r = Runfiles.Create()
 
 # Without `.exe`, or without the PE header, toolchain resolution picked the
 # host's binary instead of the Windows target's.
-ruff_binary = r.Rlocation("mise/tools/ruff/tool.exe")
+ruff_binary = r.Rlocation("mise/tools/ruff/ruff.exe")
 if ruff_binary is None:
-    sys.exit("mise/tools/ruff/tool.exe is not in runfiles")
+    sys.exit("mise/tools/ruff/ruff.exe is not in runfiles")
 
 with open(ruff_binary, "rb") as f:
     magic = f.read(2)
