@@ -112,7 +112,7 @@ Declare at least one `hub` tag reading a `mise.lock`, `use_repo` the resulting
 hub, and register `@<hub_name>//toolchains:all`. Optionally declare
 `conda_env` tags to install several conda tools into one shared prefix.
 Tools (and environments) resolve through toolchain selection, so the same
-label picks the right binary for the execution platform.""",
+label picks the right binary for the platform it is built for.""",
     implementation = _extension,
     tag_classes = {
         "conda_env": conda_env,
