@@ -10,18 +10,18 @@ toolchain_type(
 )
 
 tool(
-    name = "tool",
+    name = "{main_target}",
     visibility = ["//visibility:public"],
 )
-
+{tool_alias}
 cwd(
     name = "cwd",
-    tool = ":tool",
+    tool = ":{main_target}",
     visibility = ["//visibility:public"],
 )
 
 workspace_root(
     name = "workspace_root",
-    tool = ":tool",
+    tool = ":{main_target}",
     visibility = ["//visibility:public"],
 )

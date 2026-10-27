@@ -15,11 +15,11 @@ from runfiles import Runfiles
 r = Runfiles.Create()
 
 PG_REPO = "mise/tools/conda_postgresql"
-pg_tool = r.Rlocation(os.path.join(PG_REPO, "tool"))
+pg_tool = r.Rlocation(os.path.join(PG_REPO, "conda_postgresql"))
 psql = [pg_tool, "psql"]
 
 VALKEY_REPO = "mise/tools/conda_valkey-server"
-valkey_tool = r.Rlocation(os.path.join(VALKEY_REPO, "tool"))
+valkey_tool = r.Rlocation(os.path.join(VALKEY_REPO, "conda_valkey-server"))
 
 
 def get_port(env_name, service_name, labels):

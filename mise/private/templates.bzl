@@ -15,6 +15,37 @@ _HOST_CONSTRAINTS_MAPPING = {
     "@platforms//os:windows": "windows",
 }
 
+# Other targets of every tool package; a tool with one of these names keeps
+# `tool` as its main target name.
+_RESERVED_TARGET_NAMES = ["tool", "cwd", "workspace_root", "toolchain_type"]
+
+# TODO: Remove `:tool` once its users have moved to `:<tool>`.
+_TOOL_ALIAS = """
+alias(
+    name = "tool",
+    actual = ":{main_target}",
+    visibility = ["//visibility:public"],
+)
+"""
+
+def _main_target(tool_name):
+    """Returns the name of a tool package's main target.
+
+    The target is named after the tool so that its executable keeps the tool's
+    own basename, which binaries dispatching on `argv[0]` (such as mise
+    itself) require.
+    """
+    if tool_name in _RESERVED_TARGET_NAMES:
+        return "tool"
+    return tool_name
+
+def _main_target_subs(tool_name):
+    main_target = _main_target(tool_name)
+    return {
+        "{main_target}": main_target,
+        "{tool_alias}": _TOOL_ALIAS.format(main_target = main_target) if main_target != "tool" else "",
+    }
+
 def _render_hub(rctx, filename, substitutions = None):
     rctx.template(
         filename,
@@ -41,7 +72,10 @@ def _render_tool_labels(tools):
                     host_tool_keys.append(tool_key)
                 break
     return "".join([
-        '    "{tool_name}": Label("//tools/{tool_name}:tool"),\n'.format(tool_name = tool_name)
+        '    "{tool_name}": Label("//tools/{tool_name}:{target}"),\n'.format(
+            tool_name = tool_name,
+            target = _main_target(tool_name),
+        )
         for tool_name in host_tool_keys
     ])
 
@@ -82,5 +116,6 @@ def _tools_subs(hub_name, tools):
 templates = struct(
     hub = _render_hub,
     hub_tool = _render_hub_tool,
+    main_target_substitutions = _main_target_subs,
     tools_substitutions = _tools_subs,
 )

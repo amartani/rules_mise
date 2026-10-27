@@ -24,9 +24,9 @@ HUB_REPO = "mise"
 
 def env_tool(env):
     """Returns the path of the conda-env dispatcher wrapper for `env`."""
-    path = R.Rlocation(os.path.join(HUB_REPO, "tools", "conda_env_" + env, "tool"))
+    path = R.Rlocation(os.path.join(HUB_REPO, "tools", "conda_env_" + env, "conda_env_" + env))
     if not path:
-        sys.exit("conda env tool not found in runfiles: %s/tools/conda_env_%s/tool" % (HUB_REPO, env))
+        sys.exit("conda env tool not found in runfiles: %s/tools/conda_env_%s/conda_env_%s" % (HUB_REPO, env, env))
     return path
 
 

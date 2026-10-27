@@ -5,7 +5,7 @@ from runfiles import Runfiles
 
 r = Runfiles.Create()
 
-ruff_binary = r.Rlocation("mise/tools/ruff/tool")
+ruff_binary = r.Rlocation("mise/tools/ruff/ruff")
 
 result = subprocess.run(
     [ruff_binary, "format", "--check", __file__], capture_output=True, text=True

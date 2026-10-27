@@ -2,7 +2,7 @@
 
 run_in_attrs = {
     "tool": attr.label(
-        doc = "The wrapped tool executable (typically a hub `tool` target).",
+        doc = "The wrapped tool executable (typically a hub tool target such as `@mise//tools/ruff`).",
         mandatory = True,
         executable = True,
         cfg = "exec",

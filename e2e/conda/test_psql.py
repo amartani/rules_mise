@@ -14,7 +14,7 @@ from runfiles import Runfiles
 r = Runfiles.Create()
 
 REPO = "mise/tools/conda_postgresql"
-tool = r.Rlocation(os.path.join(REPO, "tool"))
+tool = r.Rlocation(os.path.join(REPO, "conda_postgresql"))
 
 # The conda tool wrapper dispatches to the conda prefix's bin/ via its first
 # argument (e.g. `tool psql --version`), while also supporting argv[0]

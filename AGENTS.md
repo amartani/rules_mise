@@ -31,10 +31,14 @@ mise exec -- hk check --all
   platform plus a toolchain hub. Consumer pattern (see
   `e2e/smoke/MODULE.bazel`): `mise.hub(lockfile = "//:mise.lock")`,
   `use_repo(mise, "mise")`, `register_toolchains("@mise//toolchains:all")`.
-- Tool targets: `@mise//tools/<name>:tool` plus `:cwd`, `:workspace_root`. conda
-  tools (e.g. `conda:postgresql`) expose a wrapper dispatching to the conda
-  prefix's `bin/` via the first argument (e.g. `tool psql --version`) and via
-  `argv[0]` for per-binary symlinks.
+- Tool targets: `@mise//tools/<name>` (i.e. `:<name>`, whose executable keeps
+  the tool's basename for `argv[0]`-dispatching binaries such as mise), the
+  deprecated `:tool` alias of it, plus `:cwd`, `:workspace_root`. Names
+  clashing with a package target (`templates.bzl` `_RESERVED_TARGET_NAMES`)
+  keep the main target at `:tool`. conda tools (e.g. `conda:postgresql`)
+  expose a wrapper dispatching to the conda prefix's `bin/` via the first
+  argument (e.g. `conda_postgresql psql --version`) and via `argv[0]` for
+  per-binary symlinks (except the `tool` and `<name>` basenames).
 - Tool-name sanitizing (`lockfile.bzl` `_clean`): only `: / + @` and space
   become `_`; `-` and `.` are kept (e.g. `npm:prettier` → `npm_prettier`). Keep
   in sync when adding lookups.

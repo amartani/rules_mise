@@ -14,6 +14,20 @@ py_test(
 )
 
 py_test(
+    name = "test_named_tool",
+    srcs = ["test_named_tool.py"],
+    data = [
+        "@mise//tools/ruff",
+    ],
+    env = {
+        "RUFF": "$(rlocationpath @mise//tools/ruff)",
+    },
+    deps = [
+        "@pypi//bazel_runfiles",
+    ],
+)
+
+py_test(
     name = "test_cwd_wrapper",
     srcs = ["test_cwd_wrapper.py"],
     data = [
@@ -51,7 +65,7 @@ platform(
 
 windows_tool(
     name = "ruff_windows",
-    tool = "@mise//tools/ruff:tool",
+    tool = "@mise//tools/ruff",
 )
 
 py_test(

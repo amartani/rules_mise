@@ -19,7 +19,7 @@ from runfiles import Runfiles
 r = Runfiles.Create()
 
 REPO = "mise/tools/conda_redis-server"
-tool = r.Rlocation(os.path.join(REPO, "tool"))
+tool = r.Rlocation(os.path.join(REPO, "conda_redis-server"))
 
 # The conda tool wrapper dispatches to the conda prefix's bin/ via its first
 # argument (e.g. `tool redis-server --version`), while also supporting
