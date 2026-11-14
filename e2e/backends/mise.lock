@@ -186,74 +186,74 @@ url = "https://gitea.com/gitea/tea/releases/download/v0.16.0/tea-0.16.0-windows-
 url_api = "https://gitea.com/attachments/dbbc8363-7abf-42d3-be69-4fca0c375eb0"
 
 [[tools."github:mikefarah/yq"]]
-version = "4.53.6"
+version = "4.54.3"
 backend = "github:mikefarah/yq"
 specifiers = ["latest"]
 
 [tools."github:mikefarah/yq"."platforms.linux-arm64"]
-checksum = "sha256:d5e7531273d45c5d4b7abb4a1597c47a0fecb5d6b081dfa755064b38ffcc34f4"
-url = "https://github.com/mikefarah/yq/releases/download/v4.53.6/yq_linux_arm64.tar.gz"
-url_api = "https://api.github.com/repos/mikefarah/yq/releases/assets/522028000"
+checksum = "sha256:980de87c439acb5172707560dd137e9fe4a1628af5aaf6f33b293f04c71d4e9d"
+url = "https://github.com/mikefarah/yq/releases/download/v4.54.3/yq_linux_arm64.tar.gz"
+url_api = "https://api.github.com/repos/mikefarah/yq/releases/assets/726219915"
 provenance = "github-attestations"
 
 [tools."github:mikefarah/yq"."platforms.linux-arm64-musl"]
-checksum = "sha256:d5e7531273d45c5d4b7abb4a1597c47a0fecb5d6b081dfa755064b38ffcc34f4"
-url = "https://github.com/mikefarah/yq/releases/download/v4.53.6/yq_linux_arm64.tar.gz"
-url_api = "https://api.github.com/repos/mikefarah/yq/releases/assets/522028000"
+checksum = "sha256:980de87c439acb5172707560dd137e9fe4a1628af5aaf6f33b293f04c71d4e9d"
+url = "https://github.com/mikefarah/yq/releases/download/v4.54.3/yq_linux_arm64.tar.gz"
+url_api = "https://api.github.com/repos/mikefarah/yq/releases/assets/726219915"
 provenance = "github-attestations"
 
 [tools."github:mikefarah/yq"."platforms.linux-x64"]
-checksum = "sha256:38b907b21b1b04327fb9481c595331d925a67c6ee1aabd0ef419d0b7d12dfb3d"
-url = "https://github.com/mikefarah/yq/releases/download/v4.53.6/yq_linux_amd64.tar.gz"
-url_api = "https://api.github.com/repos/mikefarah/yq/releases/assets/522028025"
+checksum = "sha256:09a25baa0e136b8633949e03117fc82cb9e50d10910f988ef17a1305539ebce4"
+url = "https://github.com/mikefarah/yq/releases/download/v4.54.3/yq_linux_amd64.tar.gz"
+url_api = "https://api.github.com/repos/mikefarah/yq/releases/assets/726219920"
 provenance = "github-attestations"
 
 [tools."github:mikefarah/yq"."platforms.linux-x64-baseline"]
-checksum = "sha256:38b907b21b1b04327fb9481c595331d925a67c6ee1aabd0ef419d0b7d12dfb3d"
-url = "https://github.com/mikefarah/yq/releases/download/v4.53.6/yq_linux_amd64.tar.gz"
-url_api = "https://api.github.com/repos/mikefarah/yq/releases/assets/522028025"
+checksum = "sha256:09a25baa0e136b8633949e03117fc82cb9e50d10910f988ef17a1305539ebce4"
+url = "https://github.com/mikefarah/yq/releases/download/v4.54.3/yq_linux_amd64.tar.gz"
+url_api = "https://api.github.com/repos/mikefarah/yq/releases/assets/726219920"
 provenance = "github-attestations"
 
 [tools."github:mikefarah/yq"."platforms.linux-x64-musl"]
-checksum = "sha256:38b907b21b1b04327fb9481c595331d925a67c6ee1aabd0ef419d0b7d12dfb3d"
-url = "https://github.com/mikefarah/yq/releases/download/v4.53.6/yq_linux_amd64.tar.gz"
-url_api = "https://api.github.com/repos/mikefarah/yq/releases/assets/522028025"
+checksum = "sha256:09a25baa0e136b8633949e03117fc82cb9e50d10910f988ef17a1305539ebce4"
+url = "https://github.com/mikefarah/yq/releases/download/v4.54.3/yq_linux_amd64.tar.gz"
+url_api = "https://api.github.com/repos/mikefarah/yq/releases/assets/726219920"
 provenance = "github-attestations"
 
 [tools."github:mikefarah/yq"."platforms.linux-x64-musl-baseline"]
-checksum = "sha256:38b907b21b1b04327fb9481c595331d925a67c6ee1aabd0ef419d0b7d12dfb3d"
-url = "https://github.com/mikefarah/yq/releases/download/v4.53.6/yq_linux_amd64.tar.gz"
-url_api = "https://api.github.com/repos/mikefarah/yq/releases/assets/522028025"
+checksum = "sha256:09a25baa0e136b8633949e03117fc82cb9e50d10910f988ef17a1305539ebce4"
+url = "https://github.com/mikefarah/yq/releases/download/v4.54.3/yq_linux_amd64.tar.gz"
+url_api = "https://api.github.com/repos/mikefarah/yq/releases/assets/726219920"
 provenance = "github-attestations"
 
 [tools."github:mikefarah/yq"."platforms.macos-arm64"]
-checksum = "sha256:4e2b18f4242c720965af7919dc0573819474cecf03a71b6cd7656025f2e5162c"
-url = "https://github.com/mikefarah/yq/releases/download/v4.53.6/yq_darwin_arm64.tar.gz"
-url_api = "https://api.github.com/repos/mikefarah/yq/releases/assets/522028017"
+checksum = "sha256:153069933ca07d6a3a2212641a4393f198aea0c7bfc7418a4a9d11445792cd6d"
+url = "https://github.com/mikefarah/yq/releases/download/v4.54.3/yq_darwin_arm64.tar.gz"
+url_api = "https://api.github.com/repos/mikefarah/yq/releases/assets/726219937"
 provenance = "github-attestations"
 
 [tools."github:mikefarah/yq"."platforms.macos-x64"]
-checksum = "sha256:cf8304676c6572960a3720a189fd42e7038bf989dc181f0c05019a2883caf540"
-url = "https://github.com/mikefarah/yq/releases/download/v4.53.6/yq_darwin_amd64.tar.gz"
-url_api = "https://api.github.com/repos/mikefarah/yq/releases/assets/522028030"
+checksum = "sha256:5874384a8a7ed8731c76da33fa571d1dc30c95a63e9689266bf8aeb4f0e94b01"
+url = "https://github.com/mikefarah/yq/releases/download/v4.54.3/yq_darwin_amd64.tar.gz"
+url_api = "https://api.github.com/repos/mikefarah/yq/releases/assets/726219931"
 provenance = "github-attestations"
 
 [tools."github:mikefarah/yq"."platforms.macos-x64-baseline"]
-checksum = "sha256:cf8304676c6572960a3720a189fd42e7038bf989dc181f0c05019a2883caf540"
-url = "https://github.com/mikefarah/yq/releases/download/v4.53.6/yq_darwin_amd64.tar.gz"
-url_api = "https://api.github.com/repos/mikefarah/yq/releases/assets/522028030"
+checksum = "sha256:5874384a8a7ed8731c76da33fa571d1dc30c95a63e9689266bf8aeb4f0e94b01"
+url = "https://github.com/mikefarah/yq/releases/download/v4.54.3/yq_darwin_amd64.tar.gz"
+url_api = "https://api.github.com/repos/mikefarah/yq/releases/assets/726219931"
 provenance = "github-attestations"
 
 [tools."github:mikefarah/yq"."platforms.windows-x64"]
-checksum = "sha256:44806582e2f8c1c586d092fcdb9e78ed48c05e28edaee7371bd3140bafff5989"
-url = "https://github.com/mikefarah/yq/releases/download/v4.53.6/yq_windows_amd64.zip"
-url_api = "https://api.github.com/repos/mikefarah/yq/releases/assets/522027975"
+checksum = "sha256:2f771df86cd8970054dcb4a2bd19412ff4da72811aa7a9a4c8cb21580b2e3fcf"
+url = "https://github.com/mikefarah/yq/releases/download/v4.54.3/yq_windows_amd64.zip"
+url_api = "https://api.github.com/repos/mikefarah/yq/releases/assets/726219888"
 provenance = "github-attestations"
 
 [tools."github:mikefarah/yq"."platforms.windows-x64-baseline"]
-checksum = "sha256:44806582e2f8c1c586d092fcdb9e78ed48c05e28edaee7371bd3140bafff5989"
-url = "https://github.com/mikefarah/yq/releases/download/v4.53.6/yq_windows_amd64.zip"
-url_api = "https://api.github.com/repos/mikefarah/yq/releases/assets/522027975"
+checksum = "sha256:2f771df86cd8970054dcb4a2bd19412ff4da72811aa7a9a4c8cb21580b2e3fcf"
+url = "https://github.com/mikefarah/yq/releases/download/v4.54.3/yq_windows_amd64.zip"
+url_api = "https://api.github.com/repos/mikefarah/yq/releases/assets/726219888"
 provenance = "github-attestations"
 
 [[tools."gitlab:gitlab-org/release-cli"]]
