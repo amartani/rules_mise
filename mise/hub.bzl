@@ -606,16 +606,16 @@ def _tool_repo_impl(rctx):
         return None
     return rctx.repo_metadata(reproducible = reproducible)
 
-# Fetches the binary of one tool for one platform into a small repository.
-#
-# Created by `bzlmod_hub()` and by `register_tools()` (WORKSPACE); one repo per
-# (tool, os, cpu) binary under the name `{hub}.{tool}.{os}_{cpu}`. The repo
-# materializes `tools/<tool>/<os>_<cpu>_executable[.exe]` (a symlink into an
-# extracted archive, a downloaded standalone file, or a conda dispatcher for
-# `kind = "conda_env"`), plus for conda tools the full `conda-prefix/` and an
-# explicit-srcs `conda_files` filegroup. Reports `repo_metadata(reproducible =)`
-# depending on whether every download was checksum-verified.
 tool_repo = repository_rule(
+    doc = """Fetches the binary of one tool for one platform into a small repository.
+
+Created by `bzlmod_hub()` and by `register_tools()` (WORKSPACE); one repo per
+(tool, os, cpu) binary under the name `{hub}.{tool}.{os}_{cpu}`. The repo
+materializes `tools/<tool>/<os>_<cpu>_executable[.exe]` (a symlink into an
+extracted archive, a downloaded standalone file, or a conda dispatcher for
+`kind = "conda_env"`), plus for conda tools the full `conda-prefix/` and an
+explicit-srcs `conda_files` filegroup. Reports `repo_metadata(reproducible =)`
+depending on whether every download was checksum-verified.""",
     attrs = {
         # Sanitized mise tool name; also the archive member basename patterns
         # (with backend prefix disambiguated via the lockfile `hint`).
