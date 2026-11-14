@@ -1,3 +1,20 @@
+[settings]
+# valkey-server has no conda-forge windows-x64 build and `mise lock` errors on
+# unresolvable platforms, so windows is excluded here. Note: with
+# `lockfile_mode = "generate"`, `mise lock` prunes platform sections outside
+# this list, so postgresql's windows-x64 entry is not in the lockfile.
+lockfile_platforms = [
+  "linux-arm64",
+  "linux-arm64-musl",
+  "linux-x64",
+  "linux-x64-baseline",
+  "linux-x64-musl",
+  "linux-x64-musl-baseline",
+  "macos-arm64",
+  "macos-x64",
+  "macos-x64-baseline",
+]
+
 [tools]
 "conda:postgresql" = "18.4"
 "conda:valkey-server" = "latest"
