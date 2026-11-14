@@ -946,74 +946,6 @@ checksum = "sha256:2b7ca858879f183ce2dcc65b300f48a0133d5430550f35b23d80d405a0788
 url = "https://conda.anaconda.org/conda-forge/osx-64/zstd-1.5.7-hbc1a06c_7.conda"
 checksum = "sha256:5277886d9704a624dc9b79ac985861e1e431bdb39a57c082507ab577a138ec6c"
 
-[conda-packages.windows-x64."ca-certificates-2026.7.22-h4c7d964_0"]
-url = "https://conda.anaconda.org/conda-forge/noarch/ca-certificates-2026.7.22-h4c7d964_0.conda"
-checksum = "sha256:95e8e74062a5fe5f870ac8c90302b6e89945165fdaed7810606e84ddee6aac12"
-
-[conda-packages.windows-x64."icu-78.3-h5112557_2"]
-url = "https://conda.anaconda.org/conda-forge/win-64/icu-78.3-h5112557_2.conda"
-checksum = "sha256:75c549b55b673e15de8785a8e5dd85bca7eb612eee0ff4dc8d7bdaa15eacbdbb"
-
-[conda-packages.windows-x64."krb5-1.22.2-h719d79b_2"]
-url = "https://conda.anaconda.org/conda-forge/win-64/krb5-1.22.2-h719d79b_2.conda"
-checksum = "sha256:63ff03324e903eb01a715ccf357df56d66224e61952fd6615d86490ebefb3285"
-
-[conda-packages.windows-x64."libiconv-1.18-hc1393d2_3"]
-url = "https://conda.anaconda.org/conda-forge/win-64/libiconv-1.18-hc1393d2_3.conda"
-checksum = "sha256:35e04e3ddac7720fc7c550a1c9f998604299d6a7bd1f3ec9b2825d825061daa2"
-
-[conda-packages.windows-x64."liblzma-5.8.3-hfd05255_1"]
-url = "https://conda.anaconda.org/conda-forge/win-64/liblzma-5.8.3-hfd05255_1.conda"
-checksum = "sha256:d36c4a1e1f80fd08e18a407e03622ff2f34dfdd022da6488ad19603dea19e6d5"
-
-[conda-packages.windows-x64."libpq-18.4-h6b13b41_1"]
-url = "https://conda.anaconda.org/conda-forge/win-64/libpq-18.4-h6b13b41_1.conda"
-checksum = "sha256:0b8e942a899c1d8c9157b0f539469f0e3cd912a7a0a8475c1cbb7bb8b59455b4"
-
-[conda-packages.windows-x64."libxml2-16-2.15.4-h3cfd58e_0"]
-url = "https://conda.anaconda.org/conda-forge/win-64/libxml2-16-2.15.4-h3cfd58e_0.conda"
-checksum = "sha256:9fa71cec30425c9cc8eda6af3574af1faf4fefa5e239c9e037b1f778ef3ce8ac"
-
-[conda-packages.windows-x64."libxml2-2.15.4-he095d88_0"]
-url = "https://conda.anaconda.org/conda-forge/win-64/libxml2-2.15.4-he095d88_0.conda"
-checksum = "sha256:a19bb3821830f6b1281e782844d5dd265f796dfed2e4812b16c9995a8c778c88"
-
-[conda-packages.windows-x64."libxslt-1.1.45-ha5384fd_1"]
-url = "https://conda.anaconda.org/conda-forge/win-64/libxslt-1.1.45-ha5384fd_1.conda"
-checksum = "sha256:7a2402fa33b7e4a99bba6250ce21c36269a8acbfcb3652057dce0f4a60b7f6bd"
-
-[conda-packages.windows-x64."libzlib-1.3.2-hfd05255_3"]
-url = "https://conda.anaconda.org/conda-forge/win-64/libzlib-1.3.2-hfd05255_3.conda"
-checksum = "sha256:0629c2cc0404d3bb29d6baa7b4ba62da80797015e86de050db81ea5a07050527"
-
-[conda-packages.windows-x64."lz4-c-1.10.0-h6a83c73_2"]
-url = "https://conda.anaconda.org/conda-forge/win-64/lz4-c-1.10.0-h6a83c73_2.conda"
-checksum = "sha256:6824e36be0f95ae516dc36dddd18f69cbad0e4e07906fcb10a5f26a8dc471903"
-
-[conda-packages.windows-x64."openssl-3.6.4-hf411b9b_0"]
-url = "https://conda.anaconda.org/conda-forge/win-64/openssl-3.6.4-hf411b9b_0.conda"
-checksum = "sha256:9dddb559ba49744d5d94092d8d13cb0567f5c3b3f439f3acf28433d1f4256acc"
-
-[conda-packages.windows-x64."ucrt-10.0.26100.0-h57928b3_0"]
-url = "https://conda.anaconda.org/conda-forge/win-64/ucrt-10.0.26100.0-h57928b3_0.conda"
-checksum = "sha256:3005729dce6f3d3f5ec91dfc49fc75a0095f9cd23bab49efb899657297ac91a5"
-
-[conda-packages.windows-x64."vc-14.5-ha367084_41"]
-url = "https://conda.anaconda.org/conda-forge/win-64/vc-14.5-ha367084_41.conda"
-checksum = "sha256:35444c55a92e2f7f7ba26bc70f81e56e52344f7d064c0fd4b40a46a58517b79c"
-
-[conda-packages.windows-x64."vc14_runtime-14.51.36247-habf1de7_41"]
-url = "https://conda.anaconda.org/conda-forge/win-64/vc14_runtime-14.51.36247-habf1de7_41.conda"
-checksum = "sha256:4e4cb599cdc41bf2109d1464c127b5bcbddf548ce3e322e612afb691338b48f8"
-
-[conda-packages.windows-x64."vcomp14-14.51.36247-habf1de7_41"]
-url = "https://conda.anaconda.org/conda-forge/win-64/vcomp14-14.51.36247-habf1de7_41.conda"
-checksum = "sha256:731e043390c9457299484d39e427221fc868a9249540a498a5a4f6456c7744d1"
-
-[conda-packages.windows-x64."zstd-1.5.7-h534d264_7"]
-url = "https://conda.anaconda.org/conda-forge/win-64/zstd-1.5.7-h534d264_7.conda"
-checksum = "sha256:ca7daae4f218a11fab82cc2857f0ea518ec3f46acec60490485347a4c22c6b3e"
-
 [[tools."conda:postgresql"]]
 version = "18.4"
 backend = "conda:postgresql"
@@ -1310,29 +1242,6 @@ conda_deps = [
     "libiconv-1.18-h4ae439b_3",
     "ca-certificates-2026.10.23-hbd8a1cb_0",
     "ncurses-6.6-hcc0dc9a_1",
-]
-
-[tools."conda:postgresql"."platforms.windows-x64"]
-checksum = "sha256:aaf2301f11981420e5b5a5493862260ffdc0d4924b888f82aef90344825fb612"
-url = "https://conda.anaconda.org/conda-forge/win-64/postgresql-18.4-hfea5a2c_1.conda"
-conda_deps = [
-    "libpq-18.4-h6b13b41_1",
-    "icu-78.3-h5112557_2",
-    "krb5-1.22.2-h719d79b_2",
-    "libzlib-1.3.2-hfd05255_3",
-    "lz4-c-1.10.0-h6a83c73_2",
-    "libxml2-2.15.4-he095d88_0",
-    "libxml2-16-2.15.4-h3cfd58e_0",
-    "libxslt-1.1.45-ha5384fd_1",
-    "openssl-3.6.4-hf411b9b_0",
-    "ucrt-10.0.26100.0-h57928b3_0",
-    "vc-14.5-ha367084_41",
-    "vc14_runtime-14.51.36247-habf1de7_41",
-    "vcomp14-14.51.36247-habf1de7_41",
-    "zstd-1.5.7-h534d264_7",
-    "libiconv-1.18-hc1393d2_3",
-    "liblzma-5.8.3-hfd05255_1",
-    "ca-certificates-2026.7.22-h4c7d964_0",
 ]
 
 [[tools."conda:valkey-server"]]
