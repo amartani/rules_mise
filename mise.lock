@@ -3,44 +3,51 @@
 lockfile_version = 4
 
 [[tools."aqua:bazelbuild/buildtools/buildozer"]]
-version = "10.1.0"
+version = "10.2.0"
 backend = "aqua:bazelbuild/buildtools/buildozer"
 specifiers = ["latest"]
 
 [tools."aqua:bazelbuild/buildtools/buildozer"."platforms.linux-arm64"]
-checksum = "sha256:add0e7e45e10231746c6bb193e466361183dfe9d2df8f951b62c49a047508f30"
-url = "https://github.com/bazel-contrib/buildtools/releases/download/v10.1.0/buildozer-linux-arm64"
-url_api = "https://api.github.com/repos/bazel-contrib/buildtools/releases/assets/582390483"
+checksum = "sha256:82bc376fafedd281579beb400be430d4c3f0104c1a8502d10e0cb7ec2c8cb5bd"
+checksum_source = "mise-versions"
+url = "https://github.com/bazel-contrib/buildtools/releases/download/v10.2.0/buildozer-linux-arm64"
+url_api = "https://api.github.com/repos/bazel-contrib/buildtools/releases/assets/684766877"
 
 [tools."aqua:bazelbuild/buildtools/buildozer"."platforms.linux-arm64-musl"]
-checksum = "sha256:add0e7e45e10231746c6bb193e466361183dfe9d2df8f951b62c49a047508f30"
-url = "https://github.com/bazel-contrib/buildtools/releases/download/v10.1.0/buildozer-linux-arm64"
-url_api = "https://api.github.com/repos/bazel-contrib/buildtools/releases/assets/582390483"
+checksum = "sha256:82bc376fafedd281579beb400be430d4c3f0104c1a8502d10e0cb7ec2c8cb5bd"
+checksum_source = "mise-versions"
+url = "https://github.com/bazel-contrib/buildtools/releases/download/v10.2.0/buildozer-linux-arm64"
+url_api = "https://api.github.com/repos/bazel-contrib/buildtools/releases/assets/684766877"
 
 [tools."aqua:bazelbuild/buildtools/buildozer"."platforms.linux-x64"]
-checksum = "sha256:3513b8b23619f5fb7ccad546e955af6e318475582ce7b6f2b47b634bd3b8dcbd"
-url = "https://github.com/bazel-contrib/buildtools/releases/download/v10.1.0/buildozer-linux-amd64"
-url_api = "https://api.github.com/repos/bazel-contrib/buildtools/releases/assets/582390480"
+checksum = "sha256:0cfa2633184880ad5139bad3133fdf1a11ce3b7d37ba3eae9a85374a613c4779"
+checksum_source = "mise-versions"
+url = "https://github.com/bazel-contrib/buildtools/releases/download/v10.2.0/buildozer-linux-amd64"
+url_api = "https://api.github.com/repos/bazel-contrib/buildtools/releases/assets/684766868"
 
 [tools."aqua:bazelbuild/buildtools/buildozer"."platforms.linux-x64-musl"]
-checksum = "sha256:3513b8b23619f5fb7ccad546e955af6e318475582ce7b6f2b47b634bd3b8dcbd"
-url = "https://github.com/bazel-contrib/buildtools/releases/download/v10.1.0/buildozer-linux-amd64"
-url_api = "https://api.github.com/repos/bazel-contrib/buildtools/releases/assets/582390480"
+checksum = "sha256:0cfa2633184880ad5139bad3133fdf1a11ce3b7d37ba3eae9a85374a613c4779"
+checksum_source = "mise-versions"
+url = "https://github.com/bazel-contrib/buildtools/releases/download/v10.2.0/buildozer-linux-amd64"
+url_api = "https://api.github.com/repos/bazel-contrib/buildtools/releases/assets/684766868"
 
 [tools."aqua:bazelbuild/buildtools/buildozer"."platforms.macos-arm64"]
-checksum = "sha256:9e5d300659253c9235c50f792b46cfc5148e62513a8056e916fa2ca738b904f2"
-url = "https://github.com/bazel-contrib/buildtools/releases/download/v10.1.0/buildozer-darwin-arm64"
-url_api = "https://api.github.com/repos/bazel-contrib/buildtools/releases/assets/582390456"
+checksum = "sha256:373f1c6c35b41c294b3a473c569e7e99dbfbc71197d7c2a45fce5cea7134e858"
+checksum_source = "mise-versions"
+url = "https://github.com/bazel-contrib/buildtools/releases/download/v10.2.0/buildozer-darwin-arm64"
+url_api = "https://api.github.com/repos/bazel-contrib/buildtools/releases/assets/684766832"
 
 [tools."aqua:bazelbuild/buildtools/buildozer"."platforms.macos-x64"]
-checksum = "sha256:e9809d8ca40da421e1b5420dd735f32d13a0b01ebadfb7f519d5b7f4316061b4"
-url = "https://github.com/bazel-contrib/buildtools/releases/download/v10.1.0/buildozer-darwin-amd64"
-url_api = "https://api.github.com/repos/bazel-contrib/buildtools/releases/assets/582390458"
+checksum = "sha256:b569919f655931bae2e3e116597a5496c7539ed29adf8ac2c959bddbbad45b55"
+checksum_source = "mise-versions"
+url = "https://github.com/bazel-contrib/buildtools/releases/download/v10.2.0/buildozer-darwin-amd64"
+url_api = "https://api.github.com/repos/bazel-contrib/buildtools/releases/assets/684766834"
 
 [tools."aqua:bazelbuild/buildtools/buildozer"."platforms.windows-x64"]
-checksum = "sha256:025217f54dc8a9abdb7647d559a607c365a63fdc1e6beb44c3b4a54773596d0f"
-url = "https://github.com/bazel-contrib/buildtools/releases/download/v10.1.0/buildozer-windows-amd64.exe"
-url_api = "https://api.github.com/repos/bazel-contrib/buildtools/releases/assets/582390497"
+checksum = "sha256:0166ba26a86b4576ac38325b8237a436c16ca0b956694bc933237593993caa17"
+checksum_source = "mise-versions"
+url = "https://github.com/bazel-contrib/buildtools/releases/download/v10.2.0/buildozer-windows-amd64.exe"
+url_api = "https://api.github.com/repos/bazel-contrib/buildtools/releases/assets/684766912"
 
 [[tools.bazel]]
 version = "9.3.1"
