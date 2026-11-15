@@ -34,8 +34,8 @@ jobs:
     env:
       USE_BAZEL_VERSION: ${{ matrix.bazel }}
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: bazel-contrib/setup-bazel@f34d6a05eae3c24acab7fa54587492daeaeffdab # 0.19.2
+      - uses: actions/checkout@v7.0.1
+      - uses: bazel-contrib/setup-bazel@0.19.2
         with:
           bazelisk-cache: true
           disk-cache: ${{ github.workflow }}
@@ -75,8 +75,8 @@ jobs:
     env:
       USE_BAZEL_VERSION: ${{ matrix.bazel }}
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: bazel-contrib/setup-bazel@f34d6a05eae3c24acab7fa54587492daeaeffdab # 0.19.2
+      - uses: actions/checkout@v7.0.1
+      - uses: bazel-contrib/setup-bazel@0.19.2
         with:
           bazelisk-cache: true
           disk-cache: ${{ github.workflow }}
@@ -85,19 +85,27 @@ jobs:
   hk:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: jdx/mise-action@d5574b52816a478f9d4e6529a3f6ff17a8a36785 # v5.2.8
+      - uses: actions/checkout@v7.0.1
+      - uses: jdx/mise-action@v5.2.8
       - run: mise exec -- hk check --all
+  actions-lock:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - run: gh extension install github/gh-actions-lock
+      - run: gh actions-lock --verify
+        env:
+          GH_TOKEN: ${{ github.token }}
   # For branch protection settings, this job provides a "stable" name that can be used to gate PR merges
   # on "all matrix jobs were successful".
   conclusion:
-    needs: [test, smoke, hk]
+    needs: [test, smoke, hk, actions-lock]
     runs-on: ubuntu-latest
     if: always()
     permissions:
       actions: read
     steps:
-      - uses: technote-space/workflow-conclusion-action@45ce8e0eb155657ab8ccf346ade734257fd196a5 # v3.0.3
+      - uses: technote-space/workflow-conclusion-action@v3.0.3
       # Note: possible conclusion values:
       # https://github.com/technote-space/workflow-conclusion-action/blob/main/src/constant.ts
       - name: report success
