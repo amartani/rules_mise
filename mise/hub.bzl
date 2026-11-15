@@ -606,25 +606,25 @@ def _tool_repo_impl(rctx):
         return None
     return rctx.repo_metadata(reproducible = reproducible)
 
-# Fetches the binary of one tool for one platform into a small repository.
-#
-# Created by `bzlmod_hub()` and by `register_tools()` (WORKSPACE); one repo per
-# (tool, os, cpu) binary under the name `{hub}.{tool}.{os}_{cpu}`. The repo
-# materializes `tools/<tool>/<os>_<cpu>_executable[.exe]` (a symlink into an
-# extracted archive, a downloaded standalone file, or a conda dispatcher for
-# `kind = "conda_env"`), plus for conda tools the full `conda-prefix/` and an
-# explicit-srcs `conda_files` filegroup. Reports `repo_metadata(reproducible =)`
-# depending on whether every download was checksum-verified.
 tool_repo = repository_rule(
+    doc = """Fetches the binary of one tool for one platform into a small repository.
+
+Created by `bzlmod_hub()` and by `register_tools()` (WORKSPACE); one repo per
+(tool, os, cpu) binary under the name `{hub}.{tool}.{os}_{cpu}`. The repo
+materializes `tools/<tool>/<os>_<cpu>_executable[.exe]` (a symlink into an
+extracted archive, a downloaded standalone file, or a conda dispatcher for
+`kind = "conda_env"`), plus for conda tools the full `conda-prefix/` and an
+explicit-srcs `conda_files` filegroup. Reports `repo_metadata(reproducible =)`
+depending on whether every download was checksum-verified.""",
     attrs = {
-        # Sanitized mise tool name; also the archive member basename patterns
-        # (with backend prefix disambiguated via the lockfile `hint`).
-        "tool_name": attr.string(mandatory = True),
-        # JSON-encoded per-platform binary descriptor built by
-        # `lockfile.load_defs()`: os, cpu, url, checksum, kind, version,
-        # backend, hint, optional file/type/auth_patterns, and for conda
-        # tools the `conda` package closure.
-        "binary": attr.string(mandatory = True),
+        "tool_name": attr.string(
+            doc = "Sanitized mise tool name; also used to match archive members, with backend prefixes disambiguated by the lockfile `hint`.",
+            mandatory = True,
+        ),
+        "binary": attr.string(
+            doc = "JSON-encoded per-platform binary descriptor from `lockfile.load_defs()`, including platform, download, backend, and optional conda package closure data.",
+            mandatory = True,
+        ),
     },
     implementation = _tool_repo_impl,
 )
@@ -701,15 +701,22 @@ def _mise_hub_impl(rctx):
         return None
     return rctx.repo_metadata(reproducible = True)
 
-# Creates the hub repository itself: renders `toolchain_info.bzl` (the
-# `toolchain_info` rule and `declare_toolchain()`), one `tool.bzl`/`BUILD.bazel`
-# per tool package, `toolchains/BUILD.bazel` declaring every toolchain, and
-# `tools.bzl` (`TOOLS` + `register_tools()`) for WORKSPACE usage. Host-generic;
-# all actual binaries live in the per-platform `tool_repo`s.
 _mise_hub = repository_rule(
+    doc = """Creates the host-generic hub repository, including `toolchain_info.bzl`
+(the `toolchain_info` rule and `declare_toolchain()`), one `tool.bzl` and
+`BUILD.bazel` per tool package, `toolchains/BUILD.bazel` declaring every
+toolchain, and `tools.bzl` (`TOOLS` and `register_tools()`) for WORKSPACE use.
+All actual binaries live in the per-platform `tool_repo`s.""",
     attrs = {
-        "lockfiles": attr.label_list(mandatory = True, allow_files = True),
-        "envs": attr.string(default = "[]"),
+        "lockfiles": attr.label_list(
+            doc = "Lockfiles whose tools are merged into this hub.",
+            mandatory = True,
+            allow_files = True,
+        ),
+        "envs": attr.string(
+            doc = "JSON-encoded conda environments to merge into the hub.",
+            default = "[]",
+        ),
     },
     implementation = _mise_hub_impl,
 )

@@ -62,9 +62,19 @@ exec "$TOOL" postgres -D "$PGDATA" -c "listen_addresses=127.0.0.1" -c "unix_sock
     return [DefaultInfo(executable = out, runfiles = runfiles)]
 
 postgres_server = rule(
+    doc = """Runs the conda PostgreSQL closure as an itest service executable.
+
+Initializes `$TMPDIR/pgdata` on first start, drops root privileges like
+`e2e/conda` does, and forwards extra service `args` (e.g. the autoassigned
+`-p` port) to `postgres`.""",
     implementation = _postgres_server_impl,
     attrs = {
-        "tool": attr.label(executable = True, cfg = "target", mandatory = True),
+        "tool": attr.label(
+            doc = "Conda PostgreSQL tool executable, including its merged extension prefix.",
+            executable = True,
+            cfg = "target",
+            mandatory = True,
+        ),
     },
     executable = True,
 )
