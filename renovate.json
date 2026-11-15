@@ -8,6 +8,10 @@
     "replacements:all",
     "workarounds:all"
   ],
+  "timezone": "Etc/UTC",
+  "minimumReleaseAge": "14 days",
+  "updateNotScheduled": false,
+  "automerge": true,
   "packageRules": [
     {
       "matchFiles": ["MODULE.bazel"],
@@ -16,6 +20,19 @@
     {
       "matchManagers": ["mise"],
       "lockFileMaintenance": { "enabled": true }
+    },
+    {
+      "description": "Group routine dependency updates into one weekly PR",
+      "matchPackageNames": ["*"],
+      "matchUpdateTypes": ["major", "minor", "patch"],
+      "groupName": "all dependencies",
+      "groupSlug": "all",
+      "schedule": ["* 0-23 * * 5"]
+    },
+    {
+      "description": "Allow security fixes at any time",
+      "isVulnerabilityAlert": true,
+      "schedule": ["at any time"]
     }
   ]
 }
