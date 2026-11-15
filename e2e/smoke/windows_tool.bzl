@@ -17,6 +17,10 @@ windows_tool = rule(
     doc = "Forwards `tool` built for Windows x86_64, to check a cross build gets the Windows binary.",
     implementation = _windows_tool_impl,
     attrs = {
-        "tool": attr.label(cfg = _windows_transition, mandatory = True),
+        "tool": attr.label(
+            doc = "Tool target to build for Windows x86_64.",
+            cfg = _windows_transition,
+            mandatory = True,
+        ),
     },
 )

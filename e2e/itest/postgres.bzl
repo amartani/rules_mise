@@ -69,7 +69,12 @@ Initializes `$TMPDIR/pgdata` on first start, drops root privileges like
 `-p` port) to `postgres`.""",
     implementation = _postgres_server_impl,
     attrs = {
-        "tool": attr.label(executable = True, cfg = "target", mandatory = True),
+        "tool": attr.label(
+            doc = "Conda PostgreSQL tool executable, including its merged extension prefix.",
+            executable = True,
+            cfg = "target",
+            mandatory = True,
+        ),
     },
     executable = True,
 )
