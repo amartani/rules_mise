@@ -701,12 +701,12 @@ def _mise_hub_impl(rctx):
         return None
     return rctx.repo_metadata(reproducible = True)
 
-# Creates the hub repository itself: renders `toolchain_info.bzl` (the
-# `toolchain_info` rule and `declare_toolchain()`), one `tool.bzl`/`BUILD.bazel`
-# per tool package, `toolchains/BUILD.bazel` declaring every toolchain, and
-# `tools.bzl` (`TOOLS` + `register_tools()`) for WORKSPACE usage. Host-generic;
-# all actual binaries live in the per-platform `tool_repo`s.
 _mise_hub = repository_rule(
+    doc = """Creates the host-generic hub repository, including `toolchain_info.bzl`
+(the `toolchain_info` rule and `declare_toolchain()`), one `tool.bzl` and
+`BUILD.bazel` per tool package, `toolchains/BUILD.bazel` declaring every
+toolchain, and `tools.bzl` (`TOOLS` and `register_tools()`) for WORKSPACE use.
+All actual binaries live in the per-platform `tool_repo`s.""",
     attrs = {
         "lockfiles": attr.label_list(
             doc = "Lockfiles whose tools are merged into this hub.",
