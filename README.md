@@ -11,6 +11,19 @@ you also run outside Bazel (see `e2e/smoke`, which uses `ruff` both ways).
 
 ## Usage
 
+First, define the tools you want in `mise.toml`:
+
+```toml
+[tools]
+ruff = "latest"
+```
+
+Generate the lockfile with mise:
+
+```sh
+mise lock
+```
+
 In your `MODULE.bazel`, add the `bazel_dep` from the release you wish to use
 (see <https://github.com/amartani/rules_mise/releases> for available versions):
 
