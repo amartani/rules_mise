@@ -26,7 +26,16 @@ steps {
   ["toml-format"] = Builtins.taplo_format
   // YAML formatting (mise: yamlfmt). YAML syntax is validated implicitly
   // by yamlfmt, which fails on invalid files.
-  ["yamlfmt"] = Builtins.yamlfmt
+  ["yamlfmt"] = new Step {
+    glob = List("**/*.yml", "**/*.yaml")
+    exclude = List(".mise/locks/**")
+    check = new Command {
+      argv = List("yamlfmt", "-lint", "{{files}}")
+    }
+    fix = new Command {
+      argv = List("yamlfmt", "{{files}}")
+    }
+  }
   // Markdown linting and formatting (mise: rumdl).
   ["rumdl"] = Builtins.rumdl
   ["rumdl-format"] = Builtins.rumdl_format
@@ -35,6 +44,12 @@ steps {
   // Starlark formatting and linting (mise: buildifier).
   ["buildifier-format"] = Builtins.buildifier_format
   ["buildifier-lint"] = Builtins.buildifier_lint
+  ["renovate-config"] = new Step {
+    glob = List("renovate.json")
+    check = new Command {
+      argv = List("renovate-config-validator", "--strict", "--no-global", "{{files}}")
+    }
+  }
 }
 
 hooks {
