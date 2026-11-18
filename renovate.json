@@ -14,7 +14,7 @@
   "automerge": true,
   "packageRules": [
     {
-      "matchFiles": ["MODULE.bazel"],
+      "matchFileNames": ["MODULE.bazel"],
       "enabled": false
     },
     {
@@ -28,11 +28,6 @@
       "groupName": "all dependencies",
       "groupSlug": "all",
       "schedule": ["* 0-23 * * 5"]
-    },
-    {
-      "description": "Allow security fixes at any time",
-      "isVulnerabilityAlert": true,
-      "schedule": ["at any time"]
     }
   ]
 }

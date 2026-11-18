@@ -177,6 +177,18 @@ url = "https://github.com/jdx/hk/releases/download/v2.12.0/hk-x86_64-pc-windows-
 signer = "sigstore-oidc:https://github.com/jdx/hk/.github/workflows/release.yml"
 repository_ids = { repository = "922514152" }
 
+[[tools."npm:renovate"]]
+version = "44.240.0"
+aube = { path = ".mise/locks/npm-renovate/44.240.0~aa673d8d", digest = "sha256:2758f675d4626679c6dd9f49e0d77147f96b1837463b86e5072206445cf1ea55" }
+backend = "npm:renovate"
+specifiers = ["latest"]
+
+[tools."npm:renovate".options]
+trust_policy_excludes = '["@yarnpkg/libzip@3.2.2"]'
+
+[tools."npm:renovate".provenance]
+repository = "github.com/renovatebot/renovate"
+
 [[tools.rumdl]]
 version = "0.3.4"
 backend = "aqua:rvben/rumdl"

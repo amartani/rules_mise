@@ -5,6 +5,9 @@ idiomatic_version_file_enable_tools = ["bazel"]
 buildifier = "latest"
 "aqua:bazelbuild/buildtools/buildozer" = "latest"
 hk = "latest"
+"npm:renovate" = { version = "latest", trust_policy_excludes = [
+  "@yarnpkg/libzip@3.2.2",
+] }
 rumdl = "latest"
 taplo = "latest"
 typos = "latest"
