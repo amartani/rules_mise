@@ -34,11 +34,14 @@ jobs:
     env:
       # mise.toml declares both majors; the first one ("9") is the default.
       MISE_BAZEL_VERSION: ${{ matrix.bazel }}
+      # These jobs only run Bazel; other tools (e.g. hk on macos-x64) are not
+      # installable on every platform and are not needed here.
+      MISE_ENABLE_TOOLS: bazel
     steps:
       - uses: actions/checkout@v7.0.1
       - uses: jdx/mise-action@v5.2.8
         with:
-          cache_key: "{{default}}-bazel${{ matrix.bazel }}"
+          cache_key: "{{default}}-bazel${{ matrix.bazel }}-tools-bazel"
       # setup-bazel also cached Bazel's disk/repository caches; mise-action only
       # caches the Bazel binaries, so restore those two caches explicitly.
       - uses: actions/cache@v6.1.0
@@ -111,11 +114,13 @@ jobs:
         working-directory: e2e/smoke
     env:
       MISE_BAZEL_VERSION: ${{ matrix.bazel }}
+      # Only Bazel is needed here (hk has no build for macos-x64).
+      MISE_ENABLE_TOOLS: bazel
     steps:
       - uses: actions/checkout@v7.0.1
       - uses: jdx/mise-action@v5.2.8
         with:
-          cache_key: "{{default}}-bazel${{ matrix.bazel }}"
+          cache_key: "{{default}}-bazel${{ matrix.bazel }}-tools-bazel"
       # Same Bazel-side caches setup-bazel used to manage on every platform.
       - uses: actions/cache@v6.1.0
         with:
