@@ -39,7 +39,7 @@ jobs:
       MISE_ENABLE_TOOLS: bazel
     steps:
       - uses: actions/checkout@v7.0.1
-      - uses: jdx/mise-action@v5.2.8
+      - uses: jdx/mise-action@v5.3.0
         with:
           cache_key: "{{default}}-bazel${{ matrix.bazel }}-tools-bazel"
       # setup-bazel also cached Bazel's disk/repository caches; mise-action only
@@ -118,7 +118,7 @@ jobs:
       MISE_ENABLE_TOOLS: bazel
     steps:
       - uses: actions/checkout@v7.0.1
-      - uses: jdx/mise-action@v5.2.8
+      - uses: jdx/mise-action@v5.3.0
         with:
           cache_key: "{{default}}-bazel${{ matrix.bazel }}-tools-bazel"
       # Same Bazel-side caches setup-bazel used to manage on every platform.
@@ -145,7 +145,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7.0.1
-      - uses: jdx/mise-action@v5.2.8
+      - uses: jdx/mise-action@v5.3.0
       - run: mise exec -- hk check --all
   actions-lock:
     runs-on: ubuntu-latest
