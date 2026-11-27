@@ -1,7 +1,6 @@
-# BuildBuddy wraps `bazel` with a bazelisk shim that injects its own bazelrc
-# (BES, RBE, metadata). Keep that wrapper and point bazelisk at the binary
-# selected by mise.toml/mise.lock via USE_BAZEL_VERSION (absolute paths are
-# used verbatim by bazelisk). .bazelversion is deliberately absent.
+# BuildBuddy wraps `bazel` with bazelisk, which injects its own bazelrc (BES,
+# RBE, metadata). Read the default Bazel version straight from mise.lock and
+# hand it to bazelisk via USE_BAZEL_VERSION; no mise install is needed here.
 actions:
   - name: buildbuddy root
     triggers: &triggers
@@ -11,79 +10,53 @@ actions:
       pull_request:
         branches:
           - "*"
-    env: &mise_env
-      # Only Bazel is needed from mise here.
-      MISE_ENABLE_TOOLS: bazel
     steps:
-      - run: &install_mise_bazel |
-          if [ ! -x "$HOME/.local/bin/mise" ]; then
-            curl -fsSL https://mise.run | sh
+      - run: &bazel_test |
+          # The first [[tools.bazel]] entry is the default from mise.toml.
+          version="$(awk '/^\[\[tools\.bazel\]\]$/ {found=1; next} found && /^version = / {gsub(/"/, "", $3); print $3; exit}' "$(git rev-parse --show-toplevel)/mise.lock")"
+          if [ -z "$version" ]; then
+            echo "No Bazel version found in mise.lock" >&2
+            exit 1
           fi
-          "$HOME/.local/bin/mise" install bazel
-      - run: |
-          export USE_BAZEL_VERSION="$("$HOME/.local/bin/mise" which bazel)"
+          export USE_BAZEL_VERSION="$version"
           bazel test --config=buildbuddy //...
   - name: buildbuddy e2e/smoke
     triggers: *triggers
-    env: *mise_env
+    bazel_workspace_dir: e2e/smoke
     steps:
-      - run: *install_mise_bazel
-      - run: |
-          export USE_BAZEL_VERSION="$("$HOME/.local/bin/mise" which bazel)"
-          cd e2e/smoke && bazel test --config=buildbuddy //...
+      - run: *bazel_test
   - name: buildbuddy e2e/backends
     triggers: *triggers
-    env: *mise_env
+    bazel_workspace_dir: e2e/backends
     steps:
-      - run: *install_mise_bazel
-      - run: |
-          export USE_BAZEL_VERSION="$("$HOME/.local/bin/mise" which bazel)"
-          cd e2e/backends && bazel test --config=buildbuddy //...
+      - run: *bazel_test
   - name: buildbuddy e2e/conda
     triggers: *triggers
-    env: *mise_env
+    bazel_workspace_dir: e2e/conda
     steps:
-      - run: *install_mise_bazel
-      - run: |
-          export USE_BAZEL_VERSION="$("$HOME/.local/bin/mise" which bazel)"
-          cd e2e/conda && bazel test --config=buildbuddy //...
+      - run: *bazel_test
   - name: buildbuddy e2e/conda-env
     triggers: *triggers
-    env: *mise_env
+    bazel_workspace_dir: e2e/conda-env
     steps:
-      - run: *install_mise_bazel
-      - run: |
-          export USE_BAZEL_VERSION="$("$HOME/.local/bin/mise" which bazel)"
-          cd e2e/conda-env && bazel test --config=buildbuddy //...
+      - run: *bazel_test
   - name: buildbuddy e2e/conda_multi_version
     triggers: *triggers
-    env: *mise_env
+    bazel_workspace_dir: e2e/conda_multi_version
     steps:
-      - run: *install_mise_bazel
-      - run: |
-          export USE_BAZEL_VERSION="$("$HOME/.local/bin/mise" which bazel)"
-          cd e2e/conda_multi_version && bazel test --config=buildbuddy //...
+      - run: *bazel_test
   - name: buildbuddy e2e/conda_opensearch
     triggers: *triggers
-    env: *mise_env
+    bazel_workspace_dir: e2e/conda_opensearch
     steps:
-      - run: *install_mise_bazel
-      - run: |
-          export USE_BAZEL_VERSION="$("$HOME/.local/bin/mise" which bazel)"
-          cd e2e/conda_opensearch && bazel test --config=buildbuddy //...
+      - run: *bazel_test
   - name: buildbuddy e2e/conda_redis
     triggers: *triggers
-    env: *mise_env
+    bazel_workspace_dir: e2e/conda_redis
     steps:
-      - run: *install_mise_bazel
-      - run: |
-          export USE_BAZEL_VERSION="$("$HOME/.local/bin/mise" which bazel)"
-          cd e2e/conda_redis && bazel test --config=buildbuddy //...
+      - run: *bazel_test
   - name: buildbuddy e2e/itest
     triggers: *triggers
-    env: *mise_env
+    bazel_workspace_dir: e2e/itest
     steps:
-      - run: *install_mise_bazel
-      - run: |
-          export USE_BAZEL_VERSION="$("$HOME/.local/bin/mise" which bazel)"
-          cd e2e/itest && bazel test --config=buildbuddy //...
+      - run: *bazel_test
