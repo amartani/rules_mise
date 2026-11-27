@@ -50,91 +50,96 @@ url = "https://github.com/bazel-contrib/buildtools/releases/download/v10.2.0/bui
 url_api = "https://api.github.com/repos/bazel-contrib/buildtools/releases/assets/684766912"
 
 [[tools.bazel]]
-version = "9.3.1"
+version = "9.3.3"
 backend = "aqua:bazelbuild/bazel"
 specifiers = ["9"]
 
 [tools.bazel."platforms.linux-arm64"]
-checksum = "sha256:10ba9cb76d4ee748d274dcc2981992bb12b74a203dc41a9c2eceeb8f29359366"
-url = "https://github.com/bazelbuild/bazel/releases/download/9.3.1/bazel-9.3.1-linux-arm64"
-url_api = "https://api.github.com/repos/bazelbuild/bazel/releases/assets/661108363"
+checksum = "sha256:41349440c343005f0531ad128df3d3da58e39d5b50bda3eb495e186c2e0bd23b"
+checksum_source = "mise-versions"
+url = "https://github.com/bazelbuild/bazel/releases/download/9.3.3/bazel-9.3.3-linux-arm64"
+url_api = "https://api.github.com/repos/bazelbuild/bazel/releases/assets/768715926"
 
 [tools.bazel."platforms.linux-arm64-musl"]
-checksum = "sha256:10ba9cb76d4ee748d274dcc2981992bb12b74a203dc41a9c2eceeb8f29359366"
-url = "https://github.com/bazelbuild/bazel/releases/download/9.3.1/bazel-9.3.1-linux-arm64"
-url_api = "https://api.github.com/repos/bazelbuild/bazel/releases/assets/661108363"
+checksum = "sha256:41349440c343005f0531ad128df3d3da58e39d5b50bda3eb495e186c2e0bd23b"
+checksum_source = "mise-versions"
+url = "https://github.com/bazelbuild/bazel/releases/download/9.3.3/bazel-9.3.3-linux-arm64"
+url_api = "https://api.github.com/repos/bazelbuild/bazel/releases/assets/768715926"
 
 [tools.bazel."platforms.linux-x64"]
-checksum = "sha256:7f775b54bbec487efaf0f49ccda1d2ed02cd34f582edfdd6aeeec76e39ef585c"
-url = "https://github.com/bazelbuild/bazel/releases/download/9.3.1/bazel-9.3.1-linux-x86_64"
-url_api = "https://api.github.com/repos/bazelbuild/bazel/releases/assets/661108421"
+checksum = "sha256:24f30faa845410547a4fdeaa8d083e2eb9e95438b996ca76a0102ff8ef171334"
+url = "https://github.com/bazelbuild/bazel/releases/download/9.3.3/bazel-9.3.3-linux-x86_64"
+url_api = "https://api.github.com/repos/bazelbuild/bazel/releases/assets/768715995"
 
 [tools.bazel."platforms.linux-x64-musl"]
-checksum = "sha256:7f775b54bbec487efaf0f49ccda1d2ed02cd34f582edfdd6aeeec76e39ef585c"
-url = "https://github.com/bazelbuild/bazel/releases/download/9.3.1/bazel-9.3.1-linux-x86_64"
-url_api = "https://api.github.com/repos/bazelbuild/bazel/releases/assets/661108421"
+checksum = "sha256:24f30faa845410547a4fdeaa8d083e2eb9e95438b996ca76a0102ff8ef171334"
+checksum_source = "mise-versions"
+url = "https://github.com/bazelbuild/bazel/releases/download/9.3.3/bazel-9.3.3-linux-x86_64"
+url_api = "https://api.github.com/repos/bazelbuild/bazel/releases/assets/768715995"
 
 [tools.bazel."platforms.macos-arm64"]
-checksum = "sha256:19c4958626e0e3a564a61c2e85eeaab97b550a30632b82341191aa61ed0ccc1b"
-url = "https://github.com/bazelbuild/bazel/releases/download/9.3.1/bazel-9.3.1-darwin-arm64"
-url_api = "https://api.github.com/repos/bazelbuild/bazel/releases/assets/661108207"
+checksum = "sha256:5bcb76f9e94651f1eeec72243a69b03b4cd589c104611c583a59d4abbf9ea15a"
+checksum_source = "mise-versions"
+url = "https://github.com/bazelbuild/bazel/releases/download/9.3.3/bazel-9.3.3-darwin-arm64"
+url_api = "https://api.github.com/repos/bazelbuild/bazel/releases/assets/768715566"
 
 [tools.bazel."platforms.macos-x64"]
-checksum = "sha256:01eb4368a9c331391448bc1f11b1bec4e57793a0cee0581579ee786cd26baf37"
-url = "https://github.com/bazelbuild/bazel/releases/download/9.3.1/bazel-9.3.1-darwin-x86_64"
-url_api = "https://api.github.com/repos/bazelbuild/bazel/releases/assets/661108210"
+checksum = "sha256:091ff8dd8ccda4cb0bd79af66b353d47d4f5d36de507fe0ac94c99ea918c17b3"
+checksum_source = "mise-versions"
+url = "https://github.com/bazelbuild/bazel/releases/download/9.3.3/bazel-9.3.3-darwin-x86_64"
+url_api = "https://api.github.com/repos/bazelbuild/bazel/releases/assets/768715604"
 
 [tools.bazel."platforms.windows-x64"]
-checksum = "sha256:7551c0164e35aa8e2331df797b404ee4066a706099b269ecfe1e375d379ee9fa"
-url = "https://github.com/bazelbuild/bazel/releases/download/9.3.1/bazel-9.3.1-windows-x86_64.zip"
-url_api = "https://api.github.com/repos/bazelbuild/bazel/releases/assets/661108614"
+checksum = "sha256:d5a7fa55a9c5750c2b6c47d83b7892b9934c3fdd02e19fac2dc012194d64b69a"
+checksum_source = "mise-versions"
+url = "https://github.com/bazelbuild/bazel/releases/download/9.3.3/bazel-9.3.3-windows-x86_64.zip"
+url_api = "https://api.github.com/repos/bazelbuild/bazel/releases/assets/768716275"
 
 [[tools.bazel]]
-version = "8.8.2"
+version = "8.9.0"
 backend = "aqua:bazelbuild/bazel"
 specifiers = ["8"]
 
 [tools.bazel."platforms.linux-arm64"]
-checksum = "sha256:de0392a89e69db64a5070fa6c97acc70c169f5cb98a0e2e1ae0cd2b5f1c5264d"
+checksum = "sha256:db09df9fffd29e739ec45f2ce1b6e9db8c763e86e0ca95f625863c5c1846194f"
 checksum_source = "mise-versions"
-url = "https://github.com/bazelbuild/bazel/releases/download/8.8.2/bazel-8.8.2-linux-arm64"
-url_api = "https://api.github.com/repos/bazelbuild/bazel/releases/assets/661124423"
+url = "https://github.com/bazelbuild/bazel/releases/download/8.9.0/bazel-8.9.0-linux-arm64"
+url_api = "https://api.github.com/repos/bazelbuild/bazel/releases/assets/768563830"
 
 [tools.bazel."platforms.linux-arm64-musl"]
-checksum = "sha256:de0392a89e69db64a5070fa6c97acc70c169f5cb98a0e2e1ae0cd2b5f1c5264d"
+checksum = "sha256:db09df9fffd29e739ec45f2ce1b6e9db8c763e86e0ca95f625863c5c1846194f"
 checksum_source = "mise-versions"
-url = "https://github.com/bazelbuild/bazel/releases/download/8.8.2/bazel-8.8.2-linux-arm64"
-url_api = "https://api.github.com/repos/bazelbuild/bazel/releases/assets/661124423"
+url = "https://github.com/bazelbuild/bazel/releases/download/8.9.0/bazel-8.9.0-linux-arm64"
+url_api = "https://api.github.com/repos/bazelbuild/bazel/releases/assets/768563830"
 
 [tools.bazel."platforms.linux-x64"]
-checksum = "sha256:bf463ba0f5f782e8fe31071bd2b821c2f6a27f03e5bb62f0879e88cbf3656e04"
-checksum_source = "mise-versions"
-url = "https://github.com/bazelbuild/bazel/releases/download/8.8.2/bazel-8.8.2-linux-x86_64"
-url_api = "https://api.github.com/repos/bazelbuild/bazel/releases/assets/661124443"
+checksum = "sha256:bc4b5efbaf8b1d85913fb0e6873e40e4d9b33244d30cbbbbcd1b7835d940f8fa"
+url = "https://github.com/bazelbuild/bazel/releases/download/8.9.0/bazel-8.9.0-linux-x86_64"
+url_api = "https://api.github.com/repos/bazelbuild/bazel/releases/assets/768563879"
 
 [tools.bazel."platforms.linux-x64-musl"]
-checksum = "sha256:bf463ba0f5f782e8fe31071bd2b821c2f6a27f03e5bb62f0879e88cbf3656e04"
+checksum = "sha256:bc4b5efbaf8b1d85913fb0e6873e40e4d9b33244d30cbbbbcd1b7835d940f8fa"
 checksum_source = "mise-versions"
-url = "https://github.com/bazelbuild/bazel/releases/download/8.8.2/bazel-8.8.2-linux-x86_64"
-url_api = "https://api.github.com/repos/bazelbuild/bazel/releases/assets/661124443"
+url = "https://github.com/bazelbuild/bazel/releases/download/8.9.0/bazel-8.9.0-linux-x86_64"
+url_api = "https://api.github.com/repos/bazelbuild/bazel/releases/assets/768563879"
 
 [tools.bazel."platforms.macos-arm64"]
-checksum = "sha256:ae640432a3fdb8a08c637562895f91c7ff1f63f04b1a9d34de9e9c46162bc10b"
+checksum = "sha256:ee8a797896720bbda590461ae4f9e6a20c2105eccfc6b8ca4274db0555a73ac5"
 checksum_source = "mise-versions"
-url = "https://github.com/bazelbuild/bazel/releases/download/8.8.2/bazel-8.8.2-darwin-arm64"
-url_api = "https://api.github.com/repos/bazelbuild/bazel/releases/assets/661124328"
+url = "https://github.com/bazelbuild/bazel/releases/download/8.9.0/bazel-8.9.0-darwin-arm64"
+url_api = "https://api.github.com/repos/bazelbuild/bazel/releases/assets/768563615"
 
 [tools.bazel."platforms.macos-x64"]
-checksum = "sha256:f1caf79883cf4b8947344cb6a117b0668dc9a300820a88de74339a624dbe6962"
+checksum = "sha256:6f4e6f478ab2b0de1b207eed8ad322b97ec8517efa2c8f4a757d7faa4baf723f"
 checksum_source = "mise-versions"
-url = "https://github.com/bazelbuild/bazel/releases/download/8.8.2/bazel-8.8.2-darwin-x86_64"
-url_api = "https://api.github.com/repos/bazelbuild/bazel/releases/assets/661124332"
+url = "https://github.com/bazelbuild/bazel/releases/download/8.9.0/bazel-8.9.0-darwin-x86_64"
+url_api = "https://api.github.com/repos/bazelbuild/bazel/releases/assets/768563643"
 
 [tools.bazel."platforms.windows-x64"]
-checksum = "sha256:ffb2a40859d6fed04f7c2e3a3e1247632153c1a68ac3ad1437c8988d608adfcc"
+checksum = "sha256:46c951414f3f9cd7d4860d1e68cdd008491eca12b393d432f6fb6f6c7395b99b"
 checksum_source = "mise-versions"
-url = "https://github.com/bazelbuild/bazel/releases/download/8.8.2/bazel-8.8.2-windows-x86_64.zip"
-url_api = "https://api.github.com/repos/bazelbuild/bazel/releases/assets/661124524"
+url = "https://github.com/bazelbuild/bazel/releases/download/8.9.0/bazel-8.9.0-windows-x86_64.zip"
+url_api = "https://api.github.com/repos/bazelbuild/bazel/releases/assets/768564119"
 
 [[tools.buildifier]]
 version = "10.2.0"
@@ -184,104 +189,101 @@ url = "https://github.com/bazel-contrib/buildtools/releases/download/v10.2.0/bui
 url_api = "https://api.github.com/repos/bazel-contrib/buildtools/releases/assets/684766823"
 
 [[tools.hk]]
-version = "2.12.0"
+version = "2.14.0"
 backend = "packslip:github.com/jdx/hk"
 specifiers = ["latest"]
 unsupported_platforms = ["macos-x64"]
 
 [tools.hk."platforms.linux-arm64"]
-checksum = "sha256:0f4e44802c3fcf98461b6608281353ae1944b82fd12f4a683f8e2e6683e562f3"
-url = "https://github.com/jdx/hk/releases/download/v2.12.0/hk-aarch64-unknown-linux-gnu.tar.gz"
+checksum = "sha256:a5503bc4a6cef77697aed92c966f7b444b3fdea4b62b63d9fb0b2b1af7f08c83"
+url = "https://github.com/jdx/hk/releases/download/v2.14.0/hk-aarch64-unknown-linux-gnu.tar.gz"
 signer = "sigstore-oidc:https://github.com/jdx/hk/.github/workflows/release.yml"
 repository_ids = { repository = "922514152" }
 
 [tools.hk."platforms.linux-arm64-musl"]
-checksum = "sha256:82758b9671b4b3627f126dc8e9803bb156c23893b4f9ec212797f81c4d242e50"
-url = "https://github.com/jdx/hk/releases/download/v2.12.0/hk-aarch64-unknown-linux-musl.tar.gz"
+checksum = "sha256:d9e0cca380e87a175fa2b18738af3e03cbd4109f9105e1ede60ebb3238d09a16"
+url = "https://github.com/jdx/hk/releases/download/v2.14.0/hk-aarch64-unknown-linux-musl.tar.gz"
 signer = "sigstore-oidc:https://github.com/jdx/hk/.github/workflows/release.yml"
 repository_ids = { repository = "922514152" }
 
 [tools.hk."platforms.linux-x64"]
-checksum = "sha256:db98f893b882f064c1f7abcc96f4ccc31e8154fd1ba0f7f94823d371c2c4fdad"
-url = "https://github.com/jdx/hk/releases/download/v2.12.0/hk-x86_64-unknown-linux-gnu.tar.gz"
+checksum = "sha256:230e89eaa3bf78aea23ac1584c8de9dd49141487f6067083003d8bdb38fa6c34"
+url = "https://github.com/jdx/hk/releases/download/v2.14.0/hk-x86_64-unknown-linux-gnu.tar.gz"
 signer = "sigstore-oidc:https://github.com/jdx/hk/.github/workflows/release.yml"
 repository_ids = { repository = "922514152" }
 
 [tools.hk."platforms.linux-x64-musl"]
-checksum = "sha256:cab1ba30c605444112b4499790a97bd28dda83ffc352baa4aa87d5abfb12c668"
-url = "https://github.com/jdx/hk/releases/download/v2.12.0/hk-x86_64-unknown-linux-musl.tar.gz"
+checksum = "sha256:49b9238317fa6f047f66b93cc1a150efaeb9790063ae44aa5de9cc3d59d709c1"
+url = "https://github.com/jdx/hk/releases/download/v2.14.0/hk-x86_64-unknown-linux-musl.tar.gz"
 signer = "sigstore-oidc:https://github.com/jdx/hk/.github/workflows/release.yml"
 repository_ids = { repository = "922514152" }
 
 [tools.hk."platforms.macos-arm64"]
-checksum = "sha256:269c17d47e884c19adb77144d5957e854fc5fc6a1a6f9c1a0a5b19431e2fabb8"
-url = "https://github.com/jdx/hk/releases/download/v2.12.0/hk-aarch64-apple-darwin.tar.gz"
+checksum = "sha256:82a6ceb4a69bcf9667502f5bdf487a7d1a3aa5078197e981cf0538086d90b778"
+url = "https://github.com/jdx/hk/releases/download/v2.14.0/hk-aarch64-apple-darwin.tar.gz"
 signer = "sigstore-oidc:https://github.com/jdx/hk/.github/workflows/release.yml"
 repository_ids = { repository = "922514152" }
 
 [tools.hk."platforms.windows-x64"]
-checksum = "sha256:052f2ea36dc679cae7fbbd57f75c2b4e5c4cd7bb6711f7bf6b9a147524ffe9f9"
-url = "https://github.com/jdx/hk/releases/download/v2.12.0/hk-x86_64-pc-windows-msvc.zip"
+checksum = "sha256:750e1ccaca97b4c33f9b709e4beea9da5de98c7bb3f175cbbe59c05b5a6e365b"
+url = "https://github.com/jdx/hk/releases/download/v2.14.0/hk-x86_64-pc-windows-msvc.zip"
 signer = "sigstore-oidc:https://github.com/jdx/hk/.github/workflows/release.yml"
 repository_ids = { repository = "922514152" }
 
 [[tools."npm:renovate"]]
-version = "44.240.0"
-aube = { path = ".mise/locks/npm-renovate/44.240.0~aa673d8d", digest = "sha256:2758f675d4626679c6dd9f49e0d77147f96b1837463b86e5072206445cf1ea55" }
+version = "45.1.0"
+aube = { path = ".mise/locks/npm-renovate/45.1.0~aa673d8d", digest = "sha256:7b722bc446ebd3f08178f6d359b13f99b7566933c18317ff114aa8959ef943cf" }
 backend = "npm:renovate"
 specifiers = ["latest"]
 
 [tools."npm:renovate".options]
 trust_policy_excludes = '["@yarnpkg/libzip@3.2.2"]'
 
-[tools."npm:renovate".provenance]
-repository = "github.com/renovatebot/renovate"
-
 [[tools.rumdl]]
-version = "0.3.4"
+version = "0.3.7"
 backend = "aqua:rvben/rumdl"
 specifiers = ["latest"]
 
 [tools.rumdl."platforms.linux-arm64"]
-checksum = "sha256:d51bfff8c4aacebb786f701918389b3b568129cb9c16aee12567ede6869a61ad"
-url = "https://github.com/rvben/rumdl/releases/download/v0.3.4/rumdl-v0.3.4-aarch64-unknown-linux-gnu.tar.gz"
-url_api = "https://api.github.com/repos/rvben/rumdl/releases/assets/741227511"
+checksum = "sha256:30e35b109ee3af388e280138fcb9bce6a92f9a52025f0b18af475f45ff4c3973"
+url = "https://github.com/rvben/rumdl/releases/download/v0.3.7/rumdl-v0.3.7-aarch64-unknown-linux-gnu.tar.gz"
+url_api = "https://api.github.com/repos/rvben/rumdl/releases/assets/797113522"
 provenance = "github-attestations"
 
 [tools.rumdl."platforms.linux-arm64-musl"]
-checksum = "sha256:712d7b0c5413a5bc0315c939f29a9cc87dbee43fb9a119138fff1d6599a41f92"
-url = "https://github.com/rvben/rumdl/releases/download/v0.3.4/rumdl-v0.3.4-aarch64-unknown-linux-musl.tar.gz"
-url_api = "https://api.github.com/repos/rvben/rumdl/releases/assets/741227519"
+checksum = "sha256:236d0c162755b3c9597148b193243e74abe6c304cdeaf1045823220dc7234df0"
+url = "https://github.com/rvben/rumdl/releases/download/v0.3.7/rumdl-v0.3.7-aarch64-unknown-linux-musl.tar.gz"
+url_api = "https://api.github.com/repos/rvben/rumdl/releases/assets/797113519"
 provenance = "github-attestations"
 
 [tools.rumdl."platforms.linux-x64"]
-checksum = "sha256:36f1524f0cfaf33f5dfe68ac19220e1bd57ded1f0f9205931f6ee1de32f4a040"
-url = "https://github.com/rvben/rumdl/releases/download/v0.3.4/rumdl-v0.3.4-x86_64-unknown-linux-gnu.tar.gz"
-url_api = "https://api.github.com/repos/rvben/rumdl/releases/assets/741227513"
+checksum = "sha256:f6a972fee9a99a8201c40f3fe3da2f974b286f10323a7f8b2be8b8a13ef73d4e"
+url = "https://github.com/rvben/rumdl/releases/download/v0.3.7/rumdl-v0.3.7-x86_64-unknown-linux-gnu.tar.gz"
+url_api = "https://api.github.com/repos/rvben/rumdl/releases/assets/797113526"
 provenance = "github-attestations"
 
 [tools.rumdl."platforms.linux-x64-musl"]
-checksum = "sha256:2e64c7654906f0df82218fcc73cbdded2e41f37961f5be3e876e708bdf42e367"
-url = "https://github.com/rvben/rumdl/releases/download/v0.3.4/rumdl-v0.3.4-x86_64-unknown-linux-musl.tar.gz"
-url_api = "https://api.github.com/repos/rvben/rumdl/releases/assets/741227509"
+checksum = "sha256:77f22b8408db103e39a226bf803e34ffdfc975550f8f79276b3f39738ec2c3e5"
+url = "https://github.com/rvben/rumdl/releases/download/v0.3.7/rumdl-v0.3.7-x86_64-unknown-linux-musl.tar.gz"
+url_api = "https://api.github.com/repos/rvben/rumdl/releases/assets/797113516"
 provenance = "github-attestations"
 
 [tools.rumdl."platforms.macos-arm64"]
-checksum = "sha256:51f7bce0d56ea632ed65e7e42a99effb7ce7a23923fe0738ecda0e1d11bcb788"
-url = "https://github.com/rvben/rumdl/releases/download/v0.3.4/rumdl-v0.3.4-aarch64-apple-darwin.tar.gz"
-url_api = "https://api.github.com/repos/rvben/rumdl/releases/assets/741227518"
+checksum = "sha256:8f9178cd11f01f637fe65d973b2034608970708f8c35277f9201198a01438b28"
+url = "https://github.com/rvben/rumdl/releases/download/v0.3.7/rumdl-v0.3.7-aarch64-apple-darwin.tar.gz"
+url_api = "https://api.github.com/repos/rvben/rumdl/releases/assets/797113518"
 provenance = "github-attestations"
 
 [tools.rumdl."platforms.macos-x64"]
-checksum = "sha256:e08cce7484b30f755b00b24d0629c2f87ab418cf1c24550e2466d2ac754dc97d"
-url = "https://github.com/rvben/rumdl/releases/download/v0.3.4/rumdl-v0.3.4-x86_64-apple-darwin.tar.gz"
-url_api = "https://api.github.com/repos/rvben/rumdl/releases/assets/741227510"
+checksum = "sha256:b7132dba4d73ff9b510dea7a9d37ded2e0048bd8f468336abf389d2f58024c10"
+url = "https://github.com/rvben/rumdl/releases/download/v0.3.7/rumdl-v0.3.7-x86_64-apple-darwin.tar.gz"
+url_api = "https://api.github.com/repos/rvben/rumdl/releases/assets/797113520"
 provenance = "github-attestations"
 
 [tools.rumdl."platforms.windows-x64"]
-checksum = "sha256:d059ae097c7d23ac627abb92a4496eb25aecc513f901a8e907662de98df0e875"
-url = "https://github.com/rvben/rumdl/releases/download/v0.3.4/rumdl-v0.3.4-x86_64-pc-windows-msvc.zip"
-url_api = "https://api.github.com/repos/rvben/rumdl/releases/assets/741227515"
+checksum = "sha256:dd2caf61f0a2efaef69780ed6d09c2035ba944d20d5a6c1c5ec3ba3b013984b3"
+url = "https://github.com/rvben/rumdl/releases/download/v0.3.7/rumdl-v0.3.7-x86_64-pc-windows-msvc.zip"
+url_api = "https://api.github.com/repos/rvben/rumdl/releases/assets/797113528"
 provenance = "github-attestations"
 
 [[tools.taplo]]
