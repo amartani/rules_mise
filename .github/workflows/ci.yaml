@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        bazel: ["8.x", "9.x"]
+        bazel: ["9", "8"]
         folder:
           - .
           - e2e/backends
@@ -32,18 +32,45 @@ jobs:
       run:
         working-directory: ${{ matrix.folder }}
     env:
-      USE_BAZEL_VERSION: ${{ matrix.bazel }}
+      # mise.toml declares both majors; the first one ("9") is the default.
+      MISE_BAZEL_VERSION: ${{ matrix.bazel }}
     steps:
       - uses: actions/checkout@v7.0.1
-      - uses: bazel-contrib/setup-bazel@0.19.2
+      - uses: jdx/mise-action@v5.2.8
         with:
-          bazelisk-cache: true
-          disk-cache: ${{ github.workflow }}
-          repository-cache: true
-          bazelrc: |
-            ${{ matrix.folder == '.' && 'common --config=ci ' || '' }}
-            ${{ matrix.folder == '.' && !startsWith(matrix.bazel, '9.') && 'common --lockfile_mode=update' || '' }}
-      - run: bazel test //...
+          cache_key: "{{default}}-bazel${{ matrix.bazel }}"
+      # setup-bazel also cached Bazel's disk/repository caches; mise-action only
+      # caches the Bazel binaries, so restore those two caches explicitly.
+      - uses: actions/cache@v6.1.0
+        with:
+          path: ~/.cache/bazel-disk
+          key: bazel-disk-${{ runner.os }}-${{ runner.arch }}-CI-${{ hashFiles('**/MODULE.bazel', '**/BUILD', '**/BUILD.bazel', 'mise.lock') }}
+          restore-keys: bazel-disk-${{ runner.os }}-${{ runner.arch }}-CI-
+      - uses: actions/cache@v6.1.0
+        with:
+          path: ~/.cache/bazel-repo
+          key: bazel-repo-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('**/MODULE.bazel', '**/MODULE.bazel.lock', '**/WORKSPACE', '**/WORKSPACE.bazel', '**/WORKSPACE.bzlmod', 'mise.lock') }}
+          restore-keys: bazel-repo-${{ runner.os }}-${{ runner.arch }}-
+      - name: Configure Bazel caches
+        shell: bash
+        run: |
+          mkdir -p "$HOME/.cache/bazel-disk" "$HOME/.cache/bazel-repo"
+          {
+            echo "build --disk_cache=$HOME/.cache/bazel-disk"
+            echo "common --repository_cache=$HOME/.cache/bazel-repo"
+          } >> "$HOME/.bazelrc"
+      - name: Test
+        run: |
+          args=(test //...)
+          if [[ "${{ matrix.folder }}" == "." ]]; then
+            args+=(--config=ci)
+            if [[ "${{ matrix.bazel }}" == "8" ]]; then
+              # The lockfile is generated with the newest Bazel; older
+              # versions need a different lockfile format.
+              args+=(--lockfile_mode=update)
+            fi
+          fi
+          mise exec -- bazel "${args[@]}"
   smoke:
     # e2e/smoke is the BCR presubmit module: run it on every OS x arch so
     # platform-specific tool failures surface here instead of at publish time.
@@ -53,18 +80,28 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        bazel: ["8.x", "9.x"]
+        bazel: ["9", "8"]
         platform:
           - name: linux-x86_64
             runner: ubuntu-24.04
+            disk_cache: ~/.cache/bazel-disk
+            repo_cache: ~/.cache/bazel-repo
           - name: linux-arm64
             runner: ubuntu-24.04-arm
+            disk_cache: ~/.cache/bazel-disk
+            repo_cache: ~/.cache/bazel-repo
           - name: macos-arm64
             runner: macos-15
+            disk_cache: ~/Library/Caches/bazel-disk
+            repo_cache: ~/Library/Caches/bazel-repo
           - name: macos-x86_64
             runner: macos-15-intel
+            disk_cache: ~/Library/Caches/bazel-disk
+            repo_cache: ~/Library/Caches/bazel-repo
           - name: windows-x86_64
             runner: windows-2025
+            disk_cache: C:/_bazel-disk
+            repo_cache: C:/_bazel-repo
             # No windows-arm64: ruff ships no Windows aarch64 binary upstream,
             # so the smoke toolset cannot cover that platform.
     name: smoke (${{ matrix.platform.name }}, bazel ${{ matrix.bazel }})
@@ -73,15 +110,32 @@ jobs:
       run:
         working-directory: e2e/smoke
     env:
-      USE_BAZEL_VERSION: ${{ matrix.bazel }}
+      MISE_BAZEL_VERSION: ${{ matrix.bazel }}
     steps:
       - uses: actions/checkout@v7.0.1
-      - uses: bazel-contrib/setup-bazel@0.19.2
+      - uses: jdx/mise-action@v5.2.8
         with:
-          bazelisk-cache: true
-          disk-cache: ${{ github.workflow }}
-          repository-cache: true
-      - run: bazel test //...
+          cache_key: "{{default}}-bazel${{ matrix.bazel }}"
+      # Same Bazel-side caches setup-bazel used to manage on every platform.
+      - uses: actions/cache@v6.1.0
+        with:
+          path: ${{ matrix.platform.disk_cache }}
+          key: bazel-disk-${{ matrix.platform.name }}-CI-${{ hashFiles('**/MODULE.bazel', '**/BUILD', '**/BUILD.bazel', 'mise.lock') }}
+          restore-keys: bazel-disk-${{ matrix.platform.name }}-CI-
+      - uses: actions/cache@v6.1.0
+        with:
+          path: ${{ matrix.platform.repo_cache }}
+          key: bazel-repo-${{ matrix.platform.name }}-${{ hashFiles('**/MODULE.bazel', '**/MODULE.bazel.lock', '**/WORKSPACE', '**/WORKSPACE.bazel', '**/WORKSPACE.bzlmod', 'mise.lock') }}
+          restore-keys: bazel-repo-${{ matrix.platform.name }}-
+      - name: Configure Bazel caches
+        shell: bash
+        run: |
+          mkdir -p "${{ matrix.platform.disk_cache }}" "${{ matrix.platform.repo_cache }}"
+          {
+            echo "build --disk_cache=${{ matrix.platform.disk_cache }}"
+            echo "common --repository_cache=${{ matrix.platform.repo_cache }}"
+          } >> "$HOME/.bazelrc"
+      - run: mise exec -- bazel test //...
   hk:
     runs-on: ubuntu-latest
     steps:

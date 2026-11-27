@@ -52,7 +52,7 @@ url_api = "https://api.github.com/repos/bazel-contrib/buildtools/releases/assets
 [[tools.bazel]]
 version = "9.3.1"
 backend = "aqua:bazelbuild/bazel"
-specifiers = ["9.3.1"]
+specifiers = ["9"]
 
 [tools.bazel."platforms.linux-arm64"]
 checksum = "sha256:10ba9cb76d4ee748d274dcc2981992bb12b74a203dc41a9c2eceeb8f29359366"
@@ -88,6 +88,53 @@ url_api = "https://api.github.com/repos/bazelbuild/bazel/releases/assets/6611082
 checksum = "sha256:7551c0164e35aa8e2331df797b404ee4066a706099b269ecfe1e375d379ee9fa"
 url = "https://github.com/bazelbuild/bazel/releases/download/9.3.1/bazel-9.3.1-windows-x86_64.zip"
 url_api = "https://api.github.com/repos/bazelbuild/bazel/releases/assets/661108614"
+
+[[tools.bazel]]
+version = "8.8.2"
+backend = "aqua:bazelbuild/bazel"
+specifiers = ["8"]
+
+[tools.bazel."platforms.linux-arm64"]
+checksum = "sha256:de0392a89e69db64a5070fa6c97acc70c169f5cb98a0e2e1ae0cd2b5f1c5264d"
+checksum_source = "mise-versions"
+url = "https://github.com/bazelbuild/bazel/releases/download/8.8.2/bazel-8.8.2-linux-arm64"
+url_api = "https://api.github.com/repos/bazelbuild/bazel/releases/assets/661124423"
+
+[tools.bazel."platforms.linux-arm64-musl"]
+checksum = "sha256:de0392a89e69db64a5070fa6c97acc70c169f5cb98a0e2e1ae0cd2b5f1c5264d"
+checksum_source = "mise-versions"
+url = "https://github.com/bazelbuild/bazel/releases/download/8.8.2/bazel-8.8.2-linux-arm64"
+url_api = "https://api.github.com/repos/bazelbuild/bazel/releases/assets/661124423"
+
+[tools.bazel."platforms.linux-x64"]
+checksum = "sha256:bf463ba0f5f782e8fe31071bd2b821c2f6a27f03e5bb62f0879e88cbf3656e04"
+checksum_source = "mise-versions"
+url = "https://github.com/bazelbuild/bazel/releases/download/8.8.2/bazel-8.8.2-linux-x86_64"
+url_api = "https://api.github.com/repos/bazelbuild/bazel/releases/assets/661124443"
+
+[tools.bazel."platforms.linux-x64-musl"]
+checksum = "sha256:bf463ba0f5f782e8fe31071bd2b821c2f6a27f03e5bb62f0879e88cbf3656e04"
+checksum_source = "mise-versions"
+url = "https://github.com/bazelbuild/bazel/releases/download/8.8.2/bazel-8.8.2-linux-x86_64"
+url_api = "https://api.github.com/repos/bazelbuild/bazel/releases/assets/661124443"
+
+[tools.bazel."platforms.macos-arm64"]
+checksum = "sha256:ae640432a3fdb8a08c637562895f91c7ff1f63f04b1a9d34de9e9c46162bc10b"
+checksum_source = "mise-versions"
+url = "https://github.com/bazelbuild/bazel/releases/download/8.8.2/bazel-8.8.2-darwin-arm64"
+url_api = "https://api.github.com/repos/bazelbuild/bazel/releases/assets/661124328"
+
+[tools.bazel."platforms.macos-x64"]
+checksum = "sha256:f1caf79883cf4b8947344cb6a117b0668dc9a300820a88de74339a624dbe6962"
+checksum_source = "mise-versions"
+url = "https://github.com/bazelbuild/bazel/releases/download/8.8.2/bazel-8.8.2-darwin-x86_64"
+url_api = "https://api.github.com/repos/bazelbuild/bazel/releases/assets/661124332"
+
+[tools.bazel."platforms.windows-x64"]
+checksum = "sha256:ffb2a40859d6fed04f7c2e3a3e1247632153c1a68ac3ad1437c8988d608adfcc"
+checksum_source = "mise-versions"
+url = "https://github.com/bazelbuild/bazel/releases/download/8.8.2/bazel-8.8.2-windows-x86_64.zip"
+url_api = "https://api.github.com/repos/bazelbuild/bazel/releases/assets/661124524"
 
 [[tools.buildifier]]
 version = "10.2.0"
@@ -140,6 +187,7 @@ url_api = "https://api.github.com/repos/bazel-contrib/buildtools/releases/assets
 version = "2.12.0"
 backend = "packslip:github.com/jdx/hk"
 specifiers = ["latest"]
+unsupported_platforms = ["macos-x64"]
 
 [tools.hk."platforms.linux-arm64"]
 checksum = "sha256:0f4e44802c3fcf98461b6608281353ae1944b82fd12f4a683f8e2e6683e562f3"
