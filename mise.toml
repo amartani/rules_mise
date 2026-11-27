@@ -1,7 +1,7 @@
-[settings]
-idiomatic_version_file_enable_tools = ["bazel"]
-
 [tools]
+# First version is the default (`mise exec -- bazel`); both are available in CI
+# via the matrix and `MISE_BAZEL_VERSION`.
+bazel = ["9", "8"]
 buildifier = "latest"
 "aqua:bazelbuild/buildtools/buildozer" = "latest"
 hk = "latest"

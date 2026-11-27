@@ -1,6 +1,9 @@
+# BuildBuddy wraps `bazel` with bazelisk, which injects its own bazelrc (BES,
+# RBE, metadata). Read the default Bazel version straight from mise.lock and
+# hand it to bazelisk via USE_BAZEL_VERSION; no mise install is needed here.
 actions:
   - name: buildbuddy root
-    triggers:
+    triggers: &triggers
       push:
         branches:
           - "main"
@@ -8,84 +11,52 @@ actions:
         branches:
           - "*"
     steps:
-      - run: "bazel test --config=buildbuddy //..."
+      - run: &bazel_test |
+          # The first [[tools.bazel]] entry is the default from mise.toml.
+          version="$(awk '/^\[\[tools\.bazel\]\]$/ {found=1; next} found && /^version = / {gsub(/"/, "", $3); print $3; exit}' "$(git rev-parse --show-toplevel)/mise.lock")"
+          if [ -z "$version" ]; then
+            echo "No Bazel version found in mise.lock" >&2
+            exit 1
+          fi
+          export USE_BAZEL_VERSION="$version"
+          bazel test --config=buildbuddy //...
   - name: buildbuddy e2e/smoke
-    triggers:
-      push:
-        branches:
-          - "main"
-      pull_request:
-        branches:
-          - "*"
+    triggers: *triggers
+    bazel_workspace_dir: e2e/smoke
     steps:
-      - run: "cd e2e/smoke && bazel test --config=buildbuddy //..."
+      - run: *bazel_test
   - name: buildbuddy e2e/backends
-    triggers:
-      push:
-        branches:
-          - "main"
-      pull_request:
-        branches:
-          - "*"
+    triggers: *triggers
+    bazel_workspace_dir: e2e/backends
     steps:
-      - run: "cd e2e/backends && bazel test --config=buildbuddy //..."
+      - run: *bazel_test
   - name: buildbuddy e2e/conda
-    triggers:
-      push:
-        branches:
-          - "main"
-      pull_request:
-        branches:
-          - "*"
+    triggers: *triggers
+    bazel_workspace_dir: e2e/conda
     steps:
-      - run: "cd e2e/conda && bazel test --config=buildbuddy //..."
+      - run: *bazel_test
   - name: buildbuddy e2e/conda-env
-    triggers:
-      push:
-        branches:
-          - "main"
-      pull_request:
-        branches:
-          - "*"
+    triggers: *triggers
+    bazel_workspace_dir: e2e/conda-env
     steps:
-      - run: "cd e2e/conda-env && bazel test --config=buildbuddy //..."
+      - run: *bazel_test
   - name: buildbuddy e2e/conda_multi_version
-    triggers:
-      push:
-        branches:
-          - "main"
-      pull_request:
-        branches:
-          - "*"
+    triggers: *triggers
+    bazel_workspace_dir: e2e/conda_multi_version
     steps:
-      - run: "cd e2e/conda_multi_version && bazel test --config=buildbuddy //..."
+      - run: *bazel_test
   - name: buildbuddy e2e/conda_opensearch
-    triggers:
-      push:
-        branches:
-          - "main"
-      pull_request:
-        branches:
-          - "*"
+    triggers: *triggers
+    bazel_workspace_dir: e2e/conda_opensearch
     steps:
-      - run: "cd e2e/conda_opensearch && bazel test --config=buildbuddy //..."
+      - run: *bazel_test
   - name: buildbuddy e2e/conda_redis
-    triggers:
-      push:
-        branches:
-          - "main"
-      pull_request:
-        branches:
-          - "*"
+    triggers: *triggers
+    bazel_workspace_dir: e2e/conda_redis
     steps:
-      - run: "cd e2e/conda_redis && bazel test --config=buildbuddy //..."
+      - run: *bazel_test
   - name: buildbuddy e2e/itest
-    triggers:
-      push:
-        branches:
-          - "main"
-      pull_request:
-        branches:
-          - "*"
+    triggers: *triggers
+    bazel_workspace_dir: e2e/itest
     steps:
-      - run: "cd e2e/itest && bazel test --config=buildbuddy //..."
+      - run: *bazel_test
