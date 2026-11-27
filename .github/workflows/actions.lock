@@ -6,10 +6,10 @@ workflows:
     '.github/workflows/ci.yaml':
         - 'actions/cache@v6.1.0'
         - 'actions/checkout@v7.0.1'
-        - 'jdx/mise-action@v5.2.8'
+        - 'jdx/mise-action@v5.3.0'
         - 'technote-space/workflow-conclusion-action@v3.0.3'
     '.github/workflows/conventional-commits.yaml':
-        - 'amannn/action-semantic-pull-request@v6.1.2'
+        - 'amannn/action-semantic-pull-request@v6.1.4'
     '.github/workflows/publish.yaml': []
     '.github/workflows/release.yaml':
         - 'softprops/action-gh-release@v3.0.4'
@@ -27,14 +27,14 @@ dependencies:
         commit: 'sha1-3d3c42e5aac5ba805825da76410c181273ba90b1'
         owner_id: 44036562
         repo_id: 197814629
-    'amannn/action-semantic-pull-request@v6.1.2':
-        ref: 'v6.1.2'
-        commit: 'sha1-2252a14e810aa9b85c2d560bd7070c802206ecf6'
+    'amannn/action-semantic-pull-request@v6.1.4':
+        ref: 'v6.1.4'
+        commit: 'sha1-66e72920af32222769c386d81f89656ebcb6d6d5'
         owner_id: 4038316
         repo_id: 220418983
-    'jdx/mise-action@v5.2.8':
-        ref: 'v5.2.8'
-        commit: 'sha1-d5574b52816a478f9d4e6529a3f6ff17a8a36785'
+    'jdx/mise-action@v5.3.0':
+        ref: 'v5.3.0'
+        commit: 'sha1-924e7c586e33d7d4bae9c14e26c5d22e2beb6e78'
         owner_id: 216188
         repo_id: 738284564
     'smlx/ccv@v0.10.0':
